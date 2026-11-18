@@ -1,0 +1,10 @@
+A comprehensive, ultra-clean modern UI/UX design system and mobile/web app presentation board for a marketplace application named "DJASSA ONLINE", presented on a sleek light-gray studio background. The brand color palette strictly features bold Crimson Red (#E11D48), Deep Charcoal Black (#0F172A), Pure White (#FFFFFF), and subtle slate grays.
+
+Top header section: Bold modern branding "DJASSA ONLINE — DESIGN SYSTEM & UI/UX", accompanied by color palette swatches showing hex codes (#E11D48 Primary Red, #0F172A Jet Black, #FFFFFF Pure White, #F8FAFC Off-White) and typography specimen cards displaying "Plus Jakarta Sans" (bold geometric headings) and "Inter" (clean readable UI body text).
+
+Center and bottom showcase: Three high-resolution, realistic modern smartphone app mockups side-by-side displaying the mobile UI of Djassa Online:
+1. Left Mockup (Hybrid Home Feed): Dark black top header with white "DJASSA ONLINE" logo and red notification dot, search bar, red & black category pills ("Tout", "Seconde Main & Troc", "Boutiques Neuves"), a vibrant red "VENTE FLASH BOUTIQUE" banner, and a 2-column product grid showing used sneakers with a red "TROC" badge and a new power drill with a black "BOUTIQUE PRO" badge, plus a bottom navigation bar with a central crimson red "+" publish button.
+2. Center Mockup (Product Detail & Barter Modal): High-res product photo of a cordless drill, price in FCFA, verified store badge, and an interactive bottom sheet modal in crisp white and black with a crimson red primary CTA button "Proposer un Troc + Cash" and secondary black outline button "Acheter via GeniusPay".
+3. Right Mockup (Pro Store Dashboard & PIN Validation): Sleek dark-mode and white card analytics view for a Pro Store showing revenue in FCFA, stock alerts in red, and a secure 4-digit PIN escrow release card in bold black and red accents.
+
+Crisp vector UI elements, sharp typography, studio lighting, Dribbble and Behance top-tier product design presentation style, high detail, 8k resolution.

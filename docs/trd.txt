@@ -1,0 +1,328 @@
+SPÉCIFICATIONS D'ARCHITECTURE & INGÉNIERIE LOGICIELLE
+
+
+Document d'Exigences Techniques (TRD) — Djassa
+Online
+Plateforme hybride de revente C2C, troc intelligent et boutiques professionnelles B2C
+
+ Version               1.0 (Architecture MVP)                Date                 18 Novembre 2026
+
+                       Web (React JS) & Mobile (React
+ Clients                                                     Serveur & BDD        Laravel API REST & PostgreSQL
+                       Native)
+
+                                                                                  Infrastructure Cloud
+ Services Tiers        GeniusPay, Brevo, Google Cloud        Déploiement
+                                                                                  Conteneurisée
+
+
+
+
+1. Vue d'Ensemble de l'Architecture
+
+Djassa Online repose sur une architecture découplée de type API-First. Le noyau métier et la
+persistance des données sont centralisés sur un serveur backend Laravel communiquant avec une
+base de données relationnelle PostgreSQL. Cette API RESTful alimente simultanément l'application
+web monopage (React en JavaScript) et les applications mobiles iOS/Android (React Native).
+
+
+   Principe directeur : Une logique métier unique côté serveur (validation des trocs, séquestre financier
+   GeniusPay, génération de codes PIN et gestion des stocks boutiques) garantissant une
+   synchronisation temps réel stricte entre les utilisateurs web et mobiles.
+
+
+
+2. Stack Technologique et Intégrations
+
+Le tableau ci-dessous recense l'ensemble des briques technologiques retenues pour le
+développement, les services externes et le déploiement de l'écosystème Djassa Online :
+
+
+  Couche / Service               Technologie                   Rôle et Justification Technique
+
+                                                               Interface web réactive (SPA), fil d'actualité hybride
+  Frontend Web                       React (JavaScript)        (occasion/neuf), tunnel de publication rapide et
+                                                               tableau de bord des boutiques pro.
+
+                                                               Application mobile cross-platform (Android & iOS)
+  Application Mobile                 React Native              avec accès caméra natif pour le mode photo flash,
+                                                               notifications push et scan/validation PIN.
+
+                                                               API RESTful sécurisée (Laravel Sanctum), moteur
+  Backend & API                      Laravel (PHP 8.3+)        d'algorithme de troc, gestion des files d'attente
+                                                               (Queues), webhooks de paiement et administration.
+
+                                                               SGBD relationnel robuste : intégrité ACID pour les
+
+                                     PostgreSQL
+                                                               transactions financières, colonnes   JSONB pour les
+  Base de Données
+                                                               attributs dynamiques d'articles et indexation plein
+                                                               texte.
+
+
+
+Djassa Online — Document d'Exigences Techniques (TRD v1.0)                                                    Page 1 of 6
+  Couche / Service             Technologie                   Rôle et Justification Technique
+
+                                                             Passerelle d'encaissement Mobile Money (Wave,
+                                                             Orange Money, MTN, Moov) et cartes bancaires,
+  Agrégateur Paiement               GeniusPay
+                                                             gestion du séquestre (Escrow) et reversements
+                                                             vendeurs.
+
+                                                             Envoi d'e-mails transactionnels via API/SMTP
+  Messagerie & E-mails              Brevo (ex-Sendinblue)    (confirmations de commande, reçus PDF, alertes du
+                                                             Mur des Souhaits) et notifications SMS OTP.
+
+                                                             Connexion automatique en un clic via Google
+                                                             Identity / OAuth 2.0 (Web & Mobile), stockage
+  Auth & Cloud                      Google Cloud (OAuth)
+                                                             d'objets médias (Cloud Storage) et hébergement
+                                                             haute disponibilité.
+
+                                                             Conteneurisation des services Laravel, Nginx et
+                                    Docker & Cloud Run /
+  Déploiement & CI/CD                                        workers Redis ; déploiement automatisé via GitHub
+                                    VPS
+                                                             Actions avec certificats SSL gérés.
+
+
+
+3. Architecture Détaillée des Composants
+
+3.1 Clients Frontend : React Web & React Native Mobile
+
+   Application Web (React JS) : Structurée autour de Vite pour un bundling rapide, React Router v6
+   pour la navigation et TanStack Query (React Query) pour la mise en cache intelligente des appels
+   API et la synchronisation optimiste des offres de troc.
+
+   Application Mobile (React Native) : Utilisation d'Expo / React Native CLI avec navigation native
+   (React Navigation), stockage chiffré des jetons d'authentification ( SecureStore ) et compression
+   d'images côté client avant upload (format WebP, max 800 Ko) afin d'économiser la bande
+   passante mobile.
+
+   Partage de logique : Les schémas de validation (formulaires d'annonces, calcul des soultes de
+   troc) et les modèles d'appels API suivent des contrats JSON identiques sur les deux plateformes.
+
+
+3.2 Backend API & Moteur Métier (Laravel)
+
+   Authentification unifiée : Laravel Sanctum délivre des jetons d'accès Bearer pour React Native et
+   gère des sessions SPA sécurisées par cookies HTTP-Only pour le client React Web.
+
+   Moteur de Troc & Paiement Mixte : Service transactionnel dédié ( BarterService ) verrouillant
+   temporairement les articles impliqués dans une proposition acceptée afin d'éviter la double vente
+   ou le double troc simultané.
+
+   File d'attente asynchrone (Queues) : Traitement en arrière-plan via Redis des tâches lourdes :
+   redimensionnement d'images, envoi des notifications Brevo et correspondance automatique avec
+   le Mur des Souhaits.
+
+
+
+
+Djassa Online — Document d'Exigences Techniques (TRD v1.0)                                                 Page 2 of 6
+4. Modélisation de la Base de Données (PostgreSQL)
+
+PostgreSQL est exploité pour sa robustesse transactionnelle et sa capacité à stocker efficacement
+des métadonnées flexibles (ex. : pointure pour un vêtement, puissance en Watts pour un outil neuf)
+grâce au type natif JSONB .
+
+
+  Table                     Colonnes Clés & Types PostgreSQL    Contraintes & Indexation
+
+                                                                               email , phone et
+                                                                Index unique sur
+                             id (UUID) , email , phone ,
+  users                                                          google_id . Rôles : user ,
+                             google_id , role , kyc_status
+                                                                 pro_seller , admin .
+
+                             id (UUID) , user_id (FK) ,
+                                                                Relation 1:1 avecusers (vendeurs pro).
+  stores                     slug , name , is_verified ,
+                                                                Index unique sur slug pour URL vitrine.
+                             rccm_doc
+
+                             id (UUID) , user_id , store_id      condition : new | used .
+                            (NULL) , condition ,                 trade_mode : sale | barter |
+  products
+                             trade_mode , price , stock ,        hybrid . Index GIN sur specs et
+                             specs (JSONB)                      recherche plein texte.
+
+                             id (UUID) , initiator_id ,
+                             receiver_id ,                              pending , accepted ,
+                                                                Statuts :
+  barter_offers              target_product_id ,                 rejected , completed . Verrouillage
+                             offered_products (JSONB) ,         optimiste lors de l'acceptation.
+                             cash_supplement , status
+
+                             id (UUID) , barter_offer_id
+                                                                 pin_hash stocke le code de remise à 4
+                            (NULL) , product_id , buyer_id ,
+  transactions                                                               escrow_status :
+                                                                chiffres haché.
+                             amount , geniuspay_ref ,
+                                                                 held , released , refunded .
+                             escrow_status , pin_hash
+
+                             id (UUID) , user_id , title ,      Index GIN sur     keywords pour
+  wishes                     keywords (TSVECTOR) ,              déclencher instantanément les alertes lors
+                             max_budget , accepts_barter        de nouvelles publications.
+
+
+
+5. Intégration des Services Tiers
+
+5.1 Connexion Automatique via Google Cloud (OAuth 2.0)
+
+L'authentification sociale permet une inscription sans friction sur le Web et le Mobile tout en
+garantissant la véracité de l'adresse e-mail :
+
+
+
+
+Djassa Online — Document d'Exigences Techniques (TRD v1.0)                                         Page 3 of 6
+1. Configuration Google Cloud Console : Création d'un projet dédié avec écran de consentement
+   OAuth et génération de trois identifiants clients distincts (Application Web React, Client Android
+   SHA-1, Client iOS Bundle ID).
+
+2. Flux d'authentification : Le client (React ou React Native) récupère un id_token signé par Google
+   et le transmet à l'endpoint backend POST /api/v1/auth/google .
+
+3. Vérification côté Laravel : Laravel Socialite / Google API Client vérifie la signature cryptographique
+   du jeton auprès des clés publiques Google, crée ou lie le compte utilisateur via google_id et
+   retourne le jeton Sanctum de l'application.
+
+
+5.2 Agrégateur de Paiement et Séquestre (GeniusPay)
+
+GeniusPay gère l'ensemble des flux financiers (achats directs et soultes financières lors des trocs
+mixtes) via Mobile Money et cartes :
+
+
+   Initialisation du paiement : Lorsqu'un acheteur valide une commande ou une soulte de troc
+   acceptée, Laravel appelle l'API GeniusPay pour générer une session de paiement sécurisée et
+   obtient une référence unique ( geniuspay_ref ).
+
+   Confirmation par Webhook : Un endpoint sécurisé POST /api/v1/webhooks/geniuspay écoute
+   les notifications asynchrones. La signature HMAC de l'en-tête HTTP est systématiquement
+   vérifiée avant de passer la transaction en statut held (fonds bloqués en séquestre).
+
+   Libération par Code PIN : Une fois les fonds sécurisés, un code PIN à 4 chiffres est généré et
+   affiché uniquement chez l'acheteur. Lors de la remise physique de l'article, la saisie de ce code par
+   le vendeur déclenche l'appel API de déblocage des fonds vers le portefeuille du vendeur.
+
+
+5.3 Service de Messagerie et Notifications (Brevo)
+
+Brevo assure la délivrabilité des communications critiques transactionnelles et marketing :
+
+
+   E-mails Transactionnels (API REST v3) : Envoi automatisé via des templates dynamiques Brevo
+   lors de l'inscription, de la réception d'une proposition de troc, de la confirmation de paiement
+   GeniusPay et de l'envoi des factures/reçus PDF générés pour les boutiques pro.
+
+   Alertes "Mur des Souhaits" : Lorsqu'un nouvel article correspond aux critères d'un souhait
+   enregistré, un job Laravel déclenche un e-mail d'alerte immédiat via Brevo avec lien profond (Deep
+   Link) ouvrant directement l'annonce sur React Web ou React Native.
+
+   Vérification SMS (OTP) : Utilisation de l'API SMS transactionnelle de Brevo pour valider les
+   numéros de téléphone locaux lors de l'activation d'une Boutique Pro.
+
+
+6. Spécifications des Endpoints API Principaux (REST)
+
+Toutes les routes sont préfixées par /api/v1 , retournent du JSON normalisé et sont soumises à une
+limitation de débit (Rate Limiting de 60 requêtes/minute par utilisateur).
+
+
+
+
+Djassa Online — Document d'Exigences Techniques (TRD v1.0)                                      Page 4 of 6
+  Méthode          Endpoint                                  Description Fonctionnelle
+
+                                                             Authentification automatique via jeton OAuth
+  POST             /auth/google
+                                                             Google Cloud (Web & Mobile).
+
+                                                             Catalogue filtrable ( ?mode=barter|sale ,       ?
+  GET              /products                                 condition=new|used , ?category= ,
+                                                             recherche plein texte).
+
+                                                             Publication rapide d'un article (occasion particulier
+  POST             /products
+                                                             ou stock neuf boutique pro).
+
+                                                             Soumission d'une offre de troc pur ou mixte (articles
+  POST             /barter-offers
+                                                             sélectionnés + soulte FCFA).
+
+                                                             Acceptation, refus ou contre-proposition d'un
+  PATCH            /barter-offers/{id}/respond
+                                                             échange par le vendeur.
+
+                                                             Initiation du paiement sécurisé (achat ou soulte)
+  POST             /payments/geniuspay/init
+                                                             auprès de GeniusPay.
+
+                    /transactions/{id}/verify-               Validation du code PIN à la remise physique et
+  POST
+                   pin                                       libération des fonds séquestrés.
+
+
+                                                             Réception sécurisée des confirmations de paiement
+  POST             /webhooks/geniuspay
+                                                             asynchrones GeniusPay.
+
+
+
+7. Sécurité, Performance et Déploiement
+
+7.1 Exigences de Sécurité
+
+   Protection des transactions : Les codes PIN de remise ne sont jamais stockés en clair en base de
+   données (hachage Bcrypt ) et expirent automatiquement après 5 tentatives erronées.
+
+   Validation des fichiers : Vérification stricte des types MIME (JPEG, PNG, WebP) et nettoyage des
+   métadonnées EXIF lors de l'upload des photos d'articles vers Google Cloud Storage.
+
+   Contrôle d'accès (RBAC) : Utilisation des Laravel Policies pour garantir que seul le propriétaire
+   d'une boutique pro vérifiée peut publier des articles avec le statut condition = new et générer
+   des factures officielles.
+
+
+7.2 Pipeline de Déploiement et Hébergement
+
+L'infrastructure de production est déployée selon une approche conteneurisée moderne assurant
+scalabilité et disponibilité continue :
+
+
+
+
+Djassa Online — Document d'Exigences Techniques (TRD v1.0)                                                 Page 5 of 6
+  GitHub (Branches main / staging)
+    └── GitHub Actions (Tests PHPUnit & Build React)
+          ├── Frontend Web (React JS) ──► CDN / Hébergement Statique HTTPS
+          ├── Backend API (Docker PHP-FPM + Nginx) ──► Serveur Cloud / Google Cloud
+  Run
+          ├── Workers (Laravel Horizon + Redis) ──► Traitement asynchrone Brevo &
+  Match Troc
+          └── Base de Données ──► PostgreSQL Managé (Sauvegardes quotidiennes
+  automatisées)
+
+
+   Observabilité : Journalisation centralisée des erreurs API et webhooks GeniusPay (Laravel
+   Telescope / Sentry) avec alertes automatiques en cas d'échec de paiement ou de latence base de
+   données supérieure à 200 ms.
+
+   Scalabilité : Séparation stricte entre le serveur applicatif sans état (Stateless), le stockage des
+   médias sur Google Cloud Storage et le serveur PostgreSQL managé, permettant de monter en
+   charge horizontalement lors des pics de trafic (ventes flash boutiques).
+
+
+
+
+Djassa Online — Document d'Exigences Techniques (TRD v1.0)                                       Page 6 of 6
+

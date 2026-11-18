@@ -1,0 +1,69 @@
+DJASSA ONLINE — ARCHITECTURE BACKEND & DONNÉES
+
+
+backend shéma
+Dossier de conception UML (Cas d'utilisation, Classes, Séquences), Modèle Relationnel (MLD) et
+Base de Données PostgreSQL
+
+
+
+  1. Diagramme des Cas d'Utilisation (UML)
+Cartographie des interactions fonctionnelles entre les acteurs (Particulier, Vendeur Pro, Visiteur,
+Administrateur, Système GeniusPay) et le système central Djassa Online.
+
+
+
+
+                       Figure 1 — Diagramme des Cas d'Utilisation du Système Djassa Online
+
+
+
+  2. Diagramme de Classes (UML)
+Modélisation orientée objet des entités métier principales (Utilisateur, Boutique, Article, OffreTroc,
+Transaction, Souhait, Message), de leurs méthodes et de leurs cardinalités.
+
+
+
+
+Djassa Online — backend shéma                                                                    Page 1 of 3
+                     Figure 2 — Diagramme de Classes UML : Architecture E-commerce & Troc
+
+
+
+  3. Diagramme de Séquences (UML)
+Orchestration chronologique d'une transaction de troc mixte (article + soulte financière en FCFA),
+incluant le blocage des fonds en séquestre via GeniusPay et la validation physique par code PIN.
+
+
+
+
+                 Figure 3 — Diagramme de Séquences : Processus de Troc Mixte & Validation PIN
+
+
+
+
+Djassa Online — backend shéma                                                                   Page 2 of 3
+  4. Modèle Relationnel de Données (MLD)
+Structure relationnelle normalisée définissant les clés primaires (PK), clés étrangères (FK) et tables
+d'association pour la persistance des offres de troc et transactions.
+
+
+
+
+                          Figure 4 — Modèle Relationnel de Données (MLD) — PostgreSQL
+
+
+  5. Base de Données Physique PostgreSQL
+Schéma physique SQL DDL, indexation des performances, contraintes d'intégrité et règles de sécurité
+au niveau des lignes (Row Level Security) pour l'implémentation sous Laravel.
+
+
+
+
+                     Figure 5 — Schéma Physique PostgreSQL, Index & Politiques de Sécurité
+
+
+
+
+Djassa Online — backend shéma                                                                  Page 3 of 3
+

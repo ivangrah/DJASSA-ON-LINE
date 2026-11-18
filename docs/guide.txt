@@ -1,0 +1,168 @@
+DJASSA ONLINE — KIT GRAPHIQUE & UI ASSE TS
+
+
+Inventaire des Icônes, Illustrations & Images
+Spécifications des ressources graphiques pour le développement Web (React JS) et Mobile (React
+Native)
+
+
+
+
+   Directives de cohérence visuelle : L'ensemble des icônes et illustrations respecte la charte
+   chromatique Noir Profond (#0F172A), Rouge Carmin (#E11D48) et Blanc Pur (#FFFFFF). La
+   bibliothèque recommandée est Lucide Icons (trait régulier de 2px , extrémités arrondies)
+   complétée par des pictogrammes métiers sur-mesure.
+
+
+
+  1. Bibliothèque d'Icônes Essentielles (Navigation & Métier)
+Les icônes sont exportées au format vectoriel SVG (grille 24×24px ) pour le Web et intégrées via
+react-native-svg sur mobile.
+
+
+  Aperçu       Nom / Identifiant              Couleur & État              Usage dans l'Application
+
+                                              Noir   #0F172A
+                                                                          Onglet principal du fil hybride (Tout, Occasion &
+                icon-home-feed                (Actif : Rouge
+                                                                          Troc, Boutiques Neuves).
+                                               #E11D48 )
+
+                                              Rouge Carmin                Badge sur les articles trocables, bouton
+                icon-barter-swap
+                                               #E11D48                    "Proposer un troc" et offres d'échange mixte.
+
+                                              Blanc sur fond Noir         Identification des vitrines officielles B2C
+                icon-pro-store
+                                               #0F172A                    (quincailleries, revendeurs d'outils neufs).
+
+                icon-publish-                 Blanc dans cercle           Bouton d'action central proéminent ouvrant le
+               plus                           Rouge   #E11D48             tunnel de mise en ligne rapide.
+
+                icon-wishlist-                Noir#0F172A /               Accès au Mur des Souhaits (recherche
+               wall                           Rouge #E11D48               inversée) et sauvegarde d'articles favoris.
+
+
+                                              Noir   #0F172A &            Indicateur de paiement sécurisé GeniusPay et
+                icon-escrow-pin
+                                              accent Rouge                validation de remise physique par code PIN.
+
+                                              Noir   #0F172A              Messagerie temps réel avec pastille de
+                icon-chat-offer
+                                              (Pastille Rouge)            notification rouge pour les offres reçues.
+
+                                                                          Catégorie Outillage & Quincaillerie (ainsi que
+                icon-cat-tools                Noir   #0F172A
+                                                                          déclinaisons High-Tech, Mode, Maison).
+
+
+
+  2. Illustrations Éditoriales et États Vides (Empty States)
+Les illustrations accompagnent l'utilisateur lors de ses premières actions ou lorsqu'une liste est vide.
+Elles adoptent un style vectoriel plat (Flat Line-Art) bichrome (Noir & Blanc) rehaussé d'une touche
+unique de Rouge Carmin (#E11D48).
+
+
+
+Djassa Online — Guide des Ressources Visuelles (Icônes, Illustrations & Images)                                      Page 1 of 3
+  Illustration / Écran             Format & Dimensions            Description Visuelle & Contexte d'Affichage
+
+                                                                  Deux mains échangeant un smartphone d'occasion
+  Onboarding 1 : Le Djassa         SVG / Lottie JSON
+                                                                  contre une boîte à outils neuve, symbolisant le troc et
+  Hybride                          ( 320×240px )
+                                                                  la revente.
+
+                                                                  Devanture moderne d'une quincaillerie digitale avec un
+  Onboarding 2 : Boutiques         SVG / Lottie JSON
+                                                                  badge de certification rouge et des cartons prêts à
+  Pro                              ( 320×240px )
+                                                                  livrer.
+
+
+  Onboarding 3 : Paiement          SVG / Lottie JSON              Bouclier noir cadenas verrouillé avec un téléphone
+  Sécurisé                         ( 320×240px )                  affichant un code PIN à 4 chiffres en rouge vif.
+
+
+                                                                  Deux flèches circulaires en pointillés noirs avec un
+                                   SVG léger
+  État Vide : Aucun Troc                                          bouton d'incitation rouge : "Publiez un article pour
+                                   ( 200×160px )
+                                                                  troquer".
+
+  État Vide : Mur des              SVG léger                      Loupe stylisée pointant vers une étiquette cadeau
+  Souhaits                         ( 200×160px )                  rouge : "Aucun souhait enregistré pour le moment".
+
+                                   Animation Lottie               Coche de validation animée (Noir & Rouge) confirmant
+  Confirmation Succès PIN
+                                   ( 180×180px )                  la libération des fonds séquestrés GeniusPay.
+
+
+
+  3. Spécifications des Images et Médias Dynamiques
+Pour garantir un temps de chargement inférieur à 2,5 secondes sur réseau mobile 3G/4G tout en
+conservant une présentation soignée, toutes les images uploadées sur Google Cloud Storage suivent
+des règles strictes de format et de compression :
+
+
+  Type d'Image                  Ratio & Taille           Format & Poids           Règles de Traitement & Fallback
+
+                                Ratio   1:1 ou                                    Compression automatique côté client
+  Photos Produits (Feed                                   WebP (Max
+                                 4:5                                              (React / React Native). Génération d'une
+  & Détail)                                               350 Ko )
+                                ( 1080×1080px )                                   miniature   400×400px pour les grilles.
+
+                                Ratio 16:9 ou                                     Fond sombre   #0F172A ou dégradé
+                                                          WebP / JPEG
+  Bannières Ventes Flash         21:9                                             rouge   #E11D48 permettant la
+                                                         (Max 250 Ko )
+                                ( 1200×500px )                                    superposition lisible de texte blanc.
+
+                                                                                  Image de couverture de la vitrine
+                                Ratio 3:1                 WebP (Max
+  Bannière Boutique Pro                                                           commerçant. Fallback : motif géométrique
+                                ( 1500×500px )            300 Ko )
+                                                                                  noir et rouge par défaut.
+
+                                Ratio   1:1                                       Fallback automatique générant les
+  Avatars & Logos                                         WebP / PNG
+                                circulaire                                        initiales de l'utilisateur ou de l'enseigne en
+  Boutiques                                              (Max 80 Ko )
+                                ( 256×256px )                                     blanc sur fond noir ou rouge.
+
+                                                                                  Badges officiels Wave, Orange Money,
+  Logos Moyens de               Hauteur fixe              SVG / PNG
+                                                                                  MTN Moov et Visa/Mastercard affichés
+  Paiement                       28px                    transparent
+                                                                                  dans la modale GeniusPay.
+
+
+
+
+Djassa Online — Guide des Ressources Visuelles (Icônes, Illustrations & Images)                                        Page 2 of 3
+  4. Arborescence d'Organisation des Assets (Frontend)
+Afin de maintenir une base de code propre et partagée entre le projet Web (React) et Mobile (React
+Native), les ressources statiques sont structurées dans un répertoire centralisé /assets :
+
+
+    /assets/icons/navigation/ : Icônes de la barre principale (Accueil, Souhaits, Publier,
+   Messages, Profil).
+
+    /assets/icons/categories/ : Pictogrammes des rayons (Outillage, High-Tech, Mode,
+   Électroménager, Auto/Moto).
+
+    /assets/icons/payments/ : Logos vectoriels GeniusPay, Wave, Orange Money, MTN Money,
+   Moov Money et Google OAuth.
+
+    /assets/illustrations/ : Fichiers SVG et animations JSON Lottie pour l'onboarding, les états
+   vides et les confirmations PIN.
+
+    /assets/placeholders/ : Images de remplacement neutres (fond gris clair #F8FAFC avec logo
+   Djassa en filigrane) en cas de perte de connexion réseau.
+
+
+
+
+Djassa Online — Guide des Ressources Visuelles (Icônes, Illustrations & Images)              Page 3 of 3
+
