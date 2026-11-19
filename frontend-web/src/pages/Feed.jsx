@@ -1,8 +1,10 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
-import { Star, Package, ShieldCheck, ArrowRight, BadgeCheck, X, Tag, Zap, ChevronLeft, ChevronRight, ArrowLeftRight } from 'lucide-react';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Star, Package, ShieldCheck, ArrowRight, BadgeCheck, X, Tag, Zap, ChevronLeft, ChevronRight, ArrowLeftRight, ChevronDown } from 'lucide-react';
+gsap.registerPlugin(ScrollTrigger);
 import { api } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 import ProductCardWide from '../components/ProductCardWide';
@@ -10,6 +12,8 @@ import { CONDITION_LABELS, formatFCFA } from '../lib/format';
 import { ProductCardSkeleton, EmptyState, Spinner } from '../components/ui';
 
 export default function Feed() {
+  const heroRef = useRef(null);
+  const promoRef = useRef(null);
   const gridRef = useRef(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const { isAuthenticated } = useAuth();
@@ -75,13 +79,138 @@ export default function Feed() {
     }
   }, [isLoading, articles.length]);
 
+  // GSAP — animations d'entrée du hero (une seule fois, puis statique)
+  useLayoutEffect(() => {
+    if (!heroRef.current) return undefined;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const scope = heroRef.current;
+    const q = (sel) => scope.querySelectorAll(sel);
+
+    const ctx = gsap.context(() => {
+      const lines = q('[data-hero-line]');
+      const sub = scope.querySelector('[data-hero-sub]');
+      const cta = scope.querySelector('[data-hero-cta]');
+      const nav = scope.querySelector('[data-hero-nav]');
+      const visuals = q('[data-hero-visual]');
+      const stats = scope.querySelector('[data-hero-stats]');
+
+      if (reduce) {
+        gsap.set([...lines, sub, cta, nav, ...visuals, stats].filter(Boolean), { clearProps: 'all' });
+        return;
+      }
+
+      const tl = gsap.timeline({ defaults: { ease: 'power3.out' }, delay: 0.1 });
+      if (nav) tl.from(nav, { y: -18, opacity: 0, duration: 0.6 }, 0);
+      if (lines.length) {
+        tl.from(lines, { yPercent: 115, opacity: 0, duration: 0.85, stagger: 0.14, ease: 'power4.out', clearProps: 'transform,opacity' }, 0.1);
+      }
+      if (sub) tl.from(sub, { y: 16, opacity: 0, duration: 0.6 }, '-=0.45');
+      if (cta) tl.from(cta, { y: 14, opacity: 0, scale: 0.96, duration: 0.55, ease: 'back.out(1.7)' }, '-=0.4');
+      if (visuals.length) {
+        tl.from(visuals, {
+          scale: 0.82, opacity: 0, x: (i) => (i === 0 ? 34 : i === 1 ? -34 : 0),
+          duration: 0.9, stagger: 0.12, ease: 'back.out(1.5)', clearProps: 'transform,opacity',
+        }, 0.25);
+      }
+      if (stats) tl.from(stats, { y: 28, opacity: 0, duration: 0.7 }, '-=0.5');
+      q('[data-hero-count]').forEach((el) => {
+        const target = Number(el.dataset.heroCount);
+        const decimals = Number(el.dataset.decimals ?? 0);
+        const suffix = el.dataset.suffix ?? '';
+        const obj = { v: 0 };
+        tl.to(obj, {
+          v: target, duration: 1.3, ease: 'power2.out',
+          onUpdate: () => {
+            const n = obj.v.toFixed(decimals);
+            const value = el.hasAttribute('data-thousands') && decimals === 0
+              ? Math.round(obj.v).toLocaleString('fr-FR').replace(/\u202f|\u00a0/g, ' ')
+              : n;
+            el.textContent = value + suffix;
+          },
+        }, '-=1.0');
+      });
+    }, heroRef);
+
+    // GSAP — scroll pinned : le hero se démonte pour laisser place à la section promo
+    const ctxScroll = gsap.context(() => {
+      if (!heroRef.current || !promoRef.current) return;
+      if (reduce) return;
+
+      const s = heroRef.current;
+      const sq = (sel) => s.querySelectorAll(sel);
+      const bg = s.querySelector('[data-hero-bg]');
+      const veil = s.querySelector('[data-hero-veil]');
+      const cue = s.querySelector('[data-hero-cue]');
+      const progress = s.querySelector('[data-hero-progress]');
+      const heroNav = s.querySelector('[data-hero-nav]');
+      const heroSub = s.querySelector('[data-hero-sub]');
+      const heroCta = s.querySelector('[data-hero-cta]');
+      const heroStats = s.querySelector('[data-hero-stats]');
+      const heroVisuals = sq('[data-hero-visual]');
+      const heroLines = sq('[data-hero-line]');
+      const lineA = heroLines[0];
+      const lineB = heroLines[1];
+
+      const scrollTl = gsap.timeline({
+        scrollTrigger: {
+          trigger: heroRef.current,
+          start: 'top top',
+          end: '+=120%',
+          pin: true,
+          pinType: 'transform',
+          scrub: 1,
+          anticipatePin: 1,
+          onUpdate: (self) => {
+            if (progress) gsap.set(progress, { scaleX: self.progress });
+          },
+        },
+      });
+
+      // Zoom du fond qui recule
+      if (bg) scrollTl.fromTo(bg, { scale: 1, z: 0 }, { scale: 1.35, z: 120, opacity: 0.45, ease: 'none' }, 0);
+
+      // Titre : les deux lignes s'écartent en sens opposés
+      if (lineA) scrollTl.fromTo(lineA, { yPercent: 0, opacity: 1 }, { yPercent: -130, opacity: 0, ease: 'power2.in' }, 0);
+      if (lineB) scrollTl.fromTo(lineB, { yPercent: 0, opacity: 1 }, { yPercent: 130, opacity: 0, ease: 'power2.in' }, 0);
+
+      // Sous-titre, CTA et nav s'effacent
+      if (heroSub) scrollTl.to(heroSub, { y: -30, opacity: 0, ease: 'power2.in' }, 0);
+      if (heroCta) scrollTl.to(heroCta, { y: 30, opacity: 0, ease: 'power2.in' }, 0);
+      if (heroNav) scrollTl.to(heroNav, { y: -30, opacity: 0, ease: 'power2.in' }, 0);
+
+      // Illustrations qui se dispersent vers les bords
+      if (heroVisuals.length) {
+        scrollTl.to(heroVisuals, {
+          x: (i) => (i === 0 ? 90 : i === 1 ? -90 : -40),
+          y: -30, scale: 0.88, opacity: 0, ease: 'power2.in', stagger: 0.05,
+        }, 0);
+      }
+
+      // Stats qui descendent
+      if (heroStats) scrollTl.to(heroStats, { y: 70, opacity: 0, ease: 'power2.in' }, 0);
+      if (cue) scrollTl.to(cue, { opacity: 0, y: 12, ease: 'power2.in' }, 0);
+
+      // Voile crème fondu en fin de scroll → transition douce avec la section suivante
+      if (veil) scrollTl.fromTo(veil, { opacity: 0 }, { opacity: 1, ease: 'power1.inOut' }, 0.55);
+
+      // Reveal de la section promo à l'entrée dans le viewport
+      gsap.from(promoRef.current.querySelectorAll('[data-promo-col]'), {
+        scrollTrigger: { trigger: promoRef.current, start: 'top 78%', toggleActions: 'play none none reverse' },
+        y: 64, opacity: 0, duration: 0.9, stagger: 0.16, ease: 'power3.out', clearProps: 'transform,opacity',
+      });
+    }, heroRef);
+
+    return () => { ctx.revert(); ctxScroll.revert(); };
+  }, []);
+
   const clearQuery = () => setSearchParams({}, { replace: true });
 
   return (
     <div>
       {/* ===== HERO plein écran — photo immersive · Djassa Online ===== */}
-      <section className="relative overflow-hidden bg-[#0c0c0c] text-white" aria-label="Djassa Online">
+      <section ref={heroRef} className="relative overflow-hidden bg-[#0c0c0c] text-white" aria-label="Djassa Online">
         <img
+          data-hero-bg
           src="/images/hero-shopping-bags.jpg"
           alt="Sacs de shopping rouges et noirs sur fond noir"
           className="absolute inset-0 h-full w-full select-none object-cover object-[50%_34%]"
@@ -90,9 +219,14 @@ export default function Feed() {
         <div className="absolute inset-0 bg-[#0b0b0b]/45" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0b0b0b]/95 via-[#0b0b0b]/25 to-transparent" />
 
+        {/* Barre de progression du scroll */}
+        <div className="absolute inset-x-0 top-0 z-30 h-[3px] bg-white/10">
+          <div data-hero-progress className="h-full w-full origin-left scale-x-0 bg-[#E60023]" />
+        </div>
+
         <div className="relative flex min-h-[100svh] flex-col px-5 sm:px-6 md:min-h-[100svh] md:px-10 xl:px-16">
           {/* Nav intégrée — logo gauche · liens centre · Se connecter droite */}
-          <div className="flex items-center justify-between gap-4 border-b border-white/10 py-3 md:py-4">
+          <div data-hero-nav className="flex items-center justify-between gap-4 border-b border-white/10 py-3 md:py-4">
             <Link to="/" className="flex items-center gap-2.5" aria-label="Djassa Online — accueil">
               <img src="/images/logo-256.png" alt="" aria-hidden="true" className="h-9 w-9 rounded-xl shadow-[0_4px_16px_rgba(237,15,2,0.5)]" />
               <span className="font-jakarta text-[15px] font-extrabold uppercase leading-none tracking-tight text-white sm:text-[17px]">
@@ -125,18 +259,20 @@ export default function Feed() {
           <img
             src="/images/hero-ecommerce.png"
             alt="Achats en ligne et livraison Djassa"
+            data-hero-visual
             className="pointer-events-none relative z-0 mx-auto -mb-1 mt-0 w-[130px] select-none object-contain opacity-95 drop-shadow-[0_18px_30px_rgba(0,0,0,0.55)] sm:w-[170px] lg:hidden"
           />
 
           {/* Headline centré */}
           <div className="relative z-10 flex flex-1 flex-col items-center justify-center pb-[224px] pt-2 text-center sm:pb-40 sm:pt-8 md:pb-44 md:pt-10">
             <h1 className="font-jakarta text-[15vw] font-extrabold leading-[0.95] tracking-tight text-white sm:text-[80px] md:text-[84px]">
-              Achète. Vends.<br /><span className="text-[#E60023]">Troque.</span>
+              <span className="block overflow-hidden"><span data-hero-line className="block">Achète. Vends.</span></span>
+              <span className="block overflow-hidden"><span data-hero-line className="block text-[#E60023]">Troque.</span></span>
             </h1>
-            <p className="mt-6 max-w-lg font-inter text-[13px] font-medium leading-6 tracking-wide text-white/85 sm:text-[14px] sm:leading-7">
+            <p data-hero-sub className="mt-6 max-w-lg font-inter text-[13px] font-medium leading-6 tracking-wide text-white/85 sm:text-[14px] sm:leading-7">
               Tout le Djassa dans ta poche — occasion, troc malin, neuf au meilleur prix. Payé en confiance, remis en main propre.
             </p>
-            <div className="mt-8">
+            <div data-hero-cta className="mt-8">
               <a href="#feed" className="inline-flex h-11 items-center gap-2 rounded-full bg-[#ED0F02] px-6 font-jakarta text-[11.5px] font-extrabold uppercase tracking-[0.16em] text-white shadow-[0_12px_30px_rgba(237,15,2,0.38)] transition hover:bg-[#ff1e12] active:scale-95 sm:h-12 sm:px-7 sm:text-[12px]">
                 Explorer le marché <ArrowRight size={16} strokeWidth={2.8} />
               </a>
@@ -144,41 +280,47 @@ export default function Feed() {
           </div>
 
           {/* Visuels e-commerce — desktop (flottants + légendes) */}
-          <div className="pointer-events-none absolute right-[2%] top-[38%] z-0 hidden w-[clamp(300px,26vw,460px)] -translate-y-1/2 flex-col items-center xl:flex">
+          <div data-hero-visual className="pointer-events-none absolute right-[2%] top-[38%] z-0 hidden w-[clamp(300px,26vw,460px)] -translate-y-1/2 flex-col items-center xl:flex">
             <img src="/images/hero-ecommerce.png" alt="Achats en ligne et livraison Djassa" className="w-full select-none object-contain opacity-95 drop-shadow-[0_30px_60px_rgba(0,0,0,0.6)]" />
             <div className="mt-1 rounded-full border border-white/15 bg-black/55 px-3.5 py-1.5 text-center backdrop-blur-md">
               <p className="font-jakarta text-[10px] font-extrabold uppercase tracking-[0.14em] text-white">Livré en confiance</p>
               <p className="font-inter text-[9px] text-white/65">Paiement sécurisé · Escrow + PIN</p>
             </div>
           </div>
-          <div className="pointer-events-none absolute left-[0%] top-[40%] z-0 hidden w-[clamp(280px,25vw,440px)] -translate-y-1/2 flex-col items-center xl:flex">
+          <div data-hero-visual className="pointer-events-none absolute left-[0%] top-[40%] z-0 hidden w-[clamp(280px,25vw,440px)] -translate-y-1/2 flex-col items-center xl:flex">
             <img src="/images/hero-bags-burst.png" alt="Sacs de shopping et cadeaux Djassa" className="w-full select-none object-contain opacity-90 drop-shadow-[0_30px_60px_rgba(0,0,0,0.6)]" />
             <div className="mt-1 rounded-full border border-white/15 bg-black/70 px-3.5 py-1.5 text-center backdrop-blur-md">
               <p className="font-jakarta text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#E60023]">Occasion & Troc</p>
               <p className="font-inter text-[9px] text-white/65">Le bon plan seconde main</p>
             </div>
           </div>
+          {/* Indicateur de scroll */}
+          <div data-hero-cue className="pointer-events-none absolute bottom-[100px] left-1/2 z-20 hidden -translate-x-1/2 flex-col items-center gap-1.5 md:flex md:bottom-[96px]">
+            <span className="font-jakarta text-[9px] font-extrabold uppercase tracking-[0.2em] text-white/65">Scroll pour découvrir</span>
+            <ChevronDown size={16} className="text-[#E60023]" strokeWidth={3} />
+          </div>
+
           {/* Barre de réassurance — 4 statistiques */}
-          <div className="absolute inset-x-3 bottom-[78px] sm:inset-x-4 md:inset-x-8 md:bottom-6 xl:inset-x-12">
+          <div data-hero-stats className="absolute inset-x-3 bottom-[78px] sm:inset-x-4 md:inset-x-8 md:bottom-6 xl:inset-x-12">
             <div className="grid grid-cols-2 divide-white/10 rounded-2xl border border-white/10 bg-black/60 backdrop-blur-md md:grid-cols-4 md:divide-x">
               <div className="flex flex-col gap-1 px-4 py-3.5 sm:px-5">
                 <span className="flex items-center gap-1.5 text-white">
                   <Star size={14} className="fill-[#ED0F02] text-[#ED0F02]" />
-                  <span className="font-jakarta text-base font-extrabold sm:text-lg">4.8/5</span>
+                  <span data-hero-count="4.8" data-decimals="1" data-suffix="/5" className="font-jakarta text-base font-extrabold sm:text-lg">4.8/5</span>
                 </span>
                 <span className="font-inter text-[8px] font-medium uppercase tracking-[0.16em] text-white/60 sm:text-[8.5px]">Vendeurs notés</span>
               </div>
               <div className="flex flex-col gap-1 border-l border-white/10 px-4 py-3.5 sm:px-5 md:border-l-0">
                 <span className="flex items-center gap-1.5 text-white">
                   <BadgeCheck size={14} className="text-[#ED0F02]" strokeWidth={2.6} />
-                  <span className="font-jakarta text-base font-extrabold sm:text-lg">50+</span>
+                  <span data-hero-count="50" data-suffix="+" className="font-jakarta text-base font-extrabold sm:text-lg">50+</span>
                 </span>
                 <span className="font-inter text-[8px] font-medium uppercase tracking-[0.16em] text-white/60 sm:text-[8.5px]">Boutiques vérifiées</span>
               </div>
               <div className="flex flex-col gap-1 border-t border-white/10 px-4 py-3.5 sm:px-5 md:border-t-0 md:border-l">
                 <span className="flex items-center gap-1.5 text-white">
                   <Package size={14} className="text-[#ED0F02]" strokeWidth={2.2} />
-                  <span className="font-jakarta text-base font-extrabold sm:text-lg">1 500+</span>
+                  <span data-hero-count="1500" data-suffix="+" data-thousands className="font-jakarta text-base font-extrabold sm:text-lg">1 500+</span>
                 </span>
                 <span className="font-inter text-[8px] font-medium uppercase tracking-[0.16em] text-white/60 sm:text-[8.5px]">Articles publiés</span>
               </div>
@@ -192,15 +334,18 @@ export default function Feed() {
             </div>
           </div>
         </div>
+
+        {/* Voile crème — transition vers la section promo pendant le scroll pinné */}
+        <div data-hero-veil className="pointer-events-none absolute inset-0 z-20 bg-[#F7F1E6] opacity-0" />
       </section>
 
       {/* ===== Section OFFRES — split 50/50 : promo (gauche) + vitrine (droite) ===== */}
-      <section className="bg-[#F7F1E6] py-8 sm:py-12" aria-label="Offres spéciales Djassa">
+      <section ref={promoRef} className="bg-[#F7F1E6] py-8 sm:py-12" aria-label="Offres spéciales Djassa">
         <div className="mx-auto max-w-7xl px-3 sm:px-6">
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-stretch lg:gap-5 lg:min-h-[440px] xl:min-h-[480px]">
 
             {/* Colonne gauche — Boostez vos économies */}
-            <div className="relative flex h-full min-h-[300px] flex-col rounded-3xl bg-[#FFFDF6] p-5 shadow-card ring-1 ring-djassa-black/5 sm:p-6 lg:min-h-0 lg:overflow-hidden">
+            <div data-promo-col className="relative flex h-full min-h-[300px] flex-col rounded-3xl bg-[#FFFDF6] p-5 shadow-card ring-1 ring-djassa-black/5 sm:p-6 lg:min-h-0 lg:overflow-hidden">
               <div className="pointer-events-none absolute -left-14 top-8 h-36 w-36 rounded-full bg-djassa-red/5 blur-2xl" aria-hidden="true" />
               <div className="pointer-events-none absolute -right-10 bottom-6 h-40 w-40 rounded-full bg-yellow-400/10 blur-2xl" aria-hidden="true" />
 
@@ -239,7 +384,7 @@ export default function Feed() {
             </div>
 
             {/* Colonne droite — Carrousel grandes cartes vitrines */}
-            <div className="relative flex h-full min-h-[340px] flex-col overflow-hidden rounded-3xl bg-[#FFFDF6] shadow-card ring-1 ring-djassa-black/5 lg:min-h-0">
+            <div data-promo-col className="relative flex h-full min-h-[340px] flex-col overflow-hidden rounded-3xl bg-[#FFFDF6] shadow-card ring-1 ring-djassa-black/5 lg:min-h-0">
               <div className="flex items-center justify-between px-4 pt-4 sm:px-5 sm:pt-5">
                 <h3 className="flex items-center gap-2 font-jakarta text-base font-extrabold tracking-tight text-djassa-black sm:text-lg">
                   <Zap size={16} className="text-[#ED0F02]" strokeWidth={2.6} fill="currentColor" />
