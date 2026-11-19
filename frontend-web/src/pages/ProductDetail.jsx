@@ -3,11 +3,12 @@ import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import {
   ArrowLeftRight, BadgeCheck, ChevronRight, Eye, Flag, Heart, MapPin,
-  MessageCircle, Share2, ShieldCheck, Store, Tag, Zap, PackageOpen,
+  MessageCircle, Share2, ShieldCheck, Store, Tag, Zap, PackageOpen, ShoppingCart,
 } from 'lucide-react';
 import { api } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { useCart } from '../context/CartContext';
 import { CONDITION_LABELS, CONDITION_STYLES, formatFCFA, timeAgo } from '../lib/format';
 import { Avatar, EmptyState } from '../components/ui';
 import BarterModal from '../components/BarterModal';
@@ -18,6 +19,7 @@ export default function ProductDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const toast = useToast();
+  const cart = useCart();
   const { isAuthenticated } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeImage, setActiveImage] = useState(0);
@@ -88,6 +90,12 @@ export default function ProductDetail() {
       return false;
     }
     return true;
+  };
+
+  const addToCart = () => {
+    if (!requireAuth()) return;
+    if (cart.add(article)) toast.success('Article ajouté au panier.');
+    else toast.info('Cet article est déjà dans votre panier.');
   };
 
   const ready = !isLoading && !isError && Boolean(article);
@@ -208,6 +216,9 @@ export default function ProductDetail() {
             <div className="mt-3 flex flex-wrap gap-2">
               <button className="inline-flex h-9 flex-1 items-center justify-center gap-2 rounded-full bg-[#ED0F02] font-jakarta text-[10.5px] font-extrabold uppercase tracking-[0.1em] text-white transition hover:bg-[#ff1e12] active:scale-95" onClick={() => requireAuth() && setCheckoutOpen(true)}>
                 <ShieldCheck size={15} strokeWidth={2.2} /> Acheter {formatFCFA(prixActuel)}
+              </button>
+              <button className="inline-flex h-9 items-center justify-center gap-2 rounded-full border-[1.5px] border-djassa-red px-3 font-jakarta text-[10.5px] font-extrabold uppercase tracking-[0.1em] text-djassa-red transition hover:bg-djassa-red hover:text-white active:scale-95" onClick={addToCart} aria-label="Ajouter au panier">
+                <ShoppingCart size={15} strokeWidth={2.3} /> <span className="hidden sm:inline">Panier</span>
               </button>
               {trocable && (
                 <button className="inline-flex h-9 flex-1 items-center justify-center gap-2 rounded-full bg-djassa-black font-jakarta text-[10.5px] font-extrabold uppercase tracking-[0.1em] text-white transition hover:bg-djassa-red active:scale-95" onClick={() => requireAuth() && setBarterOpen(true)}>

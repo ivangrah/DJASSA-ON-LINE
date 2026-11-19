@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { MessageCircle, PlusCircle, Search, UserRound } from 'lucide-react';
+import { MessageCircle, PlusCircle, Search, ShoppingCart, UserRound } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 import { Avatar } from '../components/ui';
 import { api } from '../lib/api';
 
@@ -13,6 +14,7 @@ import { api } from '../lib/api';
  */
 export default function TopNav() {
   const { isAuthenticated, user } = useAuth();
+  const { count: cartCount } = useCart();
   const navigate = useNavigate();
   const location = useLocation();
   const isHome = location.pathname === '/';
@@ -74,6 +76,14 @@ export default function TopNav() {
           <Link to="/publier" className="btn-red btn-sm hidden sm:inline-flex shadow-[0_6px_20px_rgba(230,0,35,0.4)]">
             <PlusCircle size={16} /> Publier
           </Link>
+          <NavLink to="/panier" className="relative rounded-full p-2 text-white/85 transition hover:bg-white/10 hover:text-white" aria-label={`Mon panier — ${cartCount} article${cartCount > 1 ? 's' : ''}`}>
+            <ShoppingCart size={20} />
+            {cartCount > 0 && (
+              <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-djassa-red px-1 text-[9px] font-extrabold text-white">
+                {cartCount > 9 ? '9+' : cartCount}
+              </span>
+            )}
+          </NavLink>
 
           {isAuthenticated ? (
             <>

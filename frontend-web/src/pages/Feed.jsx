@@ -3,10 +3,11 @@ import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Star, Package, ShieldCheck, ArrowRight, BadgeCheck, X, Tag, Zap, ChevronLeft, ChevronRight, ArrowLeftRight, ChevronDown, Search, SlidersHorizontal } from 'lucide-react';
+import { Star, Package, ShieldCheck, ArrowRight, BadgeCheck, X, Tag, Zap, ChevronLeft, ChevronRight, ArrowLeftRight, ChevronDown, Search, SlidersHorizontal, ShoppingCart } from 'lucide-react';
 gsap.registerPlugin(ScrollTrigger);
 import { api } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
+import { useCart } from '../context/CartContext';
 import ProductCardWide from '../components/ProductCardWide';
 import { CONDITION_LABELS, formatFCFA } from '../lib/format';
 import { ProductCardSkeleton, EmptyState, Spinner } from '../components/ui';
@@ -17,6 +18,7 @@ export default function Feed() {
   const gridRef = useRef(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const { isAuthenticated } = useAuth();
+  const { count: cartCount } = useCart();
   const navigate = useNavigate();
   const q = searchParams.get('q') ?? '';
   const sort = searchParams.get('sort') ?? 'latest';
@@ -572,10 +574,20 @@ export default function Feed() {
               </p>
             </div>
 
-            {/* Compteur */}
-            <div className="flex shrink-0 items-center gap-2 rounded-2xl bg-djassa-cloud px-4 py-3">
-              <span className="font-jakarta text-xl font-extrabold text-djassa-black">{total}</span>
-              <span className="font-inter text-[10px] font-semibold uppercase leading-tight tracking-wide text-djassa-slate">annonces<br />disponibles</span>
+            {/* Panier + compteur */}
+            <div className="flex shrink-0 items-center gap-3">
+              <Link to="/panier" className="group relative hidden h-24 w-24 items-center justify-center rounded-2xl bg-djassa-red/5 transition hover:bg-djassa-red/10 md:flex" aria-label={`Mon panier — ${cartCount} article${cartCount > 1 ? 's' : ''}`}>
+                <img src="/images/cart-sale.png" alt="Panier Djassa" className="h-20 w-20 object-contain" />
+                {cartCount > 0 && (
+                  <span className="absolute -right-1 -top-1 flex h-6 min-w-6 items-center justify-center rounded-full bg-[#ED0F02] px-1.5 font-jakarta text-[10px] font-extrabold text-white shadow-md ring-2 ring-white">
+                    {cartCount > 9 ? '9+' : cartCount}
+                  </span>
+                )}
+              </Link>
+              <div className="flex items-center gap-2 rounded-2xl bg-djassa-cloud px-4 py-3">
+                <span className="font-jakarta text-xl font-extrabold text-djassa-black">{total}</span>
+                <span className="font-inter text-[10px] font-semibold uppercase leading-tight tracking-wide text-djassa-slate">annonces<br />disponibles</span>
+              </div>
             </div>
           </div>
 
