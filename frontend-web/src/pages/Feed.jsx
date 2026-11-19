@@ -5,7 +5,7 @@ import { gsap } from 'gsap';
 import { Star, Package, ShieldCheck, ArrowRight, BadgeCheck, X, Tag, Zap, ChevronLeft, ChevronRight } from 'lucide-react';
 import { api } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
-import ProductCard from '../components/ProductCard';
+import ProductCardWide from '../components/ProductCardWide';
 import { formatFCFA } from '../lib/format';
 import { ProductCardSkeleton, EmptyState, Spinner } from '../components/ui';
 
@@ -308,7 +308,7 @@ export default function Feed() {
         )}
 
         {isLoading ? (
-          <div ref={gridRef} className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          <div ref={gridRef} className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4">
             {Array.from({ length: 8 }).map((_, i) => <ProductCardSkeleton key={i} />)}
           </div>
         ) : isError ? (
@@ -322,10 +322,10 @@ export default function Feed() {
           />
         ) : (
           <>
-            <div ref={gridRef} className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+            <div ref={gridRef} className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4">
               {articles.map((article) => (
                 <div key={article.id} data-card>
-                  <ProductCard article={article} />
+                  <ProductCardWide article={article} />
                 </div>
               ))}
             </div>

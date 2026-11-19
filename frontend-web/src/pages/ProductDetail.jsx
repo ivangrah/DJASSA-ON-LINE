@@ -20,7 +20,7 @@ export default function ProductDetail() {
   const { isAuthenticated } = useAuth();
   const [activeImage, setActiveImage] = useState(0);
   const [lastId, setLastId] = useState(id);
-  const [barterOpen, setBarterOpen] = useState(false);
+  const [barterOpen, setBarterOpen] = useState(() => new URLSearchParams(window.location.search).get('troc') === '1');
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [faved, setFaved] = useState(false);
 
