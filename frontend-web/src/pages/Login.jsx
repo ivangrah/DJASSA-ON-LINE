@@ -45,12 +45,12 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-3.5rem)] items-center justify-center bg-[#f3f4f6] px-4 py-8 sm:px-6">
+    <div className="flex min-h-screen items-stretch justify-center bg-[#f3f4f6]">
       {/* Carte blanche arrondie */}
-      <div className="grid w-full max-w-5xl overflow-hidden rounded-[32px] bg-white shadow-[0_20px_60px_rgba(18,18,18,0.08)] md:grid-cols-2">
+      <div className="grid w-full overflow-hidden bg-white md:grid-cols-2">
 
         {/* Panneau rouge vif */}
-        <div className="relative flex min-h-[340px] flex-col overflow-hidden bg-[#ED0F02] p-8 text-white sm:p-10 md:min-h-[560px]">
+        <div className="relative flex min-h-[60vh] flex-col overflow-hidden bg-[#ED0F02] p-8 text-white sm:p-10 md:min-h-screen">
           {/* dégradé vers un rouge plus soutenu */}
           <div className="absolute inset-0 bg-gradient-to-br from-[#ff2d1f] via-[#ED0F02] to-[#b80b00]" aria-hidden="true" />
           <div className="absolute -left-16 top-10 h-56 w-56 rounded-full bg-white/10 blur-2xl" aria-hidden="true" />
@@ -69,7 +69,7 @@ export default function Login() {
           {/* Illustration — fond blanc mixé */}
           <div className="relative z-10 mt-auto flex justify-center pt-4">
             <img
-              src="/images/auth-shopper.png"
+              src="/images/auth-shopper.png?v=2"
               alt="Cliente Djassa avec ses sacs de shopping"
               className="h-52 w-auto max-w-full object-contain mix-blend-multiply sm:h-64 md:h-72"
             />
@@ -77,13 +77,11 @@ export default function Login() {
         </div>
 
         {/* Formulaire */}
-        <div className="flex flex-col justify-center px-6 py-9 sm:px-10 md:px-12">
+        <div className="flex flex-col justify-center px-6 py-9 sm:px-10 md:px-16 lg:px-24">
           <div className="mx-auto w-full max-w-sm">
             {/* Logo + marque centrés */}
             <div className="flex flex-col items-center">
-              <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#ED0F02] shadow-[0_8px_20px_rgba(237,15,2,0.35)]">
-                <img src="/images/logo-256.png" alt="" className="h-8 w-8 rounded-lg object-contain" />
-              </span>
+              <img src="/images/logo-256.png" alt="" className="h-12 w-12 rounded-2xl object-contain shadow-[0_8px_20px_rgba(237,15,2,0.35)]" />
               <p className="mt-2.5 font-jakarta text-[15px] font-extrabold tracking-tight text-djassa-black">Djassa <span className="text-[#ED0F02]">Online</span></p>
               <h1 className="mt-5 font-jakarta text-[26px] font-extrabold tracking-tight text-djassa-black">Content de te revoir</h1>
               <p className="mt-1 font-inter text-[11px] text-djassa-slate">Connecte-toi à ton compte Djassa.</p>
