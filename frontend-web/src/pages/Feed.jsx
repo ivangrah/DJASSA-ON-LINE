@@ -2,10 +2,12 @@ import { useEffect, useMemo, useRef } from 'react';
 import { useInfiniteQuery } from '@tanstack/react-query';
 import { useSearchParams, Link } from 'react-router-dom';
 import { gsap } from 'gsap';
-import { Star, Package, ShieldCheck, ArrowRight, BadgeCheck, X } from 'lucide-react';
+import { Star, Package, ShieldCheck, ArrowRight, BadgeCheck, X, Flame, Zap, ChevronRight, ArrowLeftRight } from 'lucide-react';
 import { api } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 import ProductCard from '../components/ProductCard';
+import { useQuery } from '@tanstack/react-query';
+import { formatFCFA } from '../lib/format';
 import { ProductCardSkeleton, EmptyState, Spinner } from '../components/ui';
 
 export default function Feed() {
@@ -29,6 +31,14 @@ export default function Feed() {
     initialPageParam: 1,
     getNextPageParam: (last) => (last?.meta?.current_page < last?.meta?.last_page ? last.meta.current_page + 1 : undefined),
   });
+
+
+  const { data: flashData, isLoading: isLoadingOffers } = useQuery({
+    queryKey: ['products', 'flash'],
+    queryFn: async () => (await api.get('/products/flash')).data,
+    staleTime: 30_000,
+  });
+  const flashOffers = flashData?.data ?? [];
 
   const articles = useMemo(() => (data?.pages ?? []).flatMap((p) => p.data ?? []), [data]);
 
@@ -133,6 +143,112 @@ export default function Feed() {
                 </span>
                 <span className="font-inter text-[8.5px] font-medium uppercase tracking-[0.16em] text-white/60 sm:text-[9px]">Paiement sécurisé</span>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== Section PROMO — gris clair · les plus recherchés & meilleures offres ===== */}
+      <section className="bg-[#ECEFF1] py-8 sm:py-10" aria-label="Promotions Djassa">
+        <div className="mx-auto max-w-7xl px-3 sm:px-6">
+
+          {/* En-tête de section */}
+          <div className="flex items-center gap-4">
+            <span className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-full bg-white shadow-card ring-1 ring-djassa-black/10 sm:h-20 sm:w-20">
+              <img src="/images/promo-megaphone.jpg" alt="Mégaphone SPECIAL PROMO" className="h-full w-full object-cover" loading="lazy" />
+            </span>
+            <div className="min-w-0">
+              <p className="font-jakarta text-[9px] font-extrabold uppercase tracking-[0.28em] text-djassa-red sm:text-[11px]">Promo Djassa — ce qui part en ce moment</p>
+              <h2 className="mt-0.5 font-jakarta text-2xl font-extrabold leading-[0.95] tracking-tight text-djassa-black sm:text-4xl">
+                Les offres qui <span className="text-djassa-red">cartonnent.</span>
+              </h2>
+            </div>
+          </div>
+
+          <div className="mt-5 grid gap-4 md:grid-cols-12">
+            {/* Carte gauche — LES PLUS RECHERCHÉS */}
+            <div className="relative overflow-hidden rounded-3xl bg-white p-4 shadow-card ring-1 ring-djassa-black/5 sm:p-5 md:col-span-5">
+              <div className="flex items-center justify-between">
+                <span className="inline-flex items-center gap-2 rounded-full bg-djassa-red/10 px-3 py-1.5 text-[10px] font-jakarta font-extrabold uppercase tracking-[0.16em] text-djassa-red">
+                  <Flame size={13} strokeWidth={2.6} /> Les plus recherchés
+                </span>
+                <span className="font-inter text-[9px] font-semibold uppercase tracking-[0.14em] text-djassa-slate">Hebdo</span>
+              </div>
+
+              <ol className="mt-4 space-y-3">
+                {[
+                  { rank: 1, name: 'Perceuse Bosch GSB 18V', cat: 'Outillage', searches: 240, width: '100%' },
+                  { rank: 2, name: 'Groupe électrogène 2.5 kVA', cat: 'Électroménager', searches: 210, width: '88%' },
+                  { rank: 3, name: 'iPhone 12 128 Go', cat: 'High-Tech', searches: 185, width: '76%' },
+                  { rank: 4, name: 'Visseuse sans fil Makita', cat: 'Outillage', searches: 160, width: '66%' },
+                  { rank: 5, name: 'Congélateur 250L', cat: 'Électroménager', searches: 128, width: '52%' },
+                ].map((item) => (
+                  <li key={item.rank} className="group flex items-center gap-3">
+                    <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl font-jakarta text-[13px] font-extrabold ${item.rank === 1 ? 'bg-djassa-red text-white' : 'bg-djassa-cloud text-djassa-black'}`}>{item.rank}</span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-baseline justify-between gap-2">
+                        <p className="truncate font-jakarta text-[11px] font-bold text-djassa-black sm:text-[12.5px]">{item.name}</p>
+                        <span className="shrink-0 font-inter text-[9px] font-semibold text-djassa-slate">{item.searches}×</span>
+                      </div>
+                      <div className="mt-1 flex items-center gap-2">
+                        <span className="rounded-md bg-djassa-cloud px-1.5 py-0.5 text-[8px] font-medium uppercase tracking-wide text-djassa-slate">{item.cat}</span>
+                        <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-djassa-cloud">
+                          <div className="h-full rounded-full bg-gradient-to-r from-djassa-red to-orange-500" style={{ width: item.width }} />
+                        </div>
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+
+              <p className="mt-4 flex items-center gap-1.5 border-t border-djassa-black/8 pt-3 text-[9px] font-inter font-semibold uppercase tracking-[0.16em] text-djassa-slate">
+                <ArrowLeftRight size={11} className="text-djassa-red" /> Troc activé sur 70% des annonces recherchées
+              </p>
+            </div>
+
+            {/* Carte droite — MEILLEURES OFFRES */}
+            <div className="relative overflow-hidden rounded-3xl bg-white p-4 shadow-card ring-1 ring-djassa-black/5 sm:p-5 md:col-span-7">
+              {/* Tampon PROMO penché */}
+              <img src="/images/promo-stamp.jpg" alt="PROMO" aria-hidden="true" className="pointer-events-none absolute -right-3 -top-5 h-24 w-auto rotate-[-8deg] select-none object-contain opacity-95 sm:-right-2 sm:-top-8 sm:h-32" loading="lazy" />
+
+              <div className="flex items-center justify-between">
+                <span className="inline-flex items-center gap-2 rounded-full bg-djassa-black px-3 py-1.5 text-[10px] font-jakarta font-extrabold uppercase tracking-[0.16em] text-white">
+                  <Zap size={13} strokeWidth={2.6} className="text-yellow-400" fill="#FDE68A" /> Meilleures offres
+                </span>
+                <span className="font-inter text-[9px] font-semibold uppercase tracking-[0.14em] text-djassa-slate">Ventes Flash</span>
+              </div>
+
+              <div className="mt-4 divide-y divide-djassa-black/8">
+                {flashOffers.length === 0 && isLoadingOffers && (
+                  Array.from({ length: 2 }).map((_, i) => (
+                    <div key={i} className="flex items-center gap-3 py-3">
+                      <div className="h-16 w-16 animate-pulse rounded-2xl bg-djassa-cloud" />
+                      <div className="flex-1 space-y-2"><div className="h-3 w-2/3 animate-pulse rounded bg-djassa-cloud" /><div className="h-3 w-1/3 animate-pulse rounded bg-djassa-cloud" /></div>
+                    </div>
+                  ))
+                )}
+                {flashOffers.map((offer) => {
+                  const discount = Math.round((1 - Number(offer.prix_actuel) / Number(offer.prix)) * 100);
+                  return (
+                    <Link key={offer.id} to={`/article/${offer.id}`} className="group flex items-center gap-3 py-3 transition">
+                      <img src={offer.image_principale} alt={offer.titre} className="h-16 w-16 shrink-0 rounded-2xl object-cover bg-djassa-cloud transition group-hover:scale-105 sm:h-20 sm:w-20" loading="lazy" />
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate font-jakarta text-[11px] font-bold leading-snug text-djassa-black transition group-hover:text-djassa-red sm:text-[12.5px]">{offer.titre}</p>
+                        <p className="mt-0.5 flex items-baseline gap-2">
+                          <span className="font-jakarta text-sm font-extrabold text-djassa-red sm:text-base">{formatFCFA(offer.prix_actuel)}</span>
+                          <span className="font-inter text-[10px] text-djassa-slate line-through">{formatFCFA(offer.prix)}</span>
+                        </p>
+                        <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-djassa-red/8 px-2 py-0.5 text-[8px] font-bold uppercase tracking-wide text-djassa-red">-{discount}% · {offer.boutique?.nom_boutique ?? 'Particulier'}</span>
+                      </div>
+                      <ChevronRight size={16} className="shrink-0 text-djassa-slate transition group-hover:translate-x-1 group-hover:text-djassa-red" />
+                    </Link>
+                  );
+                })}
+              </div>
+
+              <a href="#feed" className="mt-3 inline-flex h-10 items-center gap-1.5 rounded-full bg-djassa-black px-5 font-jakarta text-[10px] font-extrabold uppercase tracking-[0.16em] text-white transition hover:bg-djassa-red">
+                Voir tout le catalogue <ArrowRight size={13} strokeWidth={2.8} />
+              </a>
             </div>
           </div>
         </div>
