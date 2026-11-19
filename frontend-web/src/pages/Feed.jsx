@@ -267,7 +267,7 @@ export default function Feed() {
                       onClick={(e) => { if (!e.target.closest('button, a')) navigate(`/article/${offer.id}`); }}
                       onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && !e.target.closest('button, a')) { e.preventDefault(); navigate(`/article/${offer.id}`); } }}
                       tabIndex={0}
-                      className="group flex h-full w-[88%] shrink-0 cursor-pointer snap-start flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-djassa-black/6 transition hover:shadow-pop focus-visible:ring-djassa-red sm:w-[85%] lg:w-[82%]"
+                      className="group flex h-full w-[232px] shrink-0 cursor-pointer snap-start flex-col rounded-20px bg-white shadow-sm ring-1 ring-djassa-black/6 transition hover:shadow-pop focus-visible:ring-djassa-red sm:w-[260px] lg:w-[300px]"
                     >
                       {/* Image produit — grande vitrine */}
                       <div className="relative min-h-0 flex-1 overflow-hidden bg-djassa-cloud">
@@ -275,10 +275,10 @@ export default function Feed() {
                           {offer.image_principale ? (
                             <img src={offer.image_principale} alt={offer.titre} loading="lazy" className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" />
                           ) : (
-                            <div className="flex h-full w-full items-center justify-center font-jakarta text-3xl font-extrabold text-djassa-black/15">Djassa</div>
+                            <div className="flex h-full w-full items-center justify-center font-jakarta text-2xl font-extrabold text-djassa-black/15">Djassa</div>
                           )}
                         </Link>
-                        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/55 to-transparent" />
+                        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/55 to-transparent" />
                         <div className="absolute left-3 top-3 flex flex-wrap items-center gap-1.5">
                           {isFlash && (
                             <span className="inline-flex items-center gap-1 rounded-full bg-[#ED0F02] px-2.5 py-1 font-jakarta text-[10px] font-extrabold uppercase tracking-wide text-white shadow-md">
@@ -297,7 +297,7 @@ export default function Feed() {
                             {CONDITION_LABELS[offer.condition] ?? offer.condition}
                           </span>
                         </div>
-                        <span className="absolute bottom-3 left-3 rounded-full bg-black/55 px-2.5 py-1 font-inter text-[10px] font-semibold uppercase tracking-wide text-white backdrop-blur-sm">
+                        <span className="absolute bottom-2 right-2 rounded-full bg-djassa-black px-2.5 py-1 font-inter text-[8.5px] font-semibold uppercase tracking-wide text-white shadow-sm">
                           {offer.categorie}
                         </span>
                       </div>
@@ -305,18 +305,18 @@ export default function Feed() {
                       {/* Infos produit */}
                       <div className="flex flex-col px-4 py-3 sm:px-4 sm:py-3.5">
                         <Link to={`/article/${offer.id}`} className="block">
-                          <h4 className="line-clamp-2 font-jakarta text-[15px] font-bold leading-snug tracking-[-0.015em] text-djassa-black transition group-hover:text-djassa-red sm:text-[16px]">{offer.titre}</h4>
+                          <h4 className="line-clamp-2 font-jakarta text-[14px] font-bold leading-snug tracking-[-0.01em] text-djassa-black transition group-hover:text-djassa-red sm:text-[15px]">{offer.titre}</h4>
                         </Link>
                         <div className="mt-1.5 flex flex-wrap items-baseline gap-2">
-                          <span className="font-jakarta text-[22px] font-extrabold tracking-tight text-[#E60023] sm:text-[24px]">{formatFCFA(offer.prix_actuel ?? offer.prix)}</span>
+                          <span className="font-jakarta text-[16px] font-extrabold tracking-tight text-[#E60023] sm:text-[18px]">{formatFCFA(offer.prix_actuel ?? offer.prix)}</span>
                           {isFlash && <span className="font-inter text-[11px] font-medium text-djassa-slate line-through">{formatFCFA(offer.prix)}</span>}
                         </div>
-                        <div className="mt-2 flex items-center justify-between gap-2">
-                          <span className="truncate font-inter text-[11px] text-djassa-slate">{offer.boutique?.nom_boutique ?? offer.proprietaire?.nom ?? 'Particulier'}{offer.quartier ? ` · ${offer.quartier}` : ''}</span>
+                        <div className="mt-2 flex items-center justify-between gap-1.5">
+                          <span className="truncate font-inter text-[9.5px] text-djassa-slate">{offer.boutique?.nom_boutique ?? offer.proprietaire?.nom ?? 'Particulier'}{offer.quartier ? ` · ${offer.quartier}` : ''}</span>
                           <button
                             type="button"
                             onClick={() => navigate(`/article/${offer.id}${trocable ? '?troc=1' : ''}`)}
-                            className="inline-flex h-8 shrink-0 items-center justify-center gap-1 rounded-full bg-[#ED0F02] px-4 font-jakarta text-[9px] font-extrabold uppercase tracking-[0.1em] text-white transition hover:bg-[#ff1e12] active:scale-95"
+                            className="inline-flex h-7 shrink-0 items-center justify-center gap-1 rounded-full bg-[#ED0F02] px-3 font-jakarta text-[8.5px] font-extrabold uppercase tracking-[0.1em] text-white transition hover:bg-[#ff1e12] active:scale-95"
                           >
                             {trocable ? <><ArrowLeftRight size={11} strokeWidth={2.8} /> Troc</> : 'Voir'}
                           </button>
