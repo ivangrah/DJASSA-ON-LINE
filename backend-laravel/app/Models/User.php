@@ -22,6 +22,8 @@ class User extends Authenticatable
         'google_id',
         'avatar',
         'role',
+        'plan',
+        'plan_expire_at',
         'kyc_status',
         'ville',
         'quartier',
@@ -42,12 +44,16 @@ class User extends Authenticatable
             'password' => 'hashed',
             'solde_portefeuille' => 'decimal:2',
             'score_confiance' => 'integer',
+            'plan_expire_at' => 'datetime',
         ];
     }
 
     /* ------------------------------------------------------------------
      |  Rôles & capacités
      * ------------------------------------------------------------------ */
+
+    public const PLAN_FREE = 'free';
+    public const PLAN_PRO = 'pro';
 
     public const ROLE_USER = 'user';
     public const ROLE_PRO_SELLER = 'pro_seller';
@@ -59,7 +65,15 @@ class User extends Authenticatable
 
     public function isProSeller(): bool
     {
-        return $this->role === self::ROLE_PRO_SELLER;
+        return $this->role === self::ROLE_PRO_SELLER
+            && $this->plan === self::PLAN_PRO
+            && ($this->plan_expire_at === null || $this->plan_expire_at->isFuture());
+    }
+
+    public function hasActiveProPlan(): bool
+    {
+        return $this->plan === self::PLAN_PRO
+            && ($this->plan_expire_at === null || $this->plan_expire_at->isFuture());
     }
 
     public function isAdmin(): bool
@@ -83,6 +97,11 @@ class User extends Authenticatable
     public function boutique(): HasOne
     {
         return $this->hasOne(Boutique::class, 'utilisateur_id');
+    }
+
+    public function abonnement(): HasOne
+    {
+        return $this->hasOne(Abonnement::class, 'utilisateur_id');
     }
 
     public function articles(): HasMany

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\Abonnement;
 use App\Models\Article;
 use App\Models\Message;
 use App\Models\Transaction;
@@ -47,6 +48,25 @@ class WebhookController extends Controller
         }
 
         Log::info('[Webhook GeniusPay] Événement reçu', ['reference' => $reference, 'status' => $status]);
+
+        // Abonnement Pro (DJASSA-PRO-…) — activé avant toute recherche de transaction
+        if (str_starts_with($reference, 'DJASSA-PRO-') || Abonnement::where('geniuspay_ref', $reference)->exists()) {
+            $abonnement = Abonnement::where('geniuspay_ref', $reference)
+                ->orWhere('reference', $reference)
+                ->first();
+            if ($abonnement) {
+                if ($abonnement->statut === Abonnement::STATUT_ACTIVE) {
+                    return response()->json(['received' => true, 'idempotent' => true]);
+                }
+                if ($this->isSuccessStatus((string) $status)) {
+                    AbonnementController::activer($abonnement);
+                    Log::info('[Webhook] Abonnement Pro activé', ['abonnement_id' => $abonnement->id]);
+                    return response()->json(['received' => true, 'abonnement' => 'active']);
+                }
+                $abonnement->update(['statut' => Abonnement::STATUT_FAILED]);
+                return response()->json(['received' => true, 'abonnement' => 'failed']);
+            }
+        }
 
         $transaction = Transaction::where('geniuspay_ref', $reference)->first();
 

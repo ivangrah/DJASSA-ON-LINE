@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\AbonnementController;
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\BoutiqueController;
 use App\Http\Controllers\Api\V1\BarterOfferController;
@@ -76,6 +77,12 @@ Route::prefix('v1')->group(function () {
         // Auth
         Route::post('/auth/logout', [AuthController::class, 'logout']);
         Route::get('/auth/me', [AuthController::class, 'me']);
+
+        // Abonnements — formule Gratuite (0 FCFA) / Pro (5 000 FCFA / mois)
+        Route::get('/abonnements/formules', [AbonnementController::class, 'index']);
+        Route::get('/abonnements/me', [AbonnementController::class, 'me']);
+        Route::post('/abonnements/upgrade', [AbonnementController::class, 'upgrade']);
+        Route::post('/abonnements/cancel', [AbonnementController::class, 'cancel']);
 
         // Catalogue — publication & édition
         Route::post('/products', [ProductController::class, 'store']);

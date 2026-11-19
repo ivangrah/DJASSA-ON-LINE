@@ -30,12 +30,13 @@ class AuthController extends Controller
             'password' => $request->validated('password'),
             'ville' => $request->validated('ville', 'Abidjan'),
             'role' => User::ROLE_USER,
+            'plan' => User::PLAN_FREE,
         ]);
 
         $token = $user->createToken('djassa-web')->plainTextToken;
 
         return response()->json([
-            'user' => UserResource::make($user->load('boutique')),
+            'user' => UserResource::make($user->load(['boutique', 'abonnement'])),
             'token' => $token,
             'token_type' => 'Bearer',
         ], 201);
@@ -55,7 +56,7 @@ class AuthController extends Controller
         $token = $user->createToken('djassa-web')->plainTextToken;
 
         return response()->json([
-            'user' => UserResource::make($user->load('boutique')),
+            'user' => UserResource::make($user->load(['boutique', 'abonnement'])),
             'token' => $token,
             'token_type' => 'Bearer',
         ]);
@@ -102,7 +103,8 @@ class AuthController extends Controller
                 'google_id' => $googleId,
                 'avatar' => $avatar,
                 'email_verified_at' => now(),
-                'role' => $wantedRole === User::ROLE_PRO_SELLER ? User::ROLE_PRO_SELLER : User::ROLE_USER,
+                'role' => User::ROLE_USER,
+                'plan' => User::PLAN_FREE,
                 'password' => null,
             ]);
         }
@@ -110,7 +112,7 @@ class AuthController extends Controller
         $token = $user->createToken($user->isProSeller() ? 'djassa-pro' : 'djassa-web')->plainTextToken;
 
         return response()->json([
-            'user' => UserResource::make($user->load('boutique')),
+            'user' => UserResource::make($user->load(['boutique', 'abonnement'])),
             'token' => $token,
             'token_type' => 'Bearer',
             'needs_boutique' => $user->isProSeller() && ! $user->boutique,
