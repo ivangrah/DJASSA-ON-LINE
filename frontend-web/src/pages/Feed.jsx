@@ -178,33 +178,33 @@ export default function Feed() {
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-stretch lg:gap-5 lg:min-h-[520px] xl:min-h-[560px]">
 
             {/* Colonne gauche — Boostez vos économies */}
-            <div className="relative flex h-full min-h-[360px] flex-col overflow-hidden rounded-3xl bg-[#FFFDF6] p-5 shadow-card ring-1 ring-djassa-black/5 sm:p-7 lg:min-h-0">
+            <div className="relative flex h-full min-h-[360px] flex-col rounded-3xl bg-[#FFFDF6] p-5 shadow-card ring-1 ring-djassa-black/5 sm:p-7 lg:min-h-0 lg:overflow-hidden">
               <div className="pointer-events-none absolute -left-14 top-8 h-36 w-36 rounded-full bg-djassa-red/5 blur-2xl" aria-hidden="true" />
               <div className="pointer-events-none absolute -right-10 bottom-6 h-40 w-40 rounded-full bg-yellow-400/10 blur-2xl" aria-hidden="true" />
 
-              <div className="relative flex flex-1 flex-col">
-                <div className="flex items-start justify-between gap-3">
+              <div className="relative flex min-h-0 flex-1 flex-col justify-between gap-3">
+                <div className="flex shrink-0 items-start justify-between gap-3">
                   <span className="inline-flex w-fit items-center gap-2 rounded-full bg-djassa-red/10 px-3 py-1.5 text-[9px] font-jakarta font-extrabold uppercase tracking-[0.22em] text-djassa-red">
                     <Zap size={11} strokeWidth={3} fill="currentColor" /> Offre spéciale
                   </span>
-                  <img src="/images/promo-stamp.jpg" alt="PROMO" aria-hidden="true" className="pointer-events-none -mt-1 h-12 w-auto rotate-[-10deg] select-none object-contain opacity-90 sm:h-16 lg:h-[68px]" loading="lazy" />
+                  <img src="/images/promo-stamp.jpg" alt="PROMO" aria-hidden="true" className="pointer-events-none h-12 w-auto shrink-0 -rotate-[10deg] select-none object-contain opacity-90 sm:h-14 lg:h-16" loading="lazy" />
                 </div>
 
-                <div className="mt-2 flex items-center justify-center py-2 sm:py-3 lg:py-4">
-                  <div className="relative flex h-28 w-28 items-center justify-center sm:h-36 sm:w-36 lg:h-32 lg:w-32 xl:h-40 xl:w-40">
+                <div className="flex min-h-0 flex-1 items-center justify-center py-1">
+                  <div className="relative flex aspect-square h-full max-h-36 w-auto items-center justify-center sm:max-h-44 lg:max-h-40 xl:max-h-48">
                     <div className="absolute inset-0 rounded-full bg-[#FBEEDD]" aria-hidden="true" />
-                    <img src="/images/promo-megaphone.jpg" alt="Mégaphone Special Promo illustrant les offres" className="relative h-[90%] w-[90%] object-contain mix-blend-multiply" />
+                    <img src="/images/promo-megaphone.jpg" alt="Mégaphone Special Promo illustrant les offres" className="relative h-[88%] w-[88%] object-contain mix-blend-multiply" />
                   </div>
                 </div>
 
-                <div className="mt-auto pt-1 text-center lg:text-left">
-                  <h2 className="font-jakarta text-3xl font-black leading-[1] tracking-tighter text-djassa-black sm:text-4xl xl:text-5xl">
+                <div className="shrink-0 text-center lg:text-left">
+                  <h2 className="font-jakarta text-3xl font-black leading-[0.98] tracking-tighter text-djassa-black sm:text-4xl lg:text-[2.5rem] xl:text-5xl">
                     Boostez vos<br />économies<span className="text-djassa-red">.</span>
                   </h2>
-                  <p className="mx-auto mt-3 max-w-md font-inter text-[12.5px] leading-relaxed text-djassa-slate sm:text-[13.5px] lg:mx-0">
+                  <p className="mx-auto mt-2.5 max-w-md font-inter text-[12.5px] leading-relaxed text-djassa-slate sm:text-[13px] lg:mx-0 lg:mt-3">
                     Ne ratez pas nos offres exclusives. Économisez sur l'occasion certifiée, le troc malin et le neuf boutique — directement sur le Djassa, en FCFA.
                   </p>
-                  <div className="mt-5 flex flex-wrap items-center justify-center gap-2 lg:justify-start">
+                  <div className="mt-4 flex flex-wrap items-center justify-center gap-2 lg:justify-start">
                     <a href="#feed" className="inline-flex h-11 items-center gap-2 rounded-full bg-djassa-black px-5 font-jakarta text-[10.5px] font-extrabold uppercase tracking-[0.14em] text-white transition hover:bg-djassa-red active:scale-95 sm:px-6 sm:text-[11px]">
                       Voir les offres <ArrowRight size={15} strokeWidth={3} />
                     </a>
