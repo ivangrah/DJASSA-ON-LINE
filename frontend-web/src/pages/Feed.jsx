@@ -175,10 +175,10 @@ export default function Feed() {
       {/* ===== Section OFFRES — split 50/50 : promo (gauche) + vitrine (droite) ===== */}
       <section className="bg-[#F7F1E6] py-8 sm:py-12" aria-label="Offres spéciales Djassa">
         <div className="mx-auto max-w-7xl px-3 sm:px-6">
-          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-stretch lg:gap-5 lg:min-h-[520px] xl:min-h-[560px]">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-stretch lg:gap-5 lg:min-h-[440px] xl:min-h-[480px]">
 
             {/* Colonne gauche — Boostez vos économies */}
-            <div className="relative flex h-full min-h-[360px] flex-col rounded-3xl bg-[#FFFDF6] p-5 shadow-card ring-1 ring-djassa-black/5 sm:p-7 lg:min-h-0 lg:overflow-hidden">
+            <div className="relative flex h-full min-h-[300px] flex-col rounded-3xl bg-[#FFFDF6] p-5 shadow-card ring-1 ring-djassa-black/5 sm:p-6 lg:min-h-0 lg:overflow-hidden">
               <div className="pointer-events-none absolute -left-14 top-8 h-36 w-36 rounded-full bg-djassa-red/5 blur-2xl" aria-hidden="true" />
               <div className="pointer-events-none absolute -right-10 bottom-6 h-40 w-40 rounded-full bg-yellow-400/10 blur-2xl" aria-hidden="true" />
 
@@ -190,21 +190,21 @@ export default function Feed() {
                   <img src="/images/promo-stamp.jpg" alt="PROMO" aria-hidden="true" className="pointer-events-none h-12 w-auto shrink-0 -rotate-[10deg] select-none object-contain opacity-90 sm:h-14 lg:h-16" loading="lazy" />
                 </div>
 
-                <div className="flex min-h-0 flex-1 items-center justify-center py-1">
-                  <div className="relative flex aspect-square h-full max-h-36 w-auto items-center justify-center sm:max-h-44 lg:max-h-40 xl:max-h-48">
+                <div className="flex min-h-0 flex-1 items-center justify-center py-0.5">
+                  <div className="relative flex aspect-square h-full max-h-28 w-auto items-center justify-center sm:max-h-36 lg:max-h-32 xl:max-h-40">
                     <div className="absolute inset-0 rounded-full bg-[#FBEEDD]" aria-hidden="true" />
                     <img src="/images/promo-megaphone.jpg" alt="Mégaphone Special Promo illustrant les offres" className="relative h-[88%] w-[88%] object-contain mix-blend-multiply" />
                   </div>
                 </div>
 
                 <div className="shrink-0 text-center lg:text-left">
-                  <h2 className="font-jakarta text-3xl font-black leading-[0.98] tracking-tighter text-djassa-black sm:text-4xl lg:text-[2.5rem] xl:text-5xl">
+                  <h2 className="font-jakarta text-[1.7rem] font-black leading-[0.98] tracking-tighter text-djassa-black sm:text-4xl lg:text-[2.25rem] xl:text-[2.75rem]">
                     Boostez vos<br />économies<span className="text-djassa-red">.</span>
                   </h2>
-                  <p className="mx-auto mt-2.5 max-w-md font-inter text-[12.5px] leading-relaxed text-djassa-slate sm:text-[13px] lg:mx-0 lg:mt-3">
+                  <p className="mx-auto mt-2 max-w-md font-inter text-[12px] leading-relaxed text-djassa-slate sm:text-[13px] lg:mx-0 lg:mt-2.5">
                     Ne ratez pas nos offres exclusives. Économisez sur l'occasion certifiée, le troc malin et le neuf boutique — directement sur le Djassa, en FCFA.
                   </p>
-                  <div className="mt-4 flex flex-wrap items-center justify-center gap-2 lg:justify-start">
+                  <div className="mt-3.5 flex flex-wrap items-center justify-center gap-2 lg:justify-start">
                     <a href="#feed" className="inline-flex h-11 items-center gap-2 rounded-full bg-djassa-black px-5 font-jakarta text-[10.5px] font-extrabold uppercase tracking-[0.14em] text-white transition hover:bg-djassa-red active:scale-95 sm:px-6 sm:text-[11px]">
                       Voir les offres <ArrowRight size={15} strokeWidth={3} />
                     </a>
@@ -217,7 +217,7 @@ export default function Feed() {
             </div>
 
             {/* Colonne droite — Carrousel grandes cartes vitrines */}
-            <div className="relative flex h-full min-h-[420px] flex-col overflow-hidden rounded-3xl bg-[#FFFDF6] shadow-card ring-1 ring-djassa-black/5 lg:min-h-0">
+            <div className="relative flex h-full min-h-[340px] flex-col overflow-hidden rounded-3xl bg-[#FFFDF6] shadow-card ring-1 ring-djassa-black/5 lg:min-h-0">
               <div className="flex items-center justify-between px-4 pt-4 sm:px-5 sm:pt-5">
                 <h3 className="flex items-center gap-2 font-jakarta text-base font-extrabold tracking-tight text-djassa-black sm:text-lg">
                   <Zap size={16} className="text-[#ED0F02]" strokeWidth={2.6} fill="currentColor" />
