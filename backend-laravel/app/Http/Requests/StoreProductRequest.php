@@ -51,9 +51,10 @@ class StoreProductRequest extends FormRequest
             'ville' => ['sometimes', 'string', 'max:100'],
             'quartier' => ['nullable', 'string', 'max:100'],
             // Upload fichiers : jpeg/png/webp (TRD §7.1) — compression client recommandée (< 350 Ko)
-            'images' => ['nullable', 'array', 'max:6'],
+            // 4 vues du produit exigées (carrousel au survol sur les cartes)
+            'images' => ['required_without:image_urls', 'array', 'min:4', 'max:6'],
             'images.*' => ['image', 'mimes:jpeg,jpg,png,webp', 'max:8192'],
-            'image_urls' => ['nullable', 'array', 'max:6'],
+            'image_urls' => ['required_without:images', 'array', 'min:4', 'max:6'],
             'image_urls.*' => ['url', 'max:2048'],
         ];
     }

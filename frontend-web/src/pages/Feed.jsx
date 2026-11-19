@@ -10,6 +10,7 @@ import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
 import ProductCardWide from '../components/ProductCardWide';
+import ProductGallery from '../components/ProductGallery';
 import { CONDITION_LABELS, formatFCFA } from '../lib/format';
 import { ProductCardSkeleton, EmptyState, Spinner } from '../components/ui';
 
@@ -520,11 +521,7 @@ export default function Feed() {
                       {/* Image produit — grande vitrine */}
                       <div className="relative min-h-0 flex-1 overflow-hidden bg-djassa-cloud">
                         <Link to={`/article/${offer.id}`} className="block h-full w-full" tabIndex={-1} aria-hidden="true">
-                          {offer.image_principale ? (
-                            <img src={offer.image_principale} alt={offer.titre} loading="lazy" className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" />
-                          ) : (
-                            <div className="flex h-full w-full items-center justify-center font-jakarta text-2xl font-extrabold text-djassa-black/15">Djassa</div>
-                          )}
+                          <ProductGallery article={offer} images={offer.images} />
                         </Link>
                         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/55 to-transparent" />
                         <div className="absolute left-3 top-3 flex flex-wrap items-center gap-1.5">

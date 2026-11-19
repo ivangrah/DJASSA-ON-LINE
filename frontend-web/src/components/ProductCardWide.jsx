@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeftRight, BadgeCheck, Check, Heart, ShoppingCart, Star, Zap } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+import ProductGallery from './ProductGallery';
 import { useToast } from '../context/ToastContext';
 import { CONDITION_LABELS, formatFCFA } from '../lib/format';
 
@@ -16,14 +17,12 @@ export default function ProductCardWide({ article }) {
   const [faved, setFaved] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
   const inCart = cart.has(article.id);
-  const [imageOk, setImageOk] = useState(Boolean(article.image_principale || article.images?.[0]));
   const isFlash = Boolean(article.vente_flash && article.prix_flash);
   const trocable = article.est_trocable || ['troc', 'mixte'].includes(article.mode_transaction);
   const isPro = Boolean(article.boutique);
   const prixActuel = Number(article.prix_actuel ?? article.prix);
   const prixOriginal = Number(article.prix);
   const discount = isFlash ? Math.round((1 - prixActuel / prixOriginal) * 100) : 0;
-  const image = article.image_principale ?? article.images?.[0];
   const sellerName = isPro ? article.boutique?.nom_boutique : article.proprietaire?.nom ?? 'Particulier';
   const description = (article.description ?? '').trim();
 
@@ -63,22 +62,12 @@ export default function ProductCardWide({ article }) {
       {/* Image */}
       <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-djassa-cloud">
         <Link to={`/article/${article.id}`} className="block h-full w-full" aria-label={`Voir ${article.titre}`} tabIndex={-1}>
-          {imageOk && image ? (
-            <img
-              src={image}
-              alt={article.titre}
-              loading="lazy"
-              onError={() => setImageOk(false)}
-              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
-            />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center bg-djassa-mist font-jakarta text-lg font-extrabold text-djassa-black/15">Djassa</div>
-          )}
+          <ProductGallery article={article} images={article.images} />
         </Link>
 
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-black/40 to-transparent" />
 
-        <div className="absolute left-2 top-2 flex flex-col items-start gap-1">
+        <div className="absolute left-2 top-9 z-10 flex flex-col items-start gap-1">
           {isFlash && (
             <span className="badge-flash !px-1.5 !py-0.5"><Zap size={8} strokeWidth={3.5} /> −{discount}%</span>
           )}

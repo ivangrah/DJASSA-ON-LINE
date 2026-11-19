@@ -87,9 +87,14 @@ export default function Publish() {
   const addSpec = () => setForm((f) => ({ ...f, specs: [...f.specs, { key: '', value: '' }] }));
   const removeSpec = (idx) => setForm((f) => ({ ...f, specs: f.specs.filter((_, i) => i !== idx) }));
 
-  const canNext = step === 0 ? true : step === 1 ? form.titre.trim().length >= 5 && Number(form.prix) > 0 : true;
+  const canNext = step === 0 ? images.length >= 4 : step === 1 ? form.titre.trim().length >= 5 && Number(form.prix) > 0 : true;
 
   const submit = async () => {
+    if (images.length < 4) {
+      toast.error('Ajoutez au moins 4 photos du produit pour le publier.');
+      setStep(0);
+      return;
+    }
     if (!isAuthenticated) {
       toast.info('Connectez-vous pour publier.');
       navigate('/login', { state: { from: '/publier' } });
@@ -164,7 +169,10 @@ export default function Publish() {
         <section className="mt-5">
           <label htmlFor="photos" className="group flex cursor-pointer flex-col items-center justify-center gap-2 rounded-3xl border-2 border-dashed border-djassa-black/15 bg-white px-6 py-10 text-center transition hover:border-djassa-red/50">
             {compressing ? <Spinner size={34} /> : <CloudUpload size={38} className="text-djassa-red" />}
-            <p className="font-jakarta text-sm font-bold text-djassa-black">{compressing ? 'Compression WebP en cours…' : 'Ajoutez jusqu’à 6 photos'}</p>
+            <p className="font-jakarta text-sm font-bold text-djassa-black">{compressing ? 'Compression WebP en cours…' : 'Ajoutez 4 photos du produit'}</p>
+            <p className={`font-inter text-[10px] font-semibold ${images.length >= 4 ? 'text-emerald-600' : 'text-djassa-red'}`}>
+              {images.length >= 4 ? `✓ ${images.length} photos — prêt pour la publication` : `${images.length}/4 photos ajoutées · 4 vues exigées (face, dos, détails, en usage)`}
+            </p>
             <p className="text-[10px] text-djassa-slate">JPEG, PNG, WebP — compressées automatiquement (&lt; 350 Ko)</p>
             <p className="mt-1 inline-flex items-center gap-1.5 rounded-full bg-djassa-cloud px-3 py-1.5 text-[10px] font-semibold text-djassa-slate"><Camera size={12} /> ou glissez-déposez ici</p>
             <input id="photos" ref={fileInputRef} type="file" accept="image/jpeg,image/png,image/webp" multiple className="sr-only" onChange={(e) => { addFiles(e.target.files); e.target.value = ''; }} />
@@ -313,7 +321,7 @@ export default function Publish() {
         {step < 2 ? (
           <button className="btn-black" disabled={!canNext} onClick={() => setStep((s) => s + 1)}>Continuer <ChevronRight size={18} /></button>
         ) : (
-          <button className="btn-red" disabled={submitting || !form.titre.trim() || !form.prix} onClick={submit}>{submitting ? <Spinner size={18} /> : <Zap size={18} />} Publier l'annonce</button>
+          <button className="btn-red" disabled={submitting || images.length < 4 || !form.titre.trim() || !form.prix} onClick={submit}>{submitting ? <Spinner size={18} /> : <Zap size={18} />} Publier l'annonce</button>
         )}
       </div>
     </div>
