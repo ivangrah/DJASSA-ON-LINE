@@ -56,13 +56,13 @@ export default function Login() {
           <div className="absolute -left-16 top-10 h-56 w-56 rounded-full bg-white/10 blur-2xl" aria-hidden="true" />
           <div className="absolute bottom-0 right-0 h-64 w-64 rounded-full bg-black/10 blur-2xl" aria-hidden="true" />
 
-          <div className="relative z-10">
-            {/* Retour à la landing */}
-            <Link to="/" className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 font-jakarta text-[10px] font-extrabold uppercase tracking-wide text-white backdrop-blur-sm ring-1 ring-white/25 transition hover:bg-white/25">
-              <ArrowLeft size={13} strokeWidth={2.8} /> Retour à l'accueil
-            </Link>
+          {/* Retour à la landing — en haut à droite */}
+          <Link to="/" className="absolute right-6 top-6 z-20 inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 font-jakarta text-[10px] font-extrabold uppercase tracking-wide text-white backdrop-blur-sm ring-1 ring-white/25 transition hover:bg-white/25 sm:right-8 sm:top-8">
+            <ArrowLeft size={13} strokeWidth={2.8} /> Retour à l'accueil
+          </Link>
 
-            <span className="mt-6 inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 font-jakarta text-[9px] font-extrabold uppercase tracking-[0.18em] text-white ring-1 ring-white/25">
+          <div className="relative z-10 pt-12">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 font-jakarta text-[9px] font-extrabold uppercase tracking-[0.18em] text-white ring-1 ring-white/25">
               <Sparkles size={10} /> Le marché d'Abidjan
             </span>
             <h2 className="mt-4 font-jakarta text-3xl font-extrabold leading-[1.1] tracking-tight sm:text-[36px]">
@@ -84,7 +84,7 @@ export default function Login() {
             <img
               src="/images/auth-cart-float.png"
               alt="Panier de shopping Djassa avec produits flottants"
-              className="h-56 w-auto max-w-full object-contain drop-shadow-[0_18px_40px_rgba(0,0,0,0.25)] sm:h-72 md:h-80 lg:h-[400px]"
+              className="h-72 w-auto max-w-none object-contain drop-shadow-[0_18px_40px_rgba(0,0,0,0.25)] sm:h-96 md:h-[440px] lg:h-[520px]"
             />
           </div>
         </div>
