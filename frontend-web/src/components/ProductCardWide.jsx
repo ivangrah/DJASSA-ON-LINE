@@ -91,7 +91,7 @@ export default function ProductCardWide({ article }) {
       <div className="flex flex-1 flex-col px-1.5 pb-1.5 pt-2.5">
         <div className="flex items-start justify-between gap-2">
           <Link to={`/article/${article.id}`} className="min-w-0 flex-1">
-            <h3 className="line-clamp-2 min-h-[2.2rem] font-jakarta text-[13px] font-bold leading-[1.3] tracking-[-0.015em] text-djassa-black transition group-hover:text-djassa-red sm:text-[13.5px]">
+            <h3 className="line-clamp-1 font-jakarta text-[12.5px] font-bold leading-[1.3] tracking-[-0.015em] text-djassa-black transition group-hover:text-djassa-red sm:text-[13px]">
               {article.titre}
             </h3>
           </Link>

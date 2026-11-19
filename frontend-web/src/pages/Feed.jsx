@@ -90,9 +90,9 @@ export default function Feed() {
         <div className="absolute inset-0 bg-[#0b0b0b]/45" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0b0b0b]/95 via-[#0b0b0b]/25 to-transparent" />
 
-        <div className="relative flex min-h-[100svh] flex-col px-5 sm:px-6 md:min-h-[92vh] md:px-10 xl:px-16">
+        <div className="relative flex min-h-[92svh] flex-col px-5 sm:px-6 md:min-h-[80svh] md:px-10 xl:px-16">
           {/* Nav intégrée — logo gauche · liens centre · Se connecter droite */}
-          <div className="flex items-center justify-between gap-4 border-b border-white/10 py-4 md:py-5">
+          <div className="flex items-center justify-between gap-4 border-b border-white/10 py-3 md:py-4">
             <Link to="/" className="flex items-center gap-2.5" aria-label="Djassa Online — accueil">
               <img src="/images/logo-256.png" alt="" aria-hidden="true" className="h-9 w-9 rounded-xl shadow-[0_4px_16px_rgba(237,15,2,0.5)]" />
               <span className="font-jakarta text-[15px] font-extrabold uppercase leading-none tracking-tight text-white sm:text-[17px]">
@@ -123,15 +123,15 @@ export default function Feed() {
 
           {/* Headline centré */}
           <div className="flex flex-1 flex-col items-center justify-center pb-28 pt-10 text-center sm:pb-32 sm:pt-12 md:pb-40 md:pt-16">
-            <h1 className="font-jakarta text-[17vw] font-extrabold leading-[0.95] tracking-tight text-white sm:text-[88px] md:text-[96px]">
+            <h1 className="font-jakarta text-[15vw] font-extrabold leading-[0.95] tracking-tight text-white sm:text-[80px] md:text-[84px]">
               Achète. Vends.<br /><span className="text-[#E60023]">Troque.</span>
             </h1>
-            <p className="mt-7 max-w-lg font-inter text-[14px] font-medium leading-7 tracking-wide text-white/85 sm:text-[16px] sm:leading-8">
+            <p className="mt-6 max-w-lg font-inter text-[13px] font-medium leading-6 tracking-wide text-white/85 sm:text-[14px] sm:leading-7">
               Tout le Djassa dans ta poche — occasion, troc malin, neuf au meilleur prix. Payé en confiance, remis en main propre.
             </p>
-            <div className="mt-9">
-              <a href="#feed" className="inline-flex h-12 items-center gap-2 rounded-full bg-[#ED0F02] px-6 font-jakarta text-[12px] font-extrabold uppercase tracking-[0.16em] text-white shadow-[0_14px_36px_rgba(237,15,2,0.45)] transition hover:bg-[#ff1e12] active:scale-95 sm:h-14 sm:px-8 sm:text-[13px]">
-                Explorer le marché <ArrowRight size={17} strokeWidth={2.8} />
+            <div className="mt-8">
+              <a href="#feed" className="inline-flex h-11 items-center gap-2 rounded-full bg-[#ED0F02] px-6 font-jakarta text-[11.5px] font-extrabold uppercase tracking-[0.16em] text-white shadow-[0_12px_30px_rgba(237,15,2,0.38)] transition hover:bg-[#ff1e12] active:scale-95 sm:h-12 sm:px-7 sm:text-[12px]">
+                Explorer le marché <ArrowRight size={16} strokeWidth={2.8} />
               </a>
             </div>
           </div>
@@ -139,33 +139,33 @@ export default function Feed() {
           {/* Barre de réassurance — 4 statistiques */}
           <div className="absolute inset-x-3 bottom-[78px] sm:inset-x-4 md:inset-x-8 md:bottom-6 xl:inset-x-12">
             <div className="grid grid-cols-2 divide-white/10 rounded-2xl border border-white/10 bg-black/60 backdrop-blur-md md:grid-cols-4 md:divide-x">
-              <div className="flex flex-col gap-1.5 px-4 py-4 sm:px-6">
+              <div className="flex flex-col gap-1 px-4 py-3.5 sm:px-5">
                 <span className="flex items-center gap-1.5 text-white">
-                  <Star size={15} className="fill-[#ED0F02] text-[#ED0F02]" />
+                  <Star size={14} className="fill-[#ED0F02] text-[#ED0F02]" />
                   <span className="font-jakarta text-base font-extrabold sm:text-lg">4.8/5</span>
                 </span>
-                <span className="font-inter text-[8.5px] font-medium uppercase tracking-[0.16em] text-white/60 sm:text-[9px]">Vendeurs notés</span>
+                <span className="font-inter text-[8px] font-medium uppercase tracking-[0.16em] text-white/60 sm:text-[8.5px]">Vendeurs notés</span>
               </div>
-              <div className="flex flex-col gap-1.5 border-l border-white/10 px-4 py-4 sm:px-6 md:border-l-0">
+              <div className="flex flex-col gap-1 border-l border-white/10 px-4 py-3.5 sm:px-5 md:border-l-0">
                 <span className="flex items-center gap-1.5 text-white">
-                  <BadgeCheck size={15} className="text-[#ED0F02]" strokeWidth={2.6} />
+                  <BadgeCheck size={14} className="text-[#ED0F02]" strokeWidth={2.6} />
                   <span className="font-jakarta text-base font-extrabold sm:text-lg">50+</span>
                 </span>
-                <span className="font-inter text-[8.5px] font-medium uppercase tracking-[0.16em] text-white/60 sm:text-[9px]">Boutiques vérifiées</span>
+                <span className="font-inter text-[8px] font-medium uppercase tracking-[0.16em] text-white/60 sm:text-[8.5px]">Boutiques vérifiées</span>
               </div>
-              <div className="flex flex-col gap-1.5 border-t border-white/10 px-4 py-4 sm:px-6 md:border-t-0 md:border-l">
+              <div className="flex flex-col gap-1 border-t border-white/10 px-4 py-3.5 sm:px-5 md:border-t-0 md:border-l">
                 <span className="flex items-center gap-1.5 text-white">
-                  <Package size={15} className="text-[#ED0F02]" strokeWidth={2.2} />
+                  <Package size={14} className="text-[#ED0F02]" strokeWidth={2.2} />
                   <span className="font-jakarta text-base font-extrabold sm:text-lg">1 500+</span>
                 </span>
-                <span className="font-inter text-[8.5px] font-medium uppercase tracking-[0.16em] text-white/60 sm:text-[9px]">Articles publiés</span>
+                <span className="font-inter text-[8px] font-medium uppercase tracking-[0.16em] text-white/60 sm:text-[8.5px]">Articles publiés</span>
               </div>
-              <div className="flex flex-col gap-1.5 border-l border-t border-white/10 px-4 py-4 sm:px-6 md:border-l md:border-t-0">
+              <div className="flex flex-col gap-1 border-l border-t border-white/10 px-4 py-3.5 sm:px-5 md:border-l md:border-t-0">
                 <span className="flex items-center gap-1.5 text-white">
-                  <ShieldCheck size={15} className="text-[#ED0F02]" strokeWidth={2.2} />
-                  <span className="font-jakarta text-[13px] font-extrabold leading-tight sm:text-base">Escrow + PIN</span>
+                  <ShieldCheck size={14} className="text-[#ED0F02]" strokeWidth={2.2} />
+                  <span className="font-jakarta text-[12px] font-extrabold leading-tight sm:text-base">Escrow + PIN</span>
                 </span>
-                <span className="font-inter text-[8.5px] font-medium uppercase tracking-[0.16em] text-white/60 sm:text-[9px]">Paiement sécurisé</span>
+                <span className="font-inter text-[8px] font-medium uppercase tracking-[0.16em] text-white/60 sm:text-[8.5px]">Paiement sécurisé</span>
               </div>
             </div>
           </div>
@@ -339,7 +339,7 @@ export default function Feed() {
       </section>
 
       {/* ===== Grille produits — pleine largeur ===== */}
-      <div id="feed" className="mx-auto max-w-7xl space-y-4 px-3 py-5 sm:px-6 md:py-8">
+      <div id="feed" className="mx-auto max-w-7xl space-y-3 px-3 py-4 sm:px-6 md:py-6">
         {q && (
           <div className="flex items-center justify-between gap-2">
             <p className="font-inter text-xs text-djassa-slate">Résultats pour « <span className="font-bold text-djassa-black">{q}</span> »</p>
