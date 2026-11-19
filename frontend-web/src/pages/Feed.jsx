@@ -193,11 +193,43 @@ export default function Feed() {
       // Voile crème fondu en fin de scroll → transition douce avec la section suivante
       if (veil) scrollTl.fromTo(veil, { opacity: 0 }, { opacity: 1, ease: 'power1.inOut' }, 0.55);
 
-      // Reveal de la section promo à l'entrée dans le viewport
-      gsap.from(promoRef.current.querySelectorAll('[data-promo-col]'), {
-        scrollTrigger: { trigger: promoRef.current, start: 'top 78%', toggleActions: 'play none none reverse' },
-        y: 64, opacity: 0, duration: 0.9, stagger: 0.16, ease: 'power3.out', clearProps: 'transform,opacity',
+      // timeline d'entrée détaillée de la section promo
+      const promo = promoRef.current;
+      const pq = (sel) => promo.querySelectorAll(sel);
+      const cols = pq('[data-promo-col]');
+      const badge = promo.querySelector('[data-promo-badge]');
+      const stamp = promo.querySelector('[data-promo-stamp]');
+      const illustration = promo.querySelector('[data-promo-illustration]');
+      const title = promo.querySelector('[data-promo-title]');
+      const desc = promo.querySelector('[data-promo-desc]');
+      const buttons = promo.querySelector('[data-promo-buttons]');
+      const rHeader = promo.querySelector('[data-promo-header]');
+      const arrows = promo.querySelector('[data-promo-arrows]');
+      const cards = pq('[data-promo-card]');
+
+      const promoTl = gsap.timeline({
+        scrollTrigger: { trigger: promo, start: 'top 80%', toggleActions: 'play none none reverse' },
       });
+
+      // Les 2 blocs arrivent
+      promoTl.from(cols, { y: 56, opacity: 0, duration: 0.8, stagger: 0.14, ease: 'power3.out', clearProps: 'transform,opacity' }, 0);
+
+      // Bloc gauche : badge, tampon (rotation), mégaphone (pop), titre, desc, boutons
+      if (badge) promoTl.from(badge, { scale: 0.7, opacity: 0, duration: 0.5, ease: 'back.out(2)' }, 0.25);
+      if (stamp) promoTl.from(stamp, { scale: 0.4, rotation: -35, opacity: 0, duration: 0.6, ease: 'back.out(2)' }, 0.35);
+      if (illustration) promoTl.from(illustration, { scale: 0.65, y: 20, opacity: 0, duration: 0.75, ease: 'back.out(1.6)' }, 0.4);
+      if (title) promoTl.from(title, { y: 26, opacity: 0, duration: 0.6, ease: 'power3.out' }, 0.55);
+      if (desc) promoTl.from(desc, { y: 18, opacity: 0, duration: 0.55 }, 0.68);
+      if (buttons) promoTl.from(buttons, { y: 16, opacity: 0, duration: 0.55 }, 0.8);
+
+      // Bloc droit : header, flèches, cartes en cascade
+      if (rHeader) promoTl.from(rHeader, { y: -18, opacity: 0, duration: 0.5 }, 0.4);
+      if (arrows) promoTl.from(arrows, { scale: 0.7, opacity: 0, duration: 0.5, ease: 'back.out(2)' }, 0.55);
+      if (cards.length) {
+        promoTl.from(cards.slice(0, 4), {
+          y: 44, opacity: 0, scale: 0.94, duration: 0.65, stagger: 0.1, ease: 'power3.out', clearProps: 'transform,opacity',
+        }, 0.5);
+      }
     }, heroRef);
 
     return () => { ctx.revert(); ctxScroll.revert(); };
@@ -346,32 +378,31 @@ export default function Feed() {
 
             {/* Colonne gauche — Boostez vos économies */}
             <div data-promo-col className="relative flex h-full min-h-[300px] flex-col rounded-3xl bg-[#FFFDF6] p-5 shadow-card ring-1 ring-djassa-black/5 sm:p-6 lg:min-h-0 lg:overflow-hidden">
-              <div className="pointer-events-none absolute -left-14 top-8 h-36 w-36 rounded-full bg-djassa-red/5 blur-2xl" aria-hidden="true" />
+              <div data-promo-glow className="pointer-events-none absolute -left-14 top-8 h-36 w-36 rounded-full bg-djassa-red/5 blur-2xl" aria-hidden="true" />
               <div className="pointer-events-none absolute -right-10 bottom-6 h-40 w-40 rounded-full bg-yellow-400/10 blur-2xl" aria-hidden="true" />
-
               <div className="relative flex min-h-0 flex-1 flex-col justify-between gap-3">
                 <div className="flex shrink-0 items-start justify-between gap-3">
-                  <span className="inline-flex w-fit items-center gap-2 rounded-full bg-djassa-red/10 px-3 py-1.5 text-[9px] font-jakarta font-extrabold uppercase tracking-[0.22em] text-djassa-red">
+                  <span data-promo-badge className="inline-flex w-fit items-center gap-2 rounded-full bg-djassa-red/10 px-3 py-1.5 text-[9px] font-jakarta font-extrabold uppercase tracking-[0.22em] text-djassa-red">
                     <Zap size={11} strokeWidth={3} fill="currentColor" /> Offre spéciale
                   </span>
-                  <img src="/images/promo-stamp.jpg" alt="PROMO" aria-hidden="true" className="pointer-events-none h-12 w-auto shrink-0 -rotate-[10deg] select-none object-contain opacity-90 sm:h-14 lg:h-16" loading="lazy" />
+                  <img data-promo-stamp src="/images/promo-stamp.jpg" alt="PROMO" aria-hidden="true" className="pointer-events-none h-12 w-auto shrink-0 -rotate-[10deg] select-none object-contain opacity-90 sm:h-14 lg:h-16" loading="lazy" />
                 </div>
 
-                <div className="flex min-h-0 flex-1 items-center justify-center py-0.5">
-                  <div className="relative flex aspect-square h-full max-h-28 w-auto items-center justify-center sm:max-h-36 lg:max-h-32 xl:max-h-40">
+                <div className="flex min-h-0 flex-1 items-center justify-center py-1">
+                  <div data-promo-illustration className="relative flex aspect-square h-full max-h-36 w-auto items-center justify-center sm:max-h-44 lg:max-h-44 xl:max-h-52">
                     <div className="absolute inset-0 rounded-full bg-[#FBEEDD]" aria-hidden="true" />
                     <img src="/images/promo-megaphone.jpg" alt="Mégaphone Special Promo illustrant les offres" className="relative h-[88%] w-[88%] object-contain mix-blend-multiply" />
                   </div>
                 </div>
 
                 <div className="shrink-0 text-center lg:text-left">
-                  <h2 className="font-jakarta text-[1.7rem] font-black leading-[0.98] tracking-tighter text-djassa-black sm:text-4xl lg:text-[2.25rem] xl:text-[2.75rem]">
+                  <h2 data-promo-title className="font-jakarta text-[1.7rem] font-black leading-[0.98] tracking-tighter text-djassa-black sm:text-4xl lg:text-[2.25rem] xl:text-[2.75rem]">
                     Boostez vos<br />économies<span className="text-djassa-red">.</span>
                   </h2>
-                  <p className="mx-auto mt-2 max-w-md font-inter text-[12px] leading-relaxed text-djassa-slate sm:text-[13px] lg:mx-0 lg:mt-2.5">
+                  <p data-promo-desc className="mx-auto mt-2 max-w-md font-inter text-[12px] leading-relaxed text-djassa-slate sm:text-[13px] lg:mx-0 lg:mt-2.5">
                     Ne ratez pas nos offres exclusives. Économisez sur l'occasion certifiée, le troc malin et le neuf boutique — directement sur le Djassa, en FCFA.
                   </p>
-                  <div className="mt-3.5 flex flex-wrap items-center justify-center gap-2 lg:justify-start">
+                  <div data-promo-buttons className="mt-3.5 flex flex-wrap items-center justify-center gap-2 lg:justify-start">
                     <a href="#feed" className="inline-flex h-11 items-center gap-2 rounded-full bg-djassa-black px-5 font-jakarta text-[10.5px] font-extrabold uppercase tracking-[0.14em] text-white transition hover:bg-djassa-red active:scale-95 sm:px-6 sm:text-[11px]">
                       Voir les offres <ArrowRight size={15} strokeWidth={3} />
                     </a>
@@ -385,13 +416,13 @@ export default function Feed() {
 
             {/* Colonne droite — Carrousel grandes cartes vitrines */}
             <div data-promo-col className="relative flex h-full min-h-[340px] flex-col overflow-hidden rounded-3xl bg-[#FFFDF6] shadow-card ring-1 ring-djassa-black/5 lg:min-h-0">
-              <div className="flex items-center justify-between px-4 pt-4 sm:px-5 sm:pt-5">
+              <div data-promo-header className="flex items-center justify-between px-4 pt-4 sm:px-5 sm:pt-5">
                 <h3 className="flex items-center gap-2 font-jakarta text-base font-extrabold tracking-tight text-djassa-black sm:text-lg">
                   <Zap size={16} className="text-[#ED0F02]" strokeWidth={2.6} fill="currentColor" />
                   Les offres à saisir
                   <span className="font-inter text-[9px] font-semibold uppercase tracking-[0.18em] text-djassa-slate">/ {promoItems.length}</span>
                 </h3>
-                <div className="hidden items-center gap-2 sm:flex">
+                <div data-promo-arrows className="hidden items-center gap-2 sm:flex">
                   <button onClick={() => scrollPromo(-1)} aria-label="Offre précédente" className="flex h-10 w-10 items-center justify-center rounded-full bg-djassa-black text-white shadow-md transition hover:bg-djassa-red active:scale-95">
                     <ChevronLeft size={18} strokeWidth={3} />
                   </button>
@@ -434,10 +465,10 @@ export default function Feed() {
                       onClick={(e) => { if (!e.target.closest('button, a')) navigate(`/article/${offer.id}`); }}
                       onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && !e.target.closest('button, a')) { e.preventDefault(); navigate(`/article/${offer.id}`); } }}
                       tabIndex={0}
-                      className="group flex h-[300px] w-[232px] shrink-0 cursor-pointer snap-start flex-col overflow-hidden rounded-20px bg-white shadow-sm ring-1 ring-djassa-black/6 transition hover:shadow-pop focus-visible:ring-djassa-red sm:h-[310px] sm:w-[260px] lg:h-[320px] lg:w-[300px]"
+                      className="group flex h-full w-[232px] shrink-0 cursor-pointer snap-start flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-djassa-black/6 transition hover:shadow-pop focus-visible:ring-djassa-red sm:w-[260px] lg:w-[300px]"
                     >
                       {/* Image produit — grande vitrine */}
-                      <div className="relative h-[52vw] max-h-[210px] overflow-hidden bg-djassa-cloud sm:h-[45vw] sm:max-h-[200px] lg:h-[40vw] lg:max-h-[190px]">
+                      <div className="relative min-h-0 flex-1 overflow-hidden bg-djassa-cloud">
                         <Link to={`/article/${offer.id}`} className="block h-full w-full" tabIndex={-1} aria-hidden="true">
                           {offer.image_principale ? (
                             <img src={offer.image_principale} alt={offer.titre} loading="lazy" className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" />
