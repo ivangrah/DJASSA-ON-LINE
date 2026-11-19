@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
   ArrowLeftRight, BadgeCheck, ChevronRight, Eye, Flag, Heart, MapPin,
@@ -18,9 +18,10 @@ export default function ProductDetail() {
   const navigate = useNavigate();
   const toast = useToast();
   const { isAuthenticated } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [activeImage, setActiveImage] = useState(0);
   const [lastId, setLastId] = useState(id);
-  const [barterOpen, setBarterOpen] = useState(() => new URLSearchParams(window.location.search).get('troc') === '1');
+  const [barterOpen, setBarterOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [faved, setFaved] = useState(false);
 
@@ -42,6 +43,27 @@ export default function ProductDetail() {
   const trocable = article?.est_trocable || ['troc', 'mixte'].includes(article?.mode_transaction);
   const isFlash = Boolean(article?.vente_flash && article?.prix_flash);
   const prixActuel = Number(article?.prix_actuel ?? article?.prix ?? 0);
+
+  // Ouverture auto du modal troc via ?troc=1 (depuis une carte), avec garde auth
+  useEffect(() => {
+    if (searchParams.get('troc') !== '1') return;
+    if (!isAuthenticated) {
+      toast.info('Connectez-vous pour proposer un troc.');
+      navigate('/login', { state: { from: `/article/${id}?troc=1` }, replace: true });
+      return;
+    }
+    if (!article) return;
+    if (trocable) {
+      setBarterOpen(true);
+    } else {
+      toast.info('Ce vendeur n’accepte pas le troc sur cet article.');
+    }
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.delete('troc');
+      return next;
+    }, { replace: true });
+  }, [searchParams, isAuthenticated, article, trocable, id, navigate, toast, setSearchParams]);
 
   const share = async () => {
     try {
