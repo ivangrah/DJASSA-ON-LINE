@@ -155,10 +155,10 @@ export default function Feed() {
         scrollTrigger: {
           trigger: heroRef.current,
           start: 'top top',
-          end: '+=120%',
+          end: '+=65%',
           pin: true,
           pinType: 'transform',
-          scrub: 1,
+          scrub: 0.25,
           anticipatePin: 1,
           onUpdate: (self) => {
             if (progress) gsap.set(progress, { scaleX: self.progress });
@@ -191,7 +191,7 @@ export default function Feed() {
       if (cue) scrollTl.to(cue, { opacity: 0, y: 12, ease: 'power2.in' }, 0);
 
       // Voile crème fondu en fin de scroll → transition douce avec la section suivante
-      if (veil) scrollTl.fromTo(veil, { opacity: 0 }, { opacity: 1, ease: 'power1.inOut' }, 0.55);
+      if (veil) scrollTl.fromTo(veil, { opacity: 0 }, { opacity: 1, ease: 'power1.inOut' }, 0.4);
 
       // timeline d'entrée détaillée de la section promo
       const promo = promoRef.current;
