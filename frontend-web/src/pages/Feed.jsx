@@ -267,10 +267,10 @@ export default function Feed() {
                       onClick={(e) => { if (!e.target.closest('button, a')) navigate(`/article/${offer.id}`); }}
                       onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && !e.target.closest('button, a')) { e.preventDefault(); navigate(`/article/${offer.id}`); } }}
                       tabIndex={0}
-                      className="group flex h-full w-[232px] shrink-0 cursor-pointer snap-start flex-col rounded-20px bg-white shadow-sm ring-1 ring-djassa-black/6 transition hover:shadow-pop focus-visible:ring-djassa-red sm:w-[260px] lg:w-[300px]"
+                      className="group flex h-[300px] w-[232px] shrink-0 cursor-pointer snap-start flex-col overflow-hidden rounded-20px bg-white shadow-sm ring-1 ring-djassa-black/6 transition hover:shadow-pop focus-visible:ring-djassa-red sm:h-[310px] sm:w-[260px] lg:h-[320px] lg:w-[300px]"
                     >
                       {/* Image produit — grande vitrine */}
-                      <div className="relative min-h-0 flex-1 overflow-hidden bg-djassa-cloud">
+                      <div className="relative h-[52vw] max-h-[210px] overflow-hidden bg-djassa-cloud sm:h-[45vw] sm:max-h-[200px] lg:h-[40vw] lg:max-h-[190px]">
                         <Link to={`/article/${offer.id}`} className="block h-full w-full" tabIndex={-1} aria-hidden="true">
                           {offer.image_principale ? (
                             <img src={offer.image_principale} alt={offer.titre} loading="lazy" className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" />
@@ -305,10 +305,10 @@ export default function Feed() {
                       {/* Infos produit */}
                       <div className="flex flex-col px-4 py-3 sm:px-4 sm:py-3.5">
                         <Link to={`/article/${offer.id}`} className="block">
-                          <h4 className="line-clamp-2 font-jakarta text-[14px] font-bold leading-snug tracking-[-0.01em] text-djassa-black transition group-hover:text-djassa-red sm:text-[15px]">{offer.titre}</h4>
+                          <h4 className="line-clamp-2 font-jakarta text-[13.5px] font-bold leading-snug tracking-[-0.01em] text-djassa-black transition group-hover:text-djassa-red sm:text-[14.5px]">{offer.titre}</h4>
                         </Link>
                         <div className="mt-1.5 flex flex-wrap items-baseline gap-2">
-                          <span className="font-jakarta text-[16px] font-extrabold tracking-tight text-[#E60023] sm:text-[18px]">{formatFCFA(offer.prix_actuel ?? offer.prix)}</span>
+                          <span className="font-jakarta text-[15px] font-extrabold tracking-tight text-[#E60023] sm:text-[17px]">{formatFCFA(offer.prix_actuel ?? offer.prix)}</span>
                           {isFlash && <span className="font-inter text-[11px] font-medium text-djassa-slate line-through">{formatFCFA(offer.prix)}</span>}
                         </div>
                         <div className="mt-2 flex items-center justify-between gap-1.5">
@@ -316,7 +316,7 @@ export default function Feed() {
                           <button
                             type="button"
                             onClick={() => navigate(`/article/${offer.id}${trocable ? '?troc=1' : ''}`)}
-                            className="inline-flex h-7 shrink-0 items-center justify-center gap-1 rounded-full bg-[#ED0F02] px-3 font-jakarta text-[8.5px] font-extrabold uppercase tracking-[0.1em] text-white transition hover:bg-[#ff1e12] active:scale-95"
+                            className="inline-flex h-6 shrink-0 items-center justify-center gap-1 rounded-full bg-[#ED0F02] px-3 font-jakarta text-[8.5px] font-extrabold uppercase tracking-[0.1em] text-white transition hover:bg-[#ff1e12] active:scale-95"
                           >
                             {trocable ? <><ArrowLeftRight size={11} strokeWidth={2.8} /> Troc</> : 'Voir'}
                           </button>
