@@ -2,11 +2,11 @@ import { useEffect, useMemo, useRef } from 'react';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useSearchParams, Link } from 'react-router-dom';
 import { gsap } from 'gsap';
-import { Star, Package, ShieldCheck, ArrowRight, BadgeCheck, X, Tag, Zap, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Star, Package, ShieldCheck, ArrowRight, BadgeCheck, X, Tag, Zap, ChevronLeft, ChevronRight, ArrowLeftRight } from 'lucide-react';
 import { api } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 import ProductCardWide from '../components/ProductCardWide';
-import { formatFCFA } from '../lib/format';
+import { CONDITION_LABELS, formatFCFA } from '../lib/format';
 import { ProductCardSkeleton, EmptyState, Spinner } from '../components/ui';
 
 export default function Feed() {
@@ -255,32 +255,71 @@ export default function Feed() {
               {promoItems.map((offer) => {
                 const isFlash = offer.kind === 'flash';
                 const discount = isFlash ? Math.round((1 - Number(offer.prix_actuel) / Number(offer.prix)) * 100) : null;
+                const trocable = offer.est_trocable || ['troc', 'mixte'].includes(offer.mode_transaction);
+                const sellerName = offer.boutique?.nom_boutique ?? offer.proprietaire?.nom ?? 'Particulier';
                 return (
                   <Link
                     key={offer.id}
                     to={`/article/${offer.id}`}
                     role="listitem"
-                    className="group flex w-[230px] shrink-0 snap-start flex-col overflow-hidden rounded-3xl bg-white shadow-card ring-1 ring-djassa-black/8 transition hover:-translate-y-1 hover:shadow-pop sm:w-[280px]"
+                    className="group flex w-[190px] shrink-0 snap-start flex-col overflow-hidden rounded-[20px] bg-white p-2.5 shadow-card ring-1 ring-djassa-black/6 transition hover:-translate-y-1 hover:shadow-pop sm:w-[225px]"
                   >
-                    <div className="relative aspect-square w-full overflow-hidden bg-djassa-cloud">
+                    {/* Image 4:3 */}
+                    <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-djassa-cloud">
                       {offer.image_principale ? (
-                        <img src={offer.image_principale} alt={offer.titre} loading="lazy" className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+                        <img src={offer.image_principale} alt={offer.titre} loading="lazy" className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.05]" />
                       ) : (
-                        <div className="flex h-full w-full items-center justify-center font-jakarta text-2xl font-extrabold text-djassa-black/15">Djassa</div>
+                        <div className="flex h-full w-full items-center justify-center font-jakarta text-lg font-extrabold text-djassa-black/15">Djassa</div>
                       )}
-                      <span className={`absolute left-3 top-3 rounded-full px-2.5 py-1 font-jakarta text-[9px] font-extrabold uppercase tracking-wide text-white shadow ${isFlash ? 'bg-[#ED0F02]' : 'bg-djassa-black'}`}>
-                        {isFlash ? `-${discount}% · FLASH` : 'POPULAIRE'}
+                      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/40 to-transparent" />
+                      <span className={`absolute left-2 top-2 rounded-full px-2 py-0.5 font-jakarta text-[8px] font-extrabold uppercase tracking-wide text-white shadow ${isFlash ? 'bg-[#ED0F02]' : 'bg-djassa-black'}`}>
+                        {isFlash ? `−${discount}% · FLASH` : 'POPULAIRE'}
+                      </span>
+                      {trocable && (
+                        <span className="badge-troc absolute left-2 top-7 !px-1.5 !py-0.5"><ArrowLeftRight size={8} strokeWidth={3.5} /> Troc</span>
+                      )}
+                      <span className="absolute bottom-2 left-2 rounded-full bg-white/92 px-2 py-0.5 text-[7.5px] font-bold uppercase tracking-[0.1em] text-djassa-black shadow-sm">
+                        {CONDITION_LABELS[offer.condition] ?? offer.condition}
                       </span>
                     </div>
-                    <div className="flex flex-1 flex-col p-3">
-                      <p className="line-clamp-2 min-h-[2.1rem] font-jakarta text-[11px] font-bold leading-snug text-djassa-black transition group-hover:text-djassa-red">{offer.titre}</p>
-                      <p className="mt-1.5 font-jakarta text-[17px] font-extrabold text-[#ED0F02]">
-                        {formatFCFA(offer.prix_actuel ?? offer.prix)}
-                        {isFlash && <span className="ml-1.5 align-middle font-inter text-[9px] font-medium text-djassa-slate line-through">{formatFCFA(offer.prix)}</span>}
+
+                    {/* Infos */}
+                    <div className="flex flex-1 flex-col px-1 pb-1 pt-2.5">
+                      <div className="flex items-start justify-between gap-1.5">
+                        <h3 className="line-clamp-2 min-h-[2.05rem] font-jakarta text-[11px] font-bold leading-snug text-djassa-black transition group-hover:text-djassa-red">{offer.titre}</h3>
+                        <span className="mt-0.5 hidden shrink-0 rounded-full bg-djassa-cloud px-1.5 py-0.5 text-[7px] font-bold uppercase tracking-wide text-djassa-slate sm:inline-flex">{offer.categorie}</span>
+                      </div>
+                      <p className="mt-1 flex flex-wrap items-baseline gap-1.5">
+                        <span className="font-jakarta text-[15px] font-extrabold tracking-tight text-[#E60023]">{formatFCFA(offer.prix_actuel ?? offer.prix)}</span>
+                        {isFlash && <span className="font-inter text-[9px] text-djassa-slate line-through">{formatFCFA(offer.prix)}</span>}
                       </p>
-                      <span className="mt-2 inline-flex w-fit items-center gap-1 rounded-full bg-[#ED0F02]/10 px-2.5 py-1 text-[9px] font-extrabold uppercase tracking-wide text-[#ED0F02] ring-1 ring-[#ED0F02]/25">
-                        {offer.boutique?.nom_boutique ?? 'Particulier'}
-                      </span>
+                      <p className="mt-0.5 flex items-center gap-1 text-[8.5px] text-djassa-slate">
+                        <span className="flex items-center gap-0.5 text-amber-400">
+                          {[0, 1, 2, 3, 4].map((i) => <Star key={i} size={8} className="fill-amber-400 text-amber-400" />)}
+                        </span>
+                        <span className="font-semibold text-djassa-black/75">4.8</span>
+                        <span>·</span>
+                        <span className="truncate">{sellerName}</span>
+                      </p>
+                      <p className="mt-1 line-clamp-1 font-inter text-[9.5px] text-djassa-slate">
+                        {(offer.description ?? '').trim() || 'Bon état, remise en main propre ou troc possible.'}
+                      </p>
+                      <div className="mt-auto flex items-center gap-1.5 pt-2">
+                        <Link
+                          to={`/article/${offer.id}${trocable ? '?troc=1' : ''}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="inline-flex h-7 flex-1 items-center justify-center gap-1 rounded-full bg-[#ED0F02] px-2 font-jakarta text-[8px] font-extrabold uppercase tracking-[0.08em] text-white transition hover:bg-[#ff1e12] active:scale-95"
+                        >
+                          {trocable ? <><ArrowLeftRight size={10} strokeWidth={2.8} /> Troc</> : 'Acheter'}
+                        </Link>
+                        <Link
+                          to={`/article/${offer.id}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="inline-flex h-7 items-center justify-center rounded-full border-[1.5px] border-djassa-black/20 px-2.5 font-jakarta text-[8px] font-extrabold uppercase tracking-[0.08em] text-djassa-black transition hover:border-djassa-black hover:bg-djassa-black hover:text-white active:scale-95"
+                        >
+                          Détails
+                        </Link>
+                      </div>
                     </div>
                   </Link>
                 );
