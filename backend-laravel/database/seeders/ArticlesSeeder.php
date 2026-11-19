@@ -16,7 +16,8 @@ class ArticlesSeeder extends Seeder
 {
     public function run(): void
     {
-        $img = fn (string $id) => "https://images.unsplash.com/photo-{$id}?auto=format&fit=crop&w=1080&q=80";
+        // Images auto-hébergées (storage/app/public/products/seed) — aucun host externe requis
+        $img = fn (string $id) => rtrim(config('app.url'), '/').'/storage/products/seed/'.$id.'.jpg';
 
         $quincaillerie = Boutique::where('slug', 'quincaillerie-moderne')->firstOrFail();
         $electro = Boutique::where('slug', 'electro-services-pro')->firstOrFail();
@@ -62,7 +63,7 @@ class ArticlesSeeder extends Seeder
                 'prix' => 95000, 'prix_negociable' => true, 'condition' => Article::CONDITION_NEUF,
                 'mode_transaction' => Article::MODE_MIXTE, 'est_trocable' => true, 'stock' => 8,
                 'categorie' => 'Outillage', 'specs' => ['marque' => 'DeWalt', 'tension' => '18V', 'couple_nm' => 205],
-                'images' => [$img('1530124566582-a618bc2615dc')],
+                'images' => [$img('1504148455328-c376907d081c')],
                 'ville' => 'Abidjan', 'quartier' => 'Plateau', 'statut' => Article::STATUT_PUBLISHED,
             ],
             [
