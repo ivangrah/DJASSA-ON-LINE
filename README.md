@@ -20,7 +20,7 @@ Plateforme hybride e-commerce **C2C seconde main & troc** + **Boutiques Pro B2C*
 
 ## Démarrage (backend)
 
-> ⚠️ Ports locaux : `8000` et `5173` sont déjà occupés sur cette machine — l'API Djassa tourne sur **8899**.
+> ⚠️ Ports locaux : `8000` et `5173` sont déjà occupés sur cette machine — l'API Djassa tourne sur **8899**, le frontend web sur **5199**.
 > L'hôte n'a pas `pdo_pgsql` : utiliser l'image Docker de dev (`backend-laravel/docker/php/Dockerfile.local`).
 
 ```bash
@@ -28,7 +28,17 @@ cd backend-laravel
 docker build -t djassa-php:8.4 -f docker/php/Dockerfile.local .
 docker run --rm --network host -v "$PWD":/app -w /app djassa-php:8.4 php artisan migrate:fresh --seed
 docker run --rm -d --name djassa-api --network host -v "$PWD":/app -w /app djassa-php:8.4   # http://127.0.0.1:8899
+
+# Frontend web (proxifie /api → :8899)
+cd ../frontend-web && npm install && npm run dev              # http://127.0.0.1:5199
 ```
+
+## Animations Rive
+
+`rive-animations/djassa-pin-success` — animation « Fonds libérés » (coche Noir & Rouge,
+bichrome flat line-art). Le CLI Rive (installé via `curl -fsSL https://releases.rive.app/cli/install.sh | sh`)
+est prêt ; la génération du `.riv` requiert un `rive login` unique (voir `frontend-web/public/animations/README.md`).
+En attendant, le frontend affiche un repli SVG animé identique.
 
 ## Design System
 

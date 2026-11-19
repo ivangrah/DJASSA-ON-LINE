@@ -1,0 +1,106 @@
+<Rive version="1" kind="fragment">
+    <Artboard defaultStateMachineId="0:7" styleId="0:5" width="500" height="500" name="DjassaPinSuccess" id="0:2">
+        <LayoutComponentStyle name="Artboard Style" id="0:5"/>
+
+        <Fill name="Background">
+            <SolidColor colorValue="FFFFFFFF" name="Color"/>
+        </Fill>
+
+        <!-- Cercle noir mat (draw-on) -->
+        <Shape x="250" y="250" name="Circle" id="0:14">
+            <Ellipse originX="0.5" originY="0.5" width="300" height="300" name="Path"/>
+            <Stroke join="round" cap="round" thickness="20" name="Stroke">
+                <SolidColor colorValue="FF121212" name="Color"/>
+                <TrimPath start="0" end="0" name="TrimCircle" id="0:15"/>
+            </Stroke>
+        </Shape>
+
+        <!-- Coche rouge carmin (draw-on, après le cercle) -->
+        <Shape x="0" y="0" name="Check" id="0:16">
+            <PointsPath isClockwise="true" name="Path">
+                <StraightVertex x="152" y="262"/>
+                <StraightVertex x="221" y="330"/>
+                <StraightVertex x="356" y="168"/>
+            </PointsPath>
+            <Stroke join="round" cap="round" thickness="32" name="Stroke">
+                <SolidColor colorValue="FFE11D48" name="Color"/>
+                <TrimPath start="0" end="0" name="TrimCheck" id="0:17"/>
+            </Stroke>
+        </Shape>
+
+        <StateMachine name="State Machine 1" id="0:7">
+            <StateMachineLayer name="Layer 1" id="0:8">
+                <AnyState x="200" y="-120"/>
+                <ExitState x="400" y="-120"/>
+                <EntryState>
+                    <StateTransition stateToId="0:12"/>
+                </EntryState>
+                <AnimationState x="200" animationId="0:6" id="0:12"/>
+            </StateMachineLayer>
+        </StateMachine>
+
+        <LinearAnimation duration="66" name="SuccessPop" id="0:6">
+            <!-- Cercle : scale pop (léger dépassement) -->
+            <KeyedObject objectId="0:14">
+                <KeyedProperty propertyKey="16">
+                    <KeyFrameDouble value="0.88" frame="0" interpolationType="cubic">
+                        <CubicEaseInterpolator x1="0.34" y1="1.4" x2="0.64" y2="1"/>
+                    </KeyFrameDouble>
+                    <KeyFrameDouble value="1" frame="26" interpolationType="linear"/>
+                </KeyedProperty>
+                <KeyedProperty propertyKey="17">
+                    <KeyFrameDouble value="0.88" frame="0" interpolationType="cubic">
+                        <CubicEaseInterpolator x1="0.34" y1="1.4" x2="0.64" y2="1"/>
+                    </KeyFrameDouble>
+                    <KeyFrameDouble value="1" frame="26" interpolationType="linear"/>
+                </KeyedProperty>
+            </KeyedObject>
+
+            <!-- Cercle : tracé 0 → 1 (ease-out fort) -->
+            <KeyedObject objectId="0:15">
+                <KeyedProperty propertyKey="115">
+                    <KeyFrameDouble value="0" frame="0" interpolationType="cubic">
+                        <CubicEaseInterpolator x1="0.22" y1="1" x2="0.36" y2="1"/>
+                    </KeyFrameDouble>
+                    <KeyFrameDouble value="1" frame="32" interpolationType="linear"/>
+                </KeyedProperty>
+            </KeyedObject>
+
+            <!-- Coche : scale pop différé + légère rotation -->
+            <KeyedObject objectId="0:16">
+                <KeyedProperty propertyKey="16">
+                    <KeyFrameDouble value="0.75" frame="0" interpolationType="hold"/>
+                    <KeyFrameDouble value="0.75" frame="20" interpolationType="cubic">
+                        <CubicEaseInterpolator x1="0.34" y1="1.56" x2="0.64" y2="1"/>
+                    </KeyFrameDouble>
+                    <KeyFrameDouble value="1" frame="44" interpolationType="linear"/>
+                </KeyedProperty>
+                <KeyedProperty propertyKey="17">
+                    <KeyFrameDouble value="0.75" frame="0" interpolationType="hold"/>
+                    <KeyFrameDouble value="0.75" frame="20" interpolationType="cubic">
+                        <CubicEaseInterpolator x1="0.34" y1="1.56" x2="0.64" y2="1"/>
+                    </KeyFrameDouble>
+                    <KeyFrameDouble value="1" frame="44" interpolationType="linear"/>
+                </KeyedProperty>
+                <KeyedProperty propertyKey="15">
+                    <KeyFrameDouble value="-0.12" frame="0" interpolationType="hold"/>
+                    <KeyFrameDouble value="-0.12" frame="20" interpolationType="cubic">
+                        <CubicEaseInterpolator x1="0.34" y1="1.3" x2="0.64" y2="1"/>
+                    </KeyFrameDouble>
+                    <KeyFrameDouble value="0" frame="44" interpolationType="linear"/>
+                </KeyedProperty>
+            </KeyedObject>
+
+            <!-- Coche : tracé 0 → 1, démarré après le cercle -->
+            <KeyedObject objectId="0:17">
+                <KeyedProperty propertyKey="115">
+                    <KeyFrameDouble value="0" frame="0" interpolationType="hold"/>
+                    <KeyFrameDouble value="0" frame="22" interpolationType="hold"/>
+                    <KeyFrameDouble value="1" frame="52" interpolationType="cubic">
+                        <CubicEaseInterpolator x1="0.22" y1="1" x2="0.36" y2="1"/>
+                    </KeyFrameDouble>
+                </KeyedProperty>
+            </KeyedObject>
+        </LinearAnimation>
+    </Artboard>
+</Rive>
