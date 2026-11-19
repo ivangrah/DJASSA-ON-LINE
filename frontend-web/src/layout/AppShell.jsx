@@ -6,6 +6,7 @@ import BottomTabBar from './BottomTabBar';
 
 export default function AppShell() {
   const { pathname } = useLocation();
+  const isAuthPage = pathname === '/login' || pathname === '/register';
   const [showTop, setShowTop] = useState(false);
 
   useEffect(() => {
@@ -21,12 +22,12 @@ export default function AppShell() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-djassa-cloud pb-20 md:pb-0">
-      <TopNav />
+    <div className={`min-h-screen ${isAuthPage ? '' : 'bg-djassa-cloud pb-20 md:pb-0'}`}>
+      {!isAuthPage && <TopNav />}
       <main className="route-enter" key={pathname}>
         <Outlet />
       </main>
-      <footer className="relative overflow-hidden border-t border-white/10 bg-djassa-black text-white">
+      {!isAuthPage && <footer className="relative overflow-hidden border-t border-white/10 bg-djassa-black text-white">
         <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#ED0F02]/70 to-transparent" aria-hidden="true" />
         <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-12">
           <div className="grid grid-cols-2 gap-8 md:grid-cols-4 lg:grid-cols-12 lg:gap-10">
@@ -100,8 +101,8 @@ export default function AppShell() {
             </p>
           </div>
         </div>
-      </footer>
-      <BottomTabBar />
+      </footer>}
+      {!isAuthPage && <BottomTabBar />}
 
       {/* Retour haut discret sur longs feeds */}
       {showTop && (
