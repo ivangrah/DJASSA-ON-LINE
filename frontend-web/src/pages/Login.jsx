@@ -50,29 +50,24 @@ export default function Login() {
       <div className="grid w-full overflow-hidden bg-white md:grid-cols-2">
 
         {/* Panneau rouge vif */}
-        <div className="relative flex min-h-[60vh] flex-col overflow-hidden bg-[#ED0F02] p-8 text-white sm:p-10 md:min-h-screen">
+        <div className="relative hidden min-h-[380px] flex-col overflow-hidden bg-[#ED0F02] p-5 text-white sm:min-h-[460px] sm:p-8 md:flex md:min-h-screen md:p-10">
           {/* dégradé vers un rouge plus soutenu */}
           <div className="absolute inset-0 bg-gradient-to-br from-[#ff2d1f] via-[#ED0F02] to-[#b80b00]" aria-hidden="true" />
           <div className="absolute -left-16 top-10 h-56 w-56 rounded-full bg-white/10 blur-2xl" aria-hidden="true" />
           <div className="absolute bottom-0 right-0 h-64 w-64 rounded-full bg-black/10 blur-2xl" aria-hidden="true" />
 
-          {/* Retour à la landing — en haut à droite */}
-          <Link to="/" className="absolute right-6 top-6 z-20 inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 font-jakarta text-[10px] font-extrabold uppercase tracking-wide text-white backdrop-blur-sm ring-1 ring-white/25 transition hover:bg-white/25 sm:right-8 sm:top-8">
-            <ArrowLeft size={13} strokeWidth={2.8} /> Retour à l'accueil
-          </Link>
-
-          <div className="relative z-10 pt-12">
+          <div className="relative z-10 pt-8 sm:pt-10 md:pt-12">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 font-jakarta text-[9px] font-extrabold uppercase tracking-[0.18em] text-white ring-1 ring-white/25">
               <Sparkles size={10} /> Le marché d'Abidjan
             </span>
-            <h2 className="mt-4 font-jakarta text-3xl font-extrabold leading-[1.1] tracking-tight sm:text-[36px]">
+            <h2 className="mt-3 font-jakarta text-2xl font-extrabold leading-[1.1] tracking-tight sm:text-3xl md:text-[36px]">
               Le Djassa dans<br />ta poche<span className="text-white/70">.</span>
             </h2>
             <div className="mt-3 h-0.5 w-16 rounded-full bg-white/70" aria-hidden="true" />
-            <p className="mt-4 max-w-sm font-inter text-[12.5px] leading-relaxed text-white/85">
+            <p className="mt-3 max-w-sm font-inter text-[11.5px] leading-relaxed text-white/85 sm:text-[12.5px]">
               Achète, vends et troque en toute confiance — paiement sécurisé par séquestre, code PIN à la remise et boutiques pro vérifiées.
             </p>
-            <div className="mt-5 flex flex-wrap gap-2">
+            <div className="mt-3 flex flex-wrap gap-1.5 md:mt-5 md:gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-1.5 font-inter text-[9px] font-semibold text-white/90 ring-1 ring-white/15"><ShieldCheck size={11} /> Paiement sécurisé</span>
               <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-1.5 font-inter text-[9px] font-semibold text-white/90 ring-1 ring-white/15"><Zap size={11} /> Ventes flash</span>
               <span className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-2.5 py-1.5 font-inter text-[9px] font-semibold text-white/90 ring-1 ring-white/15"><Truck size={11} /> Remise en main propre</span>
@@ -80,18 +75,23 @@ export default function Login() {
           </div>
 
           {/* Illustration — panier avec produits flottants */}
-          <div className="relative z-10 mt-auto flex flex-1 items-end justify-center pt-3">
+          <div className="relative z-10 mt-auto flex flex-1 items-end justify-center pt-1 md:pt-3">
             <img
               src="/images/auth-cart-float.png"
               alt="Panier de shopping Djassa avec produits flottants"
-              className="h-72 w-auto max-w-none object-contain drop-shadow-[0_18px_40px_rgba(0,0,0,0.25)] sm:h-96 md:h-[440px] lg:h-[520px]"
+              className="h-40 w-auto max-w-[90%] object-contain drop-shadow-[0_18px_40px_rgba(0,0,0,0.25)] sm:h-56 md:h-[440px] lg:h-[520px]"
             />
           </div>
         </div>
 
         {/* Formulaire */}
-        <div className="flex flex-col justify-center px-6 py-9 sm:px-10 md:px-16 lg:px-24">
+        <div className="flex min-h-screen flex-col justify-center px-5 py-8 sm:px-10 sm:py-9 md:min-h-0 md:px-16 lg:px-24">
           <div className="mx-auto w-full max-w-sm">
+            {/* Retour à l'accueil — mobile uniquement */}
+            <Link to="/" className="mb-6 inline-flex items-center gap-1.5 rounded-full bg-djassa-cloud px-3 py-1.5 font-jakarta text-[10px] font-extrabold uppercase tracking-wide text-djassa-black transition hover:bg-djassa-red/10 md:hidden">
+              <ArrowLeft size={13} strokeWidth={2.8} /> Retour à l'accueil
+            </Link>
+
             {/* Logo + marque centrés */}
             <div className="flex flex-col items-center">
               <img src="/images/logo-256.png" alt="" className="h-12 w-12 rounded-2xl object-contain shadow-[0_8px_20px_rgba(237,15,2,0.35)]" />
