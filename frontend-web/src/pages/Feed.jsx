@@ -1,9 +1,9 @@
-import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Star, Package, ShieldCheck, ArrowRight, BadgeCheck, X, Tag, Zap, ChevronLeft, ChevronRight, ArrowLeftRight, ChevronDown } from 'lucide-react';
+import { Star, Package, ShieldCheck, ArrowRight, BadgeCheck, X, Tag, Zap, ChevronLeft, ChevronRight, ArrowLeftRight, ChevronDown, Search, SlidersHorizontal } from 'lucide-react';
 gsap.registerPlugin(ScrollTrigger);
 import { api } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
@@ -19,8 +19,28 @@ export default function Feed() {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const q = searchParams.get('q') ?? '';
+  const sort = searchParams.get('sort') ?? 'latest';
+  const [searchInput, setSearchInput] = useState(q);
 
-  const queryParams = useMemo(() => ({ per_page: 12, sort: 'latest', ...(q ? { q } : {}) }), [q]);
+  const queryParams = useMemo(() => ({ per_page: 12, sort, ...(q ? { q } : {}) }), [q, sort]);
+
+  // Synchronise le champ avec l'URL (navigation / retour arrière)
+  useEffect(() => { setSearchInput(q); }, [q]);
+
+  const updateParams = (mutate) => setSearchParams((prev) => {
+    const next = new URLSearchParams(prev);
+    mutate(next);
+    return next;
+  });
+
+  const submitSearch = (e) => {
+    e.preventDefault();
+    const value = searchInput.trim();
+    updateParams((next) => { value ? next.set('q', value) : next.delete('q'); });
+  };
+
+  const clearQuery = () => { setSearchInput(''); updateParams((next) => next.delete('q')); };
+  const setSort = (value) => updateParams((next) => next.set('sort', value));
 
   const {
     data,
@@ -69,6 +89,7 @@ export default function Feed() {
   };
 
   const articles = useMemo(() => (data?.pages ?? []).flatMap((p) => p.data ?? []), [data]);
+  const total = data?.pages?.[0]?.meta?.total ?? articles.length;
 
   // GSAP — entrée en cascade des cartes
   useEffect(() => {
@@ -234,8 +255,6 @@ export default function Feed() {
 
     return () => { ctx.revert(); ctxScroll.revert(); };
   }, []);
-
-  const clearQuery = () => setSearchParams({}, { replace: true });
 
   return (
     <div>
@@ -536,49 +555,115 @@ export default function Feed() {
         </div>
       </section>
 
-      {/* ===== Grille produits — pleine largeur ===== */}
-      <div id="feed" className="mx-auto max-w-7xl space-y-3 px-3 py-4 sm:px-6 md:py-6">
-        {q && (
-          <div className="flex items-center justify-between gap-2">
-            <p className="font-inter text-xs text-djassa-slate">Résultats pour « <span className="font-bold text-djassa-black">{q}</span> »</p>
-            <button onClick={clearQuery} className="inline-flex items-center gap-1 rounded-full border border-djassa-black/15 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-djassa-slate transition hover:border-djassa-red hover:text-djassa-red">
-              <X size={12} /> Effacer
-            </button>
-          </div>
-        )}
-
-        {isLoading ? (
-          <div ref={gridRef} className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4">
-            {Array.from({ length: 8 }).map((_, i) => <ProductCardSkeleton key={i} />)}
-          </div>
-        ) : isError ? (
-          <EmptyState title="Impossible de charger le fil" hint="Vérifiez que l'API Djassa est démarrée (:8899)." />
-        ) : articles.length === 0 ? (
-          <EmptyState
-            art="search"
-            title="Rien à afficher ici pour l'instant"
-            hint={q ? `Aucun article trouvé pour « ${q} ». Essayez un autre mot-clé.` : 'Soyez le premier à publier dans ce rayon.'}
-            action={<Link to="/publier" className="btn-red btn-sm">Publier un article</Link>}
-          />
-        ) : (
-          <>
-            <div ref={gridRef} className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4">
-              {articles.map((article) => (
-                <div key={article.id} data-card>
-                  <ProductCardWide article={article} />
-                </div>
-              ))}
+      {/* ===== Section des articles — recherche + grille ===== */}
+      <section id="feed" className="bg-white py-8 sm:py-12">
+        <div className="mx-auto max-w-7xl px-3 sm:px-6">
+          {/* En-tête */}
+          <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+            <div>
+              <span className="inline-flex items-center gap-2 rounded-full bg-djassa-red/10 px-3 py-1.5 font-jakarta text-[9px] font-extrabold uppercase tracking-[0.2em] text-djassa-red">
+                <Tag size={11} strokeWidth={3} /> Le marché Djassa
+              </span>
+              <h2 className="mt-3 font-jakarta text-[1.9rem] font-black leading-[1.05] tracking-tight text-djassa-black sm:text-4xl">
+                Trouvez votre prochain<br className="hidden sm:block" /> coup de cœur<span className="text-djassa-red">.</span>
+              </h2>
+              <p className="mt-2 max-w-lg font-inter text-[12.5px] leading-relaxed text-djassa-slate sm:text-[13px]">
+                Occasion, troc ou neuf boutique — des milliers d'annonces près de chez vous, en FCFA.
+              </p>
             </div>
-            {hasNextPage && (
-              <div className="flex justify-center pt-2">
-                <button className="btn-outline btn-sm" onClick={() => fetchNextPage()} disabled={isFetchingNextPage}>
-                  {isFetchingNextPage ? <><Spinner size={15} /> Chargement…</> : 'Charger plus d’annonces'}
+
+            {/* Compteur */}
+            <div className="flex shrink-0 items-center gap-2 rounded-2xl bg-djassa-cloud px-4 py-3">
+              <span className="font-jakarta text-xl font-extrabold text-djassa-black">{total}</span>
+              <span className="font-inter text-[10px] font-semibold uppercase leading-tight tracking-wide text-djassa-slate">annonces<br />disponibles</span>
+            </div>
+          </div>
+
+          {/* Barre de recherche */}
+          <form onSubmit={submitSearch} className="mb-4 flex flex-col gap-2 rounded-2xl border border-djassa-black/8 bg-[#FFFDF6] p-2.5 shadow-card sm:flex-row sm:items-center">
+            <div className="flex min-w-0 flex-1 items-center gap-2.5 rounded-xl bg-white px-4 py-3 ring-1 ring-djassa-black/8 focus-within:ring-2 focus-within:ring-djassa-red">
+              <Search size={18} className="shrink-0 text-djassa-slate" strokeWidth={2.4} />
+              <input
+                type="search"
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                placeholder="Rechercher un article, une marque, une catégorie…"
+                aria-label="Rechercher des articles"
+                className="w-full bg-transparent font-inter text-[13px] text-djassa-black outline-none placeholder:text-djassa-slate/70"
+              />
+              {searchInput && (
+                <button type="button" onClick={() => { setSearchInput(''); if (q) clearQuery(); }} aria-label="Effacer la recherche" className="rounded-full p-1 text-djassa-slate transition hover:bg-djassa-cloud hover:text-djassa-red">
+                  <X size={15} strokeWidth={2.6} />
                 </button>
+              )}
+            </div>
+            <button type="submit" className="inline-flex h-[46px] items-center justify-center gap-2 rounded-xl bg-[#ED0F02] px-6 font-jakarta text-[11px] font-extrabold uppercase tracking-[0.12em] text-white shadow-[0_6px_18px_rgba(237,15,2,0.3)] transition hover:bg-[#ff1e12] active:scale-95">
+              <Search size={15} strokeWidth={2.8} /> Rechercher
+            </button>
+          </form>
+
+          {/* Filtres / tri + requête active */}
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-2">
+              {q && (
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-djassa-black px-3 py-1.5 font-inter text-[10px] font-semibold text-white">
+                  « {q} »
+                  <button type="button" onClick={clearQuery} aria-label="Retirer le filtre" className="ml-0.5 rounded-full p-0.5 transition hover:bg-white/20"><X size={11} strokeWidth={3} /></button>
+                </span>
+              )}
+              <span className="font-inter text-[10px] uppercase tracking-wide text-djassa-slate">
+                {isLoading ? 'Recherche…' : `${total} résultat${total > 1 ? 's' : ''}`}
+              </span>
+            </div>
+            <label className="inline-flex items-center gap-2 font-inter text-[10px] font-semibold uppercase tracking-wide text-djassa-slate">
+              <SlidersHorizontal size={13} strokeWidth={2.4} /> Trier par
+              <select
+                value={sort}
+                onChange={(e) => setSort(e.target.value)}
+                className="rounded-full border border-djassa-black/15 bg-white px-3 py-1.5 font-jakarta text-[10px] font-bold text-djassa-black outline-none transition focus:border-djassa-red"
+              >
+                <option value="latest">Plus récents</option>
+                <option value="popular">Populaires</option>
+                <option value="price_asc">Prix croissant</option>
+                <option value="price_desc">Prix décroissant</option>
+              </select>
+            </label>
+          </div>
+
+          {/* Grille */}
+          {isLoading ? (
+            <div ref={gridRef} className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4">
+              {Array.from({ length: 8 }).map((_, i) => <ProductCardSkeleton key={i} />)}
+            </div>
+          ) : isError ? (
+            <EmptyState title="Impossible de charger les annonces" hint="Vérifiez que l'API Djassa est démarrée (:8899)." />
+          ) : articles.length === 0 ? (
+            <EmptyState
+              art="search"
+              title={q ? `Aucun article pour « ${q} »` : "Aucun article pour le moment"}
+              hint={q ? 'Essayez un autre mot-clé ou parcourez le marché.' : 'Soyez le premier à publier dans ce rayon.'}
+              action={<Link to="/publier" className="btn-red btn-sm">Publier un article</Link>}
+            />
+          ) : (
+            <>
+              <div ref={gridRef} className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4">
+                {articles.map((article) => (
+                  <div key={article.id} data-card>
+                    <ProductCardWide article={article} />
+                  </div>
+                ))}
               </div>
-            )}
-          </>
-        )}
-      </div>
+              {hasNextPage && (
+                <div className="flex justify-center pt-5">
+                  <button className="btn-outline btn-sm" onClick={() => fetchNextPage()} disabled={isFetchingNextPage}>
+                    {isFetchingNextPage ? <><Spinner size={15} /> Chargement…</> : 'Charger plus d’annonces'}
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </section>
     </div>
   );
 }
