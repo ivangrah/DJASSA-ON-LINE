@@ -50,11 +50,11 @@ export default function Feed() {
         <img
           src="/images/hero-shopping-bags.jpg"
           alt="Sacs de shopping rouges et noirs sur fond noir"
-          className="absolute inset-0 h-full w-full select-none object-cover object-[72%_38%] sm:object-[74%_36%]"
+          className="absolute inset-0 h-full w-full select-none object-cover object-[50%_34%]"
         />
-        {/* Scrims chauds : noir profond à gauche, l'image respire à droite */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0b0b0b] via-[#0b0b0b]/80 via-[46%] to-[#0b0b0b]/5" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0b0b0b]/95 via-[#0b0b0b]/20 to-[#0b0b0b]/30" />
+        {/* Scrim global doux + voile bas pour la lisibilité du texte centré */}
+        <div className="absolute inset-0 bg-[#0b0b0b]/45" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0b0b0b]/95 via-[#0b0b0b]/25 to-transparent" />
 
         <div className="relative flex min-h-[100svh] flex-col px-5 sm:px-6 md:min-h-[92vh] md:px-10 xl:px-16">
           {/* Nav intégrée — logo gauche · liens centre · Se connecter droite */}
@@ -87,8 +87,8 @@ export default function Feed() {
             )}
           </div>
 
-          {/* Headline minimaliste centré-gauche */}
-          <div className="flex flex-1 flex-col justify-center pb-28 pt-6 sm:pb-32 md:pb-36">
+          {/* Headline centré */}
+          <div className="flex flex-1 flex-col items-center justify-center pb-28 pt-6 text-center sm:pb-32 md:pb-36">
             <h1 className="font-jakarta text-[15vw] font-extrabold leading-[0.92] tracking-tight text-white sm:text-7xl md:text-[92px] xl:text-[104px]">
               Achète.<br />Vends.<br /><span className="text-[#E60023]">Troque.</span>
             </h1>
