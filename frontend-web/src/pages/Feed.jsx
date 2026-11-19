@@ -90,7 +90,7 @@ export default function Feed() {
         <div className="absolute inset-0 bg-[#0b0b0b]/45" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0b0b0b]/95 via-[#0b0b0b]/25 to-transparent" />
 
-        <div className="relative flex min-h-[92svh] flex-col px-5 sm:px-6 md:min-h-[80svh] md:px-10 xl:px-16">
+        <div className="relative flex min-h-[100svh] flex-col px-5 sm:px-6 md:min-h-[100svh] md:px-10 xl:px-16">
           {/* Nav intégrée — logo gauche · liens centre · Se connecter droite */}
           <div className="flex items-center justify-between gap-4 border-b border-white/10 py-3 md:py-4">
             <Link to="/" className="flex items-center gap-2.5" aria-label="Djassa Online — accueil">
@@ -125,7 +125,7 @@ export default function Feed() {
           <img
             src="/images/hero-ecommerce.png"
             alt="Achats en ligne et livraison Djassa"
-            className="pointer-events-none relative z-0 mx-auto -mb-1 mt-0 w-[130px] select-none object-contain opacity-95 drop-shadow-[0_18px_30px_rgba(0,0,0,0.55)] animate-floaty sm:w-[170px] lg:hidden"
+            className="pointer-events-none relative z-0 mx-auto -mb-1 mt-0 w-[130px] select-none object-contain opacity-95 drop-shadow-[0_18px_30px_rgba(0,0,0,0.55)] sm:w-[170px] lg:hidden"
           />
 
           {/* Headline centré */}
@@ -143,13 +143,21 @@ export default function Feed() {
             </div>
           </div>
 
-          {/* Visuel e-commerce — desktop (flottant à droite) */}
-          <img
-            src="/images/hero-ecommerce.png"
-            alt="Achats en ligne et livraison Djassa"
-            className="pointer-events-none absolute right-[3%] top-[40%] z-0 hidden w-[clamp(240px,21vw,350px)] -translate-y-1/2 select-none object-contain opacity-95 drop-shadow-[0_30px_60px_rgba(0,0,0,0.6)] animate-floaty xl:block"
-          />
-
+          {/* Visuels e-commerce — desktop (flottants + légendes) */}
+          <div className="pointer-events-none absolute right-[2%] top-[38%] z-0 hidden w-[clamp(300px,26vw,460px)] -translate-y-1/2 flex-col items-center xl:flex">
+            <img src="/images/hero-ecommerce.png" alt="Achats en ligne et livraison Djassa" className="w-full select-none object-contain opacity-95 drop-shadow-[0_30px_60px_rgba(0,0,0,0.6)]" />
+            <div className="mt-1 rounded-full border border-white/15 bg-black/55 px-3.5 py-1.5 text-center backdrop-blur-md">
+              <p className="font-jakarta text-[10px] font-extrabold uppercase tracking-[0.14em] text-white">Livré en confiance</p>
+              <p className="font-inter text-[9px] text-white/65">Paiement sécurisé · Escrow + PIN</p>
+            </div>
+          </div>
+          <div className="pointer-events-none absolute left-[0%] top-[40%] z-0 hidden w-[clamp(280px,25vw,440px)] -translate-y-1/2 flex-col items-center xl:flex">
+            <img src="/images/hero-bags-burst.png" alt="Sacs de shopping et cadeaux Djassa" className="w-full select-none object-contain opacity-90 drop-shadow-[0_30px_60px_rgba(0,0,0,0.6)]" />
+            <div className="mt-1 rounded-full border border-white/15 bg-black/70 px-3.5 py-1.5 text-center backdrop-blur-md">
+              <p className="font-jakarta text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#E60023]">Occasion & Troc</p>
+              <p className="font-inter text-[9px] text-white/65">Le bon plan seconde main</p>
+            </div>
+          </div>
           {/* Barre de réassurance — 4 statistiques */}
           <div className="absolute inset-x-3 bottom-[78px] sm:inset-x-4 md:inset-x-8 md:bottom-6 xl:inset-x-12">
             <div className="grid grid-cols-2 divide-white/10 rounded-2xl border border-white/10 bg-black/60 backdrop-blur-md md:grid-cols-4 md:divide-x">
