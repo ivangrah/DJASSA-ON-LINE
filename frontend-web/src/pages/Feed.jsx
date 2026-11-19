@@ -59,7 +59,9 @@ export default function Feed() {
   const scrollPromo = (dir) => {
     const el = carouselRef.current;
     if (!el) return;
-    el.scrollBy({ left: dir * 260, behavior: 'smooth' });
+    const card = el.querySelector('[data-promo-card]');
+    const amount = card ? card.offsetWidth + 12 : el.clientWidth * 0.9;
+    el.scrollBy({ left: dir * amount, behavior: 'smooth' });
   };
 
   const articles = useMemo(() => (data?.pages ?? []).flatMap((p) => p.data ?? []), [data]);
@@ -170,174 +172,168 @@ export default function Feed() {
         </div>
       </section>
 
-      {/* ===== Section OFFRES — landing style · crème · mégaphone ===== */}
+      {/* ===== Section OFFRES — split 50/50 : promo (gauche) + vitrine (droite) ===== */}
       <section className="bg-[#F7F1E6] py-8 sm:py-12" aria-label="Offres spéciales Djassa">
         <div className="mx-auto max-w-7xl px-3 sm:px-6">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:items-stretch lg:gap-5 lg:min-h-[520px] xl:min-h-[560px]">
 
-          {/* Carte principale — illustration + titre + CTA */}
-          <div className="relative overflow-hidden rounded-[2rem] bg-[#FFFDF6] px-5 py-6 shadow-card ring-1 ring-djassa-black/5 sm:px-8 sm:py-8 lg:px-12 lg:py-10">
-            {/* Taches décoratives discrètes */}
-            <div className="pointer-events-none absolute -left-16 top-6 h-40 w-40 rounded-full bg-djassa-red/5 blur-2xl" aria-hidden="true" />
-            <div className="pointer-events-none absolute -right-12 bottom-4 h-44 w-44 rounded-full bg-yellow-400/10 blur-2xl" aria-hidden="true" />
+            {/* Colonne gauche — Boostez vos économies */}
+            <div className="relative flex h-full min-h-[360px] flex-col overflow-hidden rounded-3xl bg-[#FFFDF6] p-5 shadow-card ring-1 ring-djassa-black/5 sm:p-7 lg:min-h-0">
+              <div className="pointer-events-none absolute -left-14 top-8 h-36 w-36 rounded-full bg-djassa-red/5 blur-2xl" aria-hidden="true" />
+              <div className="pointer-events-none absolute -right-10 bottom-6 h-40 w-40 rounded-full bg-yellow-400/10 blur-2xl" aria-hidden="true" />
 
-            <div className="relative grid items-center gap-6 md:grid-cols-2">
-              {/* Illustration mégaphone */}
-              <div className="relative order-first mx-auto flex h-48 w-48 items-center justify-center sm:h-60 sm:w-60 lg:h-72 lg:w-72">
-                <div className="absolute inset-0 rounded-full bg-[#FBEEDD]" aria-hidden="true" />
-                <img src="/images/promo-megaphone.jpg" alt="Mégaphone Special Promo illustrant les offres" className="relative h-[92%] w-[92%] object-contain mix-blend-multiply" />
-              </div>
+              <div className="relative flex flex-1 flex-col">
+                <div className="flex items-start justify-between gap-3">
+                  <span className="inline-flex w-fit items-center gap-2 rounded-full bg-djassa-red/10 px-3 py-1.5 text-[9px] font-jakarta font-extrabold uppercase tracking-[0.22em] text-djassa-red">
+                    <Zap size={11} strokeWidth={3} fill="currentColor" /> Offre spéciale
+                  </span>
+                  <img src="/images/promo-stamp.jpg" alt="PROMO" aria-hidden="true" className="pointer-events-none -mt-1 h-12 w-auto rotate-[-10deg] select-none object-contain opacity-90 sm:h-16 lg:h-[68px]" loading="lazy" />
+                </div>
 
-              {/* Texte + CTA */}
-              <div className="text-center md:text-left">
-                <span className="inline-flex items-center gap-2 rounded-full bg-djassa-red/10 px-3 py-1.5 text-[9px] font-jakarta font-extrabold uppercase tracking-[0.22em] text-djassa-red">
-                  <Zap size={11} strokeWidth={3} fill="currentColor" /> Offre spéciale
-                </span>
-                <h2 className="mt-3 font-jakarta text-4xl font-black leading-[0.98] tracking-tighter text-djassa-black sm:text-5xl lg:text-6xl">
-                  Boostez vos<br />économies<span className="text-djassa-red">.</span>
-                </h2>
-                <p className="mx-auto mt-3 max-w-md font-inter text-[12.5px] leading-relaxed text-djassa-slate sm:text-sm md:mx-0">
-                  Ne ratez pas nos offres exclusives. Économisez sur l'occasion certifiée, le troc malin et le neuf boutique — directement sur le Djassa, en FCFA.
-                </p>
-                <div className="mt-5 flex flex-wrap items-center justify-center gap-2 md:justify-start">
-                  <a href="#feed" className="inline-flex h-11 items-center gap-2 rounded-full bg-djassa-black px-6 font-jakarta text-[11px] font-extrabold uppercase tracking-[0.14em] text-white transition hover:bg-djassa-red active:scale-95">
-                    Voir les offres <ArrowRight size={15} strokeWidth={3} />
-                  </a>
-                  <Link to="/souhaits" className="inline-flex h-11 items-center gap-2 rounded-full border-2 border-djassa-black px-5 font-jakarta text-[11px] font-extrabold uppercase tracking-[0.14em] text-djassa-black transition hover:border-djassa-red hover:text-djassa-red active:scale-95">
-                    Publier un besoin
-                  </Link>
+                <div className="mt-2 flex items-center justify-center py-2 sm:py-3 lg:py-4">
+                  <div className="relative flex h-28 w-28 items-center justify-center sm:h-36 sm:w-36 lg:h-32 lg:w-32 xl:h-40 xl:w-40">
+                    <div className="absolute inset-0 rounded-full bg-[#FBEEDD]" aria-hidden="true" />
+                    <img src="/images/promo-megaphone.jpg" alt="Mégaphone Special Promo illustrant les offres" className="relative h-[90%] w-[90%] object-contain mix-blend-multiply" />
+                  </div>
+                </div>
+
+                <div className="mt-auto pt-1 text-center lg:text-left">
+                  <h2 className="font-jakarta text-3xl font-black leading-[1] tracking-tighter text-djassa-black sm:text-4xl xl:text-5xl">
+                    Boostez vos<br />économies<span className="text-djassa-red">.</span>
+                  </h2>
+                  <p className="mx-auto mt-3 max-w-md font-inter text-[12.5px] leading-relaxed text-djassa-slate sm:text-[13.5px] lg:mx-0">
+                    Ne ratez pas nos offres exclusives. Économisez sur l'occasion certifiée, le troc malin et le neuf boutique — directement sur le Djassa, en FCFA.
+                  </p>
+                  <div className="mt-5 flex flex-wrap items-center justify-center gap-2 lg:justify-start">
+                    <a href="#feed" className="inline-flex h-11 items-center gap-2 rounded-full bg-djassa-black px-5 font-jakarta text-[10.5px] font-extrabold uppercase tracking-[0.14em] text-white transition hover:bg-djassa-red active:scale-95 sm:px-6 sm:text-[11px]">
+                      Voir les offres <ArrowRight size={15} strokeWidth={3} />
+                    </a>
+                    <Link to="/souhaits" className="inline-flex h-11 items-center gap-2 rounded-full border-2 border-djassa-black px-4 font-jakarta text-[10.5px] font-extrabold uppercase tracking-[0.14em] text-djassa-black transition hover:border-djassa-red hover:text-djassa-red active:scale-95 sm:px-5 sm:text-[11px]">
+                      Publier un besoin
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Tampon PROMO penché en coin */}
-            <img src="/images/promo-stamp.jpg" alt="PROMO" aria-hidden="true" className="pointer-events-none absolute right-3 top-2 h-14 w-auto rotate-[-10deg] select-none object-contain opacity-90 sm:right-6 sm:top-4 sm:h-20 lg:h-24" loading="lazy" />
-          </div>
+            {/* Colonne droite — Carrousel grandes cartes vitrines */}
+            <div className="relative flex h-full min-h-[420px] flex-col overflow-hidden rounded-3xl bg-[#FFFDF6] shadow-card ring-1 ring-djassa-black/5 lg:min-h-0">
+              <div className="flex items-center justify-between px-4 pt-4 sm:px-5 sm:pt-5">
+                <h3 className="flex items-center gap-2 font-jakarta text-base font-extrabold tracking-tight text-djassa-black sm:text-lg">
+                  <Zap size={16} className="text-[#ED0F02]" strokeWidth={2.6} fill="currentColor" />
+                  Les offres à saisir
+                  <span className="font-inter text-[9px] font-semibold uppercase tracking-[0.18em] text-djassa-slate">/ {promoItems.length}</span>
+                </h3>
+                <div className="hidden items-center gap-2 sm:flex">
+                  <button onClick={() => scrollPromo(-1)} aria-label="Offre précédente" className="flex h-10 w-10 items-center justify-center rounded-full bg-djassa-black text-white shadow-md transition hover:bg-djassa-red active:scale-95">
+                    <ChevronLeft size={18} strokeWidth={3} />
+                  </button>
+                  <button onClick={() => scrollPromo(1)} aria-label="Offre suivante" className="flex h-10 w-10 items-center justify-center rounded-full bg-djassa-red text-white shadow-pop transition hover:bg-djassa-red-strong active:scale-95">
+                    <ChevronRight size={18} strokeWidth={3} />
+                  </button>
+                </div>
+              </div>
 
-          {/* Carrousel d'articles en promo */}
-          <div className="relative mt-7 sm:mt-9">
-            <div className="mb-3 flex items-center justify-between">
-              <h3 className="flex items-center gap-2 font-jakarta text-lg font-extrabold tracking-tight text-djassa-black sm:text-2xl">
-                <Zap size={16} className="text-[#ED0F02]" strokeWidth={2.6} fill="currentColor" />
-                Les offres à saisir <span className="font-inter text-[9px] font-semibold uppercase tracking-[0.18em] text-djassa-slate">/ {promoItems.length} articles</span>
-              </h3>
-            </div>
-
-            {/* Flèches desktop */}
-            <button
-              onClick={() => scrollPromo(-1)}
-              aria-label="Offres précédentes"
-              className="absolute -left-2 top-1/2 z-10 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-djassa-red text-white shadow-pop transition hover:bg-djassa-red-strong active:scale-95 sm:flex"
-            >
-              <ChevronLeft size={24} strokeWidth={3} />
-            </button>
-            <button
-              onClick={() => scrollPromo(1)}
-              aria-label="Offres suivantes"
-              className="absolute -right-2 top-1/2 z-10 hidden h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-djassa-red text-white shadow-pop transition hover:bg-djassa-red-strong active:scale-95 sm:flex"
-            >
-              <ChevronRight size={24} strokeWidth={3} />
-            </button>
-
-            <div
-              ref={carouselRef}
-              className="no-scrollbar -mx-3 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth px-3 pb-1 pt-1 sm:-mx-6 sm:px-6"
-              role="list"
-              aria-label="Articles en promotion"
-            >
-              {isFlashLoading && promoItems.length === 0 && (
-                Array.from({ length: 4 }).map((_, i) => (
-                  <div key={i} className="w-[190px] shrink-0 animate-pulse rounded-3xl bg-white p-3 sm:w-[220px]">
-                    <div className="aspect-[4/3] rounded-2xl bg-djassa-cloud" />
-                    <div className="mt-3 h-3 w-2/3 rounded bg-djassa-cloud" />
-                    <div className="mt-2 h-3 w-1/3 rounded bg-djassa-cloud" />
-                  </div>
-                ))
-              )}
-              {promoItems.map((offer) => {
-                const isFlash = offer.kind === 'flash';
-                const discount = isFlash ? Math.round((1 - Number(offer.prix_actuel) / Number(offer.prix)) * 100) : null;
-                const trocable = offer.est_trocable || ['troc', 'mixte'].includes(offer.mode_transaction);
-                const sellerName = offer.boutique?.nom_boutique ?? offer.proprietaire?.nom ?? 'Particulier';
-                return (
-                  <div
-                    key={offer.id}
-                    role="listitem"
-                    onClick={(e) => { if (!e.target.closest('button, a')) navigate(`/article/${offer.id}`); }}
-                    onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && !e.target.closest('button, a')) { e.preventDefault(); navigate(`/article/${offer.id}`); } }}
-                    tabIndex={0}
-                    className="group flex w-[190px] shrink-0 cursor-pointer snap-start flex-col overflow-hidden rounded-[20px] bg-white p-2.5 shadow-card ring-1 ring-djassa-black/6 transition hover:-translate-y-1 hover:shadow-pop focus-visible:ring-djassa-red sm:w-[225px]"
-                  >
-                    {/* Image 4:3 */}
-                    <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-djassa-cloud">
-                      <Link to={`/article/${offer.id}`} className="block h-full w-full" tabIndex={-1} aria-hidden="true">
-                        {offer.image_principale ? (
-                          <img src={offer.image_principale} alt={offer.titre} loading="lazy" className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.05]" />
-                        ) : (
-                          <div className="flex h-full w-full items-center justify-center font-jakarta text-lg font-extrabold text-djassa-black/15">Djassa</div>
-                        )}
-                      </Link>
-                      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-black/40 to-transparent" />
-                      <span className={`absolute left-2 top-2 rounded-full px-2 py-0.5 font-jakarta text-[8px] font-extrabold uppercase tracking-wide text-white shadow ${isFlash ? 'bg-[#ED0F02]' : 'bg-djassa-black'}`}>
-                        {isFlash ? `−${discount}% · FLASH` : 'POPULAIRE'}
-                      </span>
-                      {trocable && (
-                        <span className="badge-troc absolute left-2 top-7 !px-1.5 !py-0.5"><ArrowLeftRight size={8} strokeWidth={3.5} /> Troc</span>
-                      )}
-                      <span className="absolute bottom-2 left-2 rounded-full bg-white/92 px-2 py-0.5 text-[7.5px] font-bold uppercase tracking-[0.1em] text-djassa-black shadow-sm">
-                        {CONDITION_LABELS[offer.condition] ?? offer.condition}
-                      </span>
+              <div
+                ref={carouselRef}
+                className="no-scrollbar mt-3 flex min-h-0 flex-1 snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth px-4 pb-4 sm:px-5 sm:pb-5"
+                role="list"
+                aria-label="Articles en promotion"
+              >
+                {isFlashLoading && promoItems.length === 0 && (
+                  <div className="flex h-full w-[88%] shrink-0 animate-pulse flex-col overflow-hidden rounded-2xl bg-white ring-1 ring-djassa-black/5 sm:w-[85%]">
+                    <div className="flex-1 bg-djassa-cloud" />
+                    <div className="space-y-2 p-4">
+                      <div className="h-3 w-1/3 rounded bg-djassa-cloud" />
+                      <div className="h-4 w-3/4 rounded bg-djassa-cloud" />
+                      <div className="h-5 w-1/2 rounded bg-djassa-cloud" />
                     </div>
-
-                    {/* Infos */}
-                    <div className="flex flex-1 flex-col px-1 pb-1 pt-2.5">
-                      <div className="flex items-start justify-between gap-1.5">
-                        <Link to={`/article/${offer.id}`} className="block min-w-0 flex-1">
-                          <h3 className="line-clamp-2 min-h-[2.1rem] font-jakarta text-[12px] font-bold leading-[1.3] tracking-[-0.015em] text-djassa-black transition group-hover:text-djassa-red">{offer.titre}</h3>
+                  </div>
+                )}
+                {!isFlashLoading && promoItems.length === 0 && (
+                  <div className="flex h-full w-full items-center justify-center rounded-2xl bg-white/70 p-6 text-center ring-1 ring-djassa-black/5">
+                    <p className="font-inter text-sm text-djassa-slate">Aucune offre disponible pour le moment.</p>
+                  </div>
+                )}
+                {promoItems.map((offer) => {
+                  const isFlash = offer.kind === 'flash';
+                  const discount = isFlash ? Math.round((1 - Number(offer.prix_actuel) / Number(offer.prix)) * 100) : null;
+                  const trocable = offer.est_trocable || ['troc', 'mixte'].includes(offer.mode_transaction);
+                  return (
+                    <div
+                      key={offer.id}
+                      data-promo-card
+                      role="listitem"
+                      onClick={(e) => { if (!e.target.closest('button, a')) navigate(`/article/${offer.id}`); }}
+                      onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && !e.target.closest('button, a')) { e.preventDefault(); navigate(`/article/${offer.id}`); } }}
+                      tabIndex={0}
+                      className="group flex h-full w-[88%] shrink-0 cursor-pointer snap-start flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-djassa-black/6 transition hover:shadow-pop focus-visible:ring-djassa-red sm:w-[85%] lg:w-[82%]"
+                    >
+                      {/* Image produit — grande vitrine */}
+                      <div className="relative min-h-0 flex-1 overflow-hidden bg-djassa-cloud">
+                        <Link to={`/article/${offer.id}`} className="block h-full w-full" tabIndex={-1} aria-hidden="true">
+                          {offer.image_principale ? (
+                            <img src={offer.image_principale} alt={offer.titre} loading="lazy" className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" />
+                          ) : (
+                            <div className="flex h-full w-full items-center justify-center font-jakarta text-3xl font-extrabold text-djassa-black/15">Djassa</div>
+                          )}
                         </Link>
-                        <span className="mt-0.5 hidden shrink-0 rounded-full bg-djassa-cloud px-1.5 py-0.5 text-[7px] font-semibold uppercase tracking-wide text-djassa-slate sm:inline-flex">{offer.categorie}</span>
-                      </div>
-                      <p className="mt-1 flex flex-wrap items-baseline gap-1.5">
-                        <span className="font-jakarta text-[16px] font-extrabold tracking-tight text-[#E60023]">{formatFCFA(offer.prix_actuel ?? offer.prix)}</span>
-                        {isFlash && <span className="font-inter text-[9.5px] font-medium text-djassa-slate line-through">{formatFCFA(offer.prix)}</span>}
-                      </p>
-                      <p className="mt-0.5 flex items-center gap-1 text-[9.5px] text-djassa-slate">
-                        <span className="flex items-center gap-0.5 text-amber-400">
-                          {[0, 1, 2, 3, 4].map((i) => <Star key={i} size={8} className="fill-amber-400 text-amber-400" />)}
+                        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/55 to-transparent" />
+                        <div className="absolute left-3 top-3 flex flex-wrap items-center gap-1.5">
+                          {isFlash && (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-[#ED0F02] px-2.5 py-1 font-jakarta text-[10px] font-extrabold uppercase tracking-wide text-white shadow-md">
+                              <Zap size={10} strokeWidth={3} fill="currentColor" /> -{discount}% • FLASH
+                            </span>
+                          )}
+                          {!isFlash && (
+                            <span className="inline-flex items-center rounded-full bg-djassa-black px-2.5 py-1 font-jakarta text-[10px] font-extrabold uppercase tracking-wide text-white shadow-md">
+                              POPULAIRE
+                            </span>
+                          )}
+                          {trocable && (
+                            <span className="badge-troc !px-2 !py-1"><ArrowLeftRight size={10} strokeWidth={3.5} /> Troc</span>
+                          )}
+                          <span className="inline-flex rounded-full bg-white/95 px-2.5 py-1 font-jakarta text-[9px] font-bold uppercase tracking-[0.12em] text-djassa-black shadow-sm">
+                            {CONDITION_LABELS[offer.condition] ?? offer.condition}
+                          </span>
+                        </div>
+                        <span className="absolute bottom-3 left-3 rounded-full bg-black/55 px-2.5 py-1 font-inter text-[10px] font-semibold uppercase tracking-wide text-white backdrop-blur-sm">
+                          {offer.categorie}
                         </span>
-                        <span className="font-inter font-semibold text-djassa-black/75">4.8</span>
-                        <span>·</span>
-                        <span className="truncate font-inter">{sellerName}</span>
-                      </p>
-                      <p className="mt-1 line-clamp-2 min-h-[1.9rem] font-inter text-[10.5px] leading-[1.4] text-djassa-slate">
-                        {(offer.description ?? '').trim() || 'Bon état, remise en main propre ou troc possible.'}
-                      </p>
-                      <div className="mt-auto flex items-center gap-1.5 pt-2">
-                        <button
-                          type="button"
-                          onClick={() => navigate(`/article/${offer.id}${trocable ? '?troc=1' : ''}`)}
-                          className="inline-flex h-7 flex-1 items-center justify-center gap-1 rounded-full bg-[#ED0F02] px-2 font-jakarta text-[8.5px] font-extrabold uppercase tracking-[0.08em] text-white transition hover:bg-[#ff1e12] active:scale-95"
-                        >
-                          {trocable ? <><ArrowLeftRight size={10} strokeWidth={2.8} /> Troc</> : 'Acheter'}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => navigate(`/article/${offer.id}`)}
-                          className="inline-flex h-7 items-center justify-center rounded-full border-[1.5px] border-djassa-black/20 px-2.5 font-jakarta text-[8.5px] font-extrabold uppercase tracking-[0.08em] text-djassa-black transition hover:border-djassa-black hover:bg-djassa-black hover:text-white active:scale-95"
-                        >
-                          Détails
-                        </button>
+                      </div>
+
+                      {/* Infos produit */}
+                      <div className="flex flex-col px-4 py-3 sm:px-4 sm:py-3.5">
+                        <Link to={`/article/${offer.id}`} className="block">
+                          <h4 className="line-clamp-2 font-jakarta text-[15px] font-bold leading-snug tracking-[-0.015em] text-djassa-black transition group-hover:text-djassa-red sm:text-[16px]">{offer.titre}</h4>
+                        </Link>
+                        <div className="mt-1.5 flex flex-wrap items-baseline gap-2">
+                          <span className="font-jakarta text-[22px] font-extrabold tracking-tight text-[#E60023] sm:text-[24px]">{formatFCFA(offer.prix_actuel ?? offer.prix)}</span>
+                          {isFlash && <span className="font-inter text-[11px] font-medium text-djassa-slate line-through">{formatFCFA(offer.prix)}</span>}
+                        </div>
+                        <div className="mt-2 flex items-center justify-between gap-2">
+                          <span className="truncate font-inter text-[11px] text-djassa-slate">{offer.boutique?.nom_boutique ?? offer.proprietaire?.nom ?? 'Particulier'}{offer.quartier ? ` · ${offer.quartier}` : ''}</span>
+                          <button
+                            type="button"
+                            onClick={() => navigate(`/article/${offer.id}${trocable ? '?troc=1' : ''}`)}
+                            className="inline-flex h-8 shrink-0 items-center justify-center gap-1 rounded-full bg-[#ED0F02] px-4 font-jakarta text-[9px] font-extrabold uppercase tracking-[0.1em] text-white transition hover:bg-[#ff1e12] active:scale-95"
+                          >
+                            {trocable ? <><ArrowLeftRight size={11} strokeWidth={2.8} /> Troc</> : 'Voir'}
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
+
+              {/* Flèches mobile */}
+              <div className="flex items-center justify-center gap-4 pb-4 sm:hidden">
+                <button onClick={() => scrollPromo(-1)} aria-label="Offre précédente" className="flex h-11 w-11 items-center justify-center rounded-full bg-djassa-black text-white active:scale-95"><ChevronLeft size={20} strokeWidth={3} /></button>
+                <button onClick={() => scrollPromo(1)} aria-label="Offre suivante" className="flex h-11 w-11 items-center justify-center rounded-full bg-djassa-red text-white active:scale-95"><ChevronRight size={20} strokeWidth={3} /></button>
+              </div>
             </div>
 
-            {/* Flèches mobile */}
-            <div className="mt-3 flex items-center justify-center gap-4 sm:hidden">
-              <button onClick={() => scrollPromo(-1)} aria-label="Offres précédentes" className="flex h-11 w-11 items-center justify-center rounded-full bg-djassa-red text-white active:scale-95"><ChevronLeft size={20} strokeWidth={3} /></button>
-              <button onClick={() => scrollPromo(1)} aria-label="Offres suivantes" className="flex h-11 w-11 items-center justify-center rounded-full bg-djassa-red text-white active:scale-95"><ChevronRight size={20} strokeWidth={3} /></button>
-            </div>
           </div>
         </div>
       </section>
