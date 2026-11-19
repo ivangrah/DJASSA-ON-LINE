@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeftRight, BadgeCheck, Heart, Star, Zap } from 'lucide-react';
+import { ArrowLeftRight, BadgeCheck, Check, Heart, ShoppingCart, Star, Zap } from 'lucide-react';
+import { useCart } from '../context/CartContext';
+import { useToast } from '../context/ToastContext';
 import { CONDITION_LABELS, formatFCFA } from '../lib/format';
 
 /**
@@ -9,7 +11,11 @@ import { CONDITION_LABELS, formatFCFA } from '../lib/format';
  */
 export default function ProductCardWide({ article }) {
   const navigate = useNavigate();
+  const cart = useCart();
+  const toast = useToast();
   const [faved, setFaved] = useState(false);
+  const [justAdded, setJustAdded] = useState(false);
+  const inCart = cart.has(article.id);
   const [imageOk, setImageOk] = useState(Boolean(article.image_principale || article.images?.[0]));
   const isFlash = Boolean(article.vente_flash && article.prix_flash);
   const trocable = article.est_trocable || ['troc', 'mixte'].includes(article.mode_transaction);
@@ -20,6 +26,18 @@ export default function ProductCardWide({ article }) {
   const image = article.image_principale ?? article.images?.[0];
   const sellerName = isPro ? article.boutique?.nom_boutique : article.proprietaire?.nom ?? 'Particulier';
   const description = (article.description ?? '').trim();
+
+  const addToCart = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!inCart) {
+      if (cart.add(article)) toast.success('Article ajouté au panier.');
+    } else {
+      toast.info('Déjà dans votre panier.');
+    }
+    setJustAdded(true);
+    setTimeout(() => setJustAdded(false), 700);
+  };
 
   const goPrimary = () => navigate(`/article/${article.id}${trocable ? '?troc=1' : ''}`);
   const goDetails = () => navigate(`/article/${article.id}`);
@@ -80,6 +98,16 @@ export default function ProductCardWide({ article }) {
           className="absolute right-2 top-2 rounded-full bg-white/92 p-1.5 shadow-sm transition hover:scale-110 active:scale-95"
         >
           <Heart size={12} strokeWidth={2.6} className={faved ? 'fill-djassa-red text-djassa-red heart-pop' : 'text-djassa-black'} />
+        </button>
+
+        <button
+          type="button"
+          onClick={addToCart}
+          aria-label={inCart ? 'Déjà dans le panier' : 'Ajouter au panier'}
+          title={inCart ? 'Déjà dans le panier' : 'Ajouter au panier'}
+          className={`group/cart absolute bottom-2 right-2 flex h-9 w-9 items-center justify-center rounded-full shadow-lg ring-2 ring-white/80 backdrop-blur transition hover:scale-110 active:scale-95 ${justAdded ? 'cart-pop' : ''} ${inCart ? 'bg-emerald-600 text-white' : 'bg-gradient-to-br from-[#ED0F02] to-[#ff5a3c] text-white'}`}
+        >
+          {justAdded ? <Check size={16} strokeWidth={3} /> : <ShoppingCart size={15} strokeWidth={2.6} />}
         </button>
 
         <span className="absolute bottom-2 left-2 rounded-full bg-white/92 px-2 py-0.5 text-[7.5px] font-bold uppercase tracking-[0.1em] text-djassa-black shadow-sm">

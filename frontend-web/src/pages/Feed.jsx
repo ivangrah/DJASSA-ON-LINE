@@ -3,11 +3,12 @@ import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Star, Package, ShieldCheck, ArrowRight, BadgeCheck, X, Tag, Zap, ChevronLeft, ChevronRight, ArrowLeftRight, ChevronDown, Search, SlidersHorizontal, ShoppingCart } from 'lucide-react';
+import { Star, Package, ShieldCheck, ArrowRight, BadgeCheck, X, Tag, Zap, ChevronLeft, ChevronRight, ArrowLeftRight, ChevronDown, Search, SlidersHorizontal, ShoppingCart, Check } from 'lucide-react';
 gsap.registerPlugin(ScrollTrigger);
 import { api } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { useToast } from '../context/ToastContext';
 import ProductCardWide from '../components/ProductCardWide';
 import { CONDITION_LABELS, formatFCFA } from '../lib/format';
 import { ProductCardSkeleton, EmptyState, Spinner } from '../components/ui';
@@ -18,7 +19,9 @@ export default function Feed() {
   const gridRef = useRef(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const { isAuthenticated } = useAuth();
-  const { count: cartCount } = useCart();
+  const cart = useCart();
+  const { count: cartCount } = cart;
+  const toast = useToast();
   const navigate = useNavigate();
   const q = searchParams.get('q') ?? '';
   const sort = searchParams.get('sort') ?? 'latest';
@@ -39,6 +42,13 @@ export default function Feed() {
     e.preventDefault();
     const value = searchInput.trim();
     updateParams((next) => { value ? next.set('q', value) : next.delete('q'); });
+  };
+
+  const addPromoToCart = (e, offer) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (cart.has(offer.id)) { toast.info('Déjà dans votre panier.'); return; }
+    if (cart.add(offer)) toast.success('Article ajouté au panier.');
   };
 
   const clearQuery = () => { setSearchInput(''); updateParams((next) => next.delete('q')); };
@@ -516,9 +526,18 @@ export default function Feed() {
                             {CONDITION_LABELS[offer.condition] ?? offer.condition}
                           </span>
                         </div>
-                        <span className="absolute bottom-2 right-2 rounded-full bg-djassa-black px-2.5 py-1 font-inter text-[8.5px] font-semibold uppercase tracking-wide text-white shadow-sm">
+                        <span className="absolute bottom-2 left-2 rounded-full bg-djassa-black px-2.5 py-1 font-inter text-[8.5px] font-semibold uppercase tracking-wide text-white shadow-sm">
                           {offer.categorie}
                         </span>
+                        <button
+                          type="button"
+                          onClick={(e) => addPromoToCart(e, offer)}
+                          aria-label={cart.has(offer.id) ? 'Déjà dans le panier' : 'Ajouter au panier'}
+                          title={cart.has(offer.id) ? 'Déjà dans le panier' : 'Ajouter au panier'}
+                          className={`absolute bottom-2 right-2 flex h-9 w-9 items-center justify-center rounded-full shadow-lg ring-2 ring-white/80 backdrop-blur transition hover:scale-110 active:scale-95 ${cart.has(offer.id) ? 'bg-emerald-600 text-white' : 'bg-gradient-to-br from-[#ED0F02] to-[#ff5a3c] text-white'}`}
+                        >
+                          {cart.has(offer.id) ? <Check size={15} strokeWidth={3} /> : <ShoppingCart size={15} strokeWidth={2.6} />}
+                        </button>
                       </div>
 
                       {/* Infos produit */}
@@ -579,7 +598,7 @@ export default function Feed() {
               <Link to="/panier" className="group relative hidden h-24 w-24 items-center justify-center rounded-2xl bg-djassa-red/5 transition hover:bg-djassa-red/10 md:flex" aria-label={`Mon panier — ${cartCount} article${cartCount > 1 ? 's' : ''}`}>
                 <img src="/images/cart-sale.png" alt="Panier Djassa" className="h-20 w-20 object-contain" />
                 {cartCount > 0 && (
-                  <span className="absolute -right-1 -top-1 flex h-6 min-w-6 items-center justify-center rounded-full bg-[#ED0F02] px-1.5 font-jakarta text-[10px] font-extrabold text-white shadow-md ring-2 ring-white">
+                  <span key={cartCount} className="cart-badge-pop absolute -right-1 -top-1 flex h-6 min-w-6 items-center justify-center rounded-full bg-[#ED0F02] px-1.5 font-jakarta text-[10px] font-extrabold text-white shadow-md ring-2 ring-white">
                     {cartCount > 9 ? '9+' : cartCount}
                   </span>
                 )}
