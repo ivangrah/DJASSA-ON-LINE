@@ -111,14 +111,14 @@ export default function Login() {
                 <label htmlFor="email" className="sr-only">Adresse e-mail</label>
                 <div className="relative">
                   <Mail size={15} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-djassa-slate" />
-                  <input id="email" type="email" required autoComplete="email" className="input !rounded-xl !bg-[#f6f6f7] !pl-10 !py-3 !text-[12px]" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Adresse e-mail" />
+                  <input id="email" type="email" required autoComplete="email" className="input-auth !pl-10" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Adresse e-mail" />
                 </div>
               </div>
               <div>
                 <label htmlFor="password" className="sr-only">Mot de passe</label>
                 <div className="relative">
                   <LockKeyhole size={15} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-djassa-slate" />
-                  <input id="password" type={showPwd ? 'text' : 'password'} required autoComplete="current-password" className="input !rounded-xl !bg-[#f6f6f7] !pl-10 !pr-10 !py-3 !text-[12px]" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Mot de passe" />
+                  <input id="password" type={showPwd ? 'text' : 'password'} required autoComplete="current-password" className="input-auth !pl-10 !pr-10" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Mot de passe" />
                   <button type="button" onClick={() => setShowPwd((v) => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-djassa-slate transition hover:text-djassa-black" aria-label={showPwd ? 'Masquer' : 'Afficher'}>
                     {showPwd ? <EyeOff size={15} /> : <Eye size={15} />}
                   </button>

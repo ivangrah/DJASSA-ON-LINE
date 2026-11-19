@@ -183,15 +183,15 @@ export default function Register() {
                 <>
                   <div>
                     <label htmlFor="nom" className="label">Nom complet</label>
-                    <div className="relative"><UserRound size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-djassa-slate" /><input id="nom" required className="input !pl-11" placeholder="Koffi N'Guessan" value={form.nom} onChange={set('nom')} autoComplete="name" /></div>
+                    <div className="relative"><UserRound size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-djassa-slate" /><input id="nom" required className="input-auth !pl-11" placeholder="Koffi N'Guessan" value={form.nom} onChange={set('nom')} autoComplete="name" /></div>
                   </div>
                   <div>
                     <label htmlFor="email" className="label">Adresse e-mail</label>
-                    <div className="relative"><Mail size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-djassa-slate" /><input id="email" type="email" required autoComplete="email" className="input !pl-11" placeholder="vous@exemple.ci" value={form.email} onChange={set('email')} /></div>
+                    <div className="relative"><Mail size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-djassa-slate" /><input id="email" type="email" required autoComplete="email" className="input-auth !pl-11" placeholder="vous@exemple.ci" value={form.email} onChange={set('email')} /></div>
                   </div>
                   <div>
                     <label htmlFor="telephone" className="label">Téléphone <span className="font-normal normal-case text-djassa-slate">(Mobile Money)</span></label>
-                    <div className="relative"><Phone size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-djassa-slate" /><input id="telephone" type="tel" autoComplete="tel" className="input !pl-11" placeholder="+225 07 00 00 00 00" value={form.telephone} onChange={set('telephone')} /></div>
+                    <div className="relative"><Phone size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-djassa-slate" /><input id="telephone" type="tel" autoComplete="tel" className="input-auth !pl-11" placeholder="+225 07 00 00 00 00" value={form.telephone} onChange={set('telephone')} /></div>
                   </div>
                 </>
               )}
@@ -201,7 +201,7 @@ export default function Register() {
                 <>
                   <div>
                     <label htmlFor="password" className="label">Mot de passe</label>
-                    <div className="relative"><LockKeyhole size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-djassa-slate" /><input id="password" type={showPwd ? 'text' : 'password'} required minLength={8} autoComplete="new-password" className="input !pl-11" placeholder="8 caractères min." value={form.password} onChange={set('password')} /></div>
+                    <div className="relative"><LockKeyhole size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-djassa-slate" /><input id="password" type={showPwd ? 'text' : 'password'} required minLength={8} autoComplete="new-password" className="input-auth !pl-11" placeholder="8 caractères min." value={form.password} onChange={set('password')} /></div>
                   </div>
                   <div>
                     <label htmlFor="password_confirmation" className="label">Confirmation</label>

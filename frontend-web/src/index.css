@@ -81,6 +81,14 @@
   .input {
     @apply w-full rounded-xl border border-djassa-black/10 bg-white px-4 py-3 text-sm font-inter placeholder-djassa-slate/70 outline-none transition focus:border-djassa-red focus:ring-4 focus:ring-djassa-red/15;
   }
+
+  /* Champs d'authentification — Sora, plus lisibles */
+  .input-auth {
+    @apply w-full rounded-xl border border-djassa-black/10 bg-[#f6f6f7] px-4 py-3 font-jakarta text-[13.5px] font-medium text-djassa-black placeholder:font-inter placeholder:text-[12.5px] placeholder:font-normal placeholder:text-djassa-slate/80 outline-none transition focus:border-djassa-red focus:bg-white focus:ring-4 focus:ring-djassa-red/15;
+  }
+  .input-auth::placeholder {
+    letter-spacing: 0.01em;
+  }
   .label {
     @apply block text-[11px] font-jakarta font-bold uppercase tracking-wider text-djassa-slate mb-1.5;
   }
