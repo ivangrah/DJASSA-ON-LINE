@@ -39,7 +39,7 @@ export default function ProductCardWide({ article }) {
           navigate(`/article/${article.id}`);
         }
       }}
-      className="group flex cursor-pointer flex-col overflow-hidden rounded-[20px] bg-white p-2.5 shadow-card ring-1 ring-djassa-black/6 transition-all duration-300 hover:-translate-y-1 hover:shadow-pop focus-visible:ring-djassa-red"
+      className="group flex cursor-pointer flex-col overflow-hidden rounded-[16px] bg-white p-2 shadow-card ring-1 ring-djassa-black/6 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-pop focus-visible:ring-djassa-red sm:rounded-[18px] sm:p-2.5"
       aria-label={`${article.titre} — ${formatFCFA(prixActuel)}`}
     >
       {/* Image */}
@@ -100,37 +100,37 @@ export default function ProductCardWide({ article }) {
           </span>
         </div>
 
-        <p className="mt-1 flex flex-wrap items-baseline gap-1.5">
-          <span className="font-jakarta text-[17px] font-extrabold tracking-tight text-[#E60023] sm:text-[18px]">{formatFCFA(prixActuel)}</span>
+        <div className="flex flex-wrap items-baseline gap-1.5">
+          <span className="font-jakarta text-[16px] font-extrabold tracking-tight text-[#E60023] sm:text-[17px]">{formatFCFA(prixActuel)}</span>
           {isFlash && <span className="font-inter text-[10px] font-medium text-djassa-slate line-through">{formatFCFA(prixOriginal)}</span>}
           {article.prix_negociable && <span className="rounded-full bg-emerald-50 px-1.5 py-0.5 text-[7px] font-bold uppercase tracking-wide text-emerald-700">Nég.</span>}
-        </p>
+        </div>
 
-        <p className="mt-1 flex items-center gap-1 text-[10px] text-djassa-slate">
+        <div className="mt-1 flex items-center gap-1.5">
           <span className="flex items-center gap-0.5 text-amber-400">
             {[0, 1, 2, 3, 4].map((i) => <Star key={i} size={9} className="fill-amber-400 text-amber-400" />)}
           </span>
-          <span className="font-inter font-semibold text-djassa-black/75">4.8</span>
-          <span>·</span>
-          <span className="truncate font-inter">{sellerName}{isPro && article.boutique?.verifie ? ' ✓' : ''}</span>
-        </p>
+          <span className="font-inter font-semibold text-djassa-black/75 text-[10px]">4.8</span>
+          <span className="text-[9px]">·</span>
+          <span className="truncate font-inter text-[9.5px]">{sellerName}{isPro && article.boutique?.verifie ? ' ✓' : ''}</span>
+        </div>
 
-        <p className="mt-1 line-clamp-2 min-h-[2rem] font-inter text-[11px] leading-[1.45] text-djassa-slate">
+        <p className="mt-1 line-clamp-1 text-[10.5px] leading-snug text-djassa-slate">
           {description || 'Bon état, remise en main propre ou troc possible.'}
         </p>
 
-        <div className="mt-auto flex items-center gap-1.5 pt-2.5">
+        <div className="mt-auto flex items-center gap-1.5 pt-2">
           <button
             type="button"
             onClick={goPrimary}
-            className="inline-flex h-8 flex-1 items-center justify-center gap-1 rounded-full bg-[#ED0F02] px-3 font-jakarta text-[9px] font-extrabold uppercase tracking-[0.1em] text-white shadow-[0_4px_14px_rgba(237,15,2,0.35)] transition hover:bg-[#ff1e12] active:scale-95"
+            className="inline-flex h-7 flex-1 items-center justify-center gap-1 rounded-full bg-[#ED0F02] px-3 font-jakarta text-[9px] font-extrabold uppercase tracking-[0.1em] text-white shadow-[0_3px_12px_rgba(237,15,2,0.3)] transition hover:bg-[#ff1e12] active:scale-95"
           >
             {trocable ? <><ArrowLeftRight size={11} strokeWidth={2.8} /> Troc</> : 'Acheter'}
           </button>
           <button
             type="button"
             onClick={goDetails}
-            className="inline-flex h-8 items-center justify-center rounded-full border-[1.5px] border-djassa-black/20 px-3 font-jakarta text-[9px] font-extrabold uppercase tracking-[0.1em] text-djassa-black transition hover:border-djassa-black hover:bg-djassa-black hover:text-white active:scale-95"
+            className="inline-flex h-7 items-center justify-center rounded-full border-[1.5px] border-djassa-black/20 px-3 font-jakarta text-[9px] font-extrabold uppercase tracking-[0.1em] text-djassa-black transition hover:border-djassa-black hover:bg-djassa-black hover:text-white active:scale-95"
           >
             Détails
           </button>
