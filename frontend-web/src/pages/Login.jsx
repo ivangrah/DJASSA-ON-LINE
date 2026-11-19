@@ -47,10 +47,10 @@ export default function Login() {
   return (
     <div className="flex min-h-[calc(100vh-3.5rem)] items-center justify-center bg-[#f3f4f6] px-4 py-8 sm:px-6">
       {/* Carte blanche arrondie */}
-      <div className="grid w-full max-w-5xl overflow-hidden rounded-[32px] bg-white shadow-[0_20px_60px_rgba(18,18,18,0.08)] md:grid-cols-2">
+      <div className="grid w-full max-w-6xl overflow-hidden rounded-[32px] bg-white shadow-[0_20px_60px_rgba(18,18,18,0.08)] md:grid-cols-2">
 
         {/* Panneau rouge vif */}
-        <div className="relative hidden min-h-[380px] flex-col overflow-hidden bg-[#ED0F02] p-5 text-white sm:min-h-[460px] sm:p-8 md:flex md:min-h-[560px] md:p-10">
+        <div className="relative hidden min-h-[380px] flex-col overflow-hidden bg-[#ED0F02] p-5 text-white sm:min-h-[460px] sm:p-8 md:flex md:min-h-[520px] md:p-9">
           {/* dégradé vers un rouge plus soutenu */}
           <div className="absolute inset-0 bg-gradient-to-br from-[#ff2d1f] via-[#ED0F02] to-[#b80b00]" aria-hidden="true" />
           <div className="absolute -left-16 top-10 h-56 w-56 rounded-full bg-white/10 blur-2xl" aria-hidden="true" />
@@ -84,7 +84,7 @@ export default function Login() {
             <img
               src="/images/auth-cart-float.png"
               alt="Panier de shopping Djassa avec produits flottants"
-              className="h-40 w-auto max-w-[90%] object-contain drop-shadow-[0_18px_40px_rgba(0,0,0,0.25)] sm:h-56 md:h-[440px] lg:h-[520px]"
+              className="h-40 w-auto max-w-[90%] object-contain drop-shadow-[0_18px_40px_rgba(0,0,0,0.25)] sm:h-56 md:h-[380px] lg:h-[440px]"
             />
           </div>
         </div>

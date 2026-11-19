@@ -18,7 +18,7 @@ export default {
         },
       },
       fontFamily: {
-        jakarta: ['"Outfit"', 'system-ui', 'sans-serif'],
+        jakarta: ['"Sora"', 'system-ui', 'sans-serif'],
         inter: ['"DM Sans"', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
