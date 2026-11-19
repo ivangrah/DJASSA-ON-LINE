@@ -280,7 +280,7 @@ export default function Feed() {
       if (rHeader) promoTl.from(rHeader, { y: -18, opacity: 0, duration: 0.5 }, 0.4);
       if (arrows) promoTl.from(arrows, { scale: 0.7, opacity: 0, duration: 0.5, ease: 'back.out(2)' }, 0.55);
       if (cards.length) {
-        promoTl.from(cards.slice(0, 4), {
+        promoTl.from(Array.from(cards).slice(0, 4), {
           y: 44, opacity: 0, scale: 0.94, duration: 0.65, stagger: 0.1, ease: 'power3.out', clearProps: 'transform,opacity',
         }, 0.5);
       }
