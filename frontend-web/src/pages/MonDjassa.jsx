@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
-  BadgeCheck, Bell, Boxes, Download, LayoutDashboard, LogOut, Menu,
-  Package, Search, ShieldCheck, ShoppingBag, ShoppingCart, Trash2,
+  BadgeCheck, Bell, Boxes, ChevronRight, Download, LayoutDashboard, LogOut, Menu,
+  MessageCircle, Package, Search, ShieldCheck, ShoppingBag, ShoppingCart, Trash2,
   TrendingUp, Wallet, X,
 } from 'lucide-react';
 import { api, downloadAuthenticated } from '../lib/api';
@@ -15,6 +15,7 @@ import PinSuccess from '../components/PinSuccess';
 
 export default function MonDjassa() {
   const { user, isPro, logout, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
   const toast = useToast();
   const queryClient = useQueryClient();
   const [tab, setTab] = useState('annonces');
@@ -33,6 +34,13 @@ export default function MonDjassa() {
     queryFn: async () => (await api.get('/transactions')).data,
     enabled: isAuthenticated,
     refetchInterval: 10000,
+  });
+
+  const { data: convData, isLoading: loadingConv } = useQuery({
+    queryKey: ['messages', 'conversations'],
+    queryFn: async () => (await api.get('/messages/conversations')).data,
+    enabled: isAuthenticated,
+    refetchInterval: 15000,
   });
 
   const verifyPin = useMutation({
@@ -79,6 +87,7 @@ export default function MonDjassa() {
     { key: 'annonces', label: 'Mes annonces', Icon: Package },
     { key: 'ventes', label: 'Mes ventes', Icon: ShoppingCart },
     { key: 'achats', label: 'Mes achats', Icon: ShoppingBag },
+    { key: 'discussions', label: 'Discussions', Icon: MessageCircle },
   ];
 
   const tabContent = () => {
@@ -98,6 +107,31 @@ export default function MonDjassa() {
                   <span className={`mt-1 inline-block rounded-full px-2 py-0.5 text-[8px] font-bold uppercase tracking-wide ${meta.cls}`}>{meta.label}</span>
                 </div>
                 <button onClick={() => archive.mutate(a.id)} className="rounded-full p-2 text-djassa-slate transition hover:bg-red-50 hover:text-djassa-red" aria-label="Archiver l'annonce"><Trash2 size={16} /></button>
+              </li>
+            );
+          })}
+        </ul>
+      );
+    }
+    if (tab === 'discussions') {
+      if (loadingConv) return <div className="flex justify-center p-8"><Spinner /></div>;
+      const conversations = convData?.data ?? convData ?? [];
+      if (!conversations.length) return <EmptyState art="message" title="Aucune discussion" hint="Vos conversations avec les acheteurs et vendeurs apparaîtront ici." action={<Link to="/messages" className="btn-red btn-sm">Ouvrir la messagerie</Link>} />;
+      return (
+        <ul className="space-y-2">
+          {conversations.map((c) => {
+            const other = c.interlocuteur ?? c.autre_participant ?? c.participant ?? c.user ?? {};
+            const name = other.nom ?? other.name ?? c.nom_interlocuteur ?? 'Discussion';
+            const last = c.dernier_message ?? c.last_message ?? c.message ?? {};
+            return (
+              <li key={c.id} onClick={() => navigate(`/messages?conv=${c.id}`)} className="flex cursor-pointer items-center gap-3 rounded-2xl border border-djassa-black/8 bg-white p-3 shadow-card transition hover:border-djassa-red/40">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-djassa-red/10 font-jakarta text-sm font-extrabold text-djassa-red">{name.slice(0, 1).toUpperCase()}</span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-jakarta text-[12px] font-extrabold text-djassa-black">{name}</p>
+                  <p className="truncate font-inter text-[10px] text-djassa-slate">{last.contenu ?? last.texte ?? last.message ?? 'Ouvrir la conversation'}</p>
+                </div>
+                {c.unread_count > 0 && <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#ED0F02] px-1 text-[9px] font-extrabold text-white">{c.unread_count > 9 ? '9+' : c.unread_count}</span>}
+                <ChevronRight size={15} className="shrink-0 text-djassa-slate" />
               </li>
             );
           })}

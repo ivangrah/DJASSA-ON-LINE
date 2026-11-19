@@ -22,8 +22,8 @@ export default function AppShell() {
   }, []);
 
   return (
-    <div className={`min-h-screen ${isAuthPage || pathname === '/' ? '' : 'bg-djassa-cloud pb-20 md:pb-0'}`}>
-      {!isAuthPage && <TopNav />}
+    <div className={`min-h-screen ${isAuthPage || pathname === '/' || pathname === '/moi' ? '' : 'bg-djassa-cloud pb-20 md:pb-0'}`}>
+      {!isAuthPage && pathname !== '/moi' && <TopNav />}
       <main className="route-enter" key={pathname}>
         <Outlet />
       </main>
