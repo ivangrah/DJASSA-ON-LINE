@@ -41,7 +41,7 @@ class ArticlesSeeder extends Seeder
                 'prix' => 85000, 'prix_negociable' => true, 'condition' => Article::CONDITION_NEUF,
                 'mode_transaction' => Article::MODE_MIXTE, 'est_trocable' => true, 'stock' => 15,
                 'categorie' => 'Outillage', 'specs' => ['marque' => 'Bosch', 'tension' => '18V', 'couple_nm' => 50, 'garantie_mois' => 12],
-                'images' => [$img('1572981778609-a5b5b4e1f3e2'), $img('1504148455328-c376907d081c')],
+                'images' => [$img('1504148455328-c376907d081c'), $img('1530124566582-a618bc2615dc')],
                 'ville' => 'Abidjan', 'quartier' => 'Plateau', 'statut' => Article::STATUT_PUBLISHED,
             ],
             [
@@ -62,7 +62,7 @@ class ArticlesSeeder extends Seeder
                 'prix' => 95000, 'prix_negociable' => true, 'condition' => Article::CONDITION_NEUF,
                 'mode_transaction' => Article::MODE_MIXTE, 'est_trocable' => true, 'stock' => 8,
                 'categorie' => 'Outillage', 'specs' => ['marque' => 'DeWalt', 'tension' => '18V', 'couple_nm' => 205],
-                'images' => [$img('1572981779307-847f55f6aaf9')],
+                'images' => [$img('1530124566582-a618bc2615dc')],
                 'ville' => 'Abidjan', 'quartier' => 'Plateau', 'statut' => Article::STATUT_PUBLISHED,
             ],
             [
@@ -82,7 +82,7 @@ class ArticlesSeeder extends Seeder
                 'prix' => 185000, 'prix_flash' => 159000, 'prix_negociable' => true, 'condition' => Article::CONDITION_NEUF,
                 'mode_transaction' => Article::MODE_VENTE, 'est_trocable' => false, 'stock' => 6,
                 'categorie' => 'Électroménager', 'specs' => ['marque' => 'Générique Pro', 'puissance_kva' => 2.5, 'carburant' => 'essence', 'demarrage' => 'electrique'],
-                'images' => [$img('1581092160562-40aa08e78837')],
+                'images' => [$img('1530124566582-a618bc2615dc')],
                 'ville' => 'Abidjan', 'quartier' => 'Marcory', 'statut' => Article::STATUT_PUBLISHED,
                 'vente_flash' => true, 'flash_fin_at' => now()->addHours(24),
             ],
@@ -136,7 +136,7 @@ class ArticlesSeeder extends Seeder
                 'prix' => 18000, 'prix_negociable' => false, 'condition' => Article::CONDITION_USAGE,
                 'mode_transaction' => Article::MODE_MIXTE, 'est_trocable' => true, 'stock' => 1,
                 'categorie' => 'Outillage', 'specs' => ['marque' => 'Makita', 'tension' => '14.4V'],
-                'images' => [$img('1572981778609-a5b5b4e1f3e2')],
+                'images' => [$img('1530124566582-a618bc2615dc')],
                 'ville' => 'Abidjan', 'quartier' => 'Cocody', 'statut' => Article::STATUT_PUBLISHED,
             ],
             [
@@ -176,7 +176,7 @@ class ArticlesSeeder extends Seeder
                 'prix' => 450000, 'prix_negociable' => true, 'condition' => Article::CONDITION_BON_ETAT,
                 'mode_transaction' => Article::MODE_VENTE, 'est_trocable' => false, 'stock' => 1,
                 'categorie' => 'Auto/Moto', 'specs' => ['marque' => 'Yamaha', 'modele' => 'Crypton', 'annee' => 2019, 'kilometrage' => 38000],
-                'images' => [$img('1558981403-f3c3d5d1d0c5')],
+                'images' => [$img('1568772585407-9361f9bf3a87')],
                 'ville' => 'Yamoussoukro', 'quartier' => 'Habitat', 'statut' => Article::STATUT_PUBLISHED,
             ],
             [
@@ -186,7 +186,7 @@ class ArticlesSeeder extends Seeder
                 'prix' => 80000, 'prix_negociable' => true, 'condition' => Article::CONDITION_USAGE,
                 'mode_transaction' => Article::MODE_MIXTE, 'est_trocable' => true, 'stock' => 1,
                 'categorie' => 'Électroménager', 'specs' => ['puissance_kva' => 2.5, 'heures_compteur' => 800],
-                'images' => [$img('1581092160562-40aa08e78837')],
+                'images' => [$img('1530124566582-a618bc2615dc')],
                 'ville' => 'Abidjan', 'quartier' => 'Yopougon', 'statut' => Article::STATUT_PUBLISHED,
             ],
             [
@@ -196,7 +196,7 @@ class ArticlesSeeder extends Seeder
                 'prix' => 60000, 'prix_negociable' => true, 'condition' => Article::CONDITION_BON_ETAT,
                 'mode_transaction' => Article::MODE_VENTE, 'est_trocable' => false, 'stock' => 1,
                 'categorie' => 'Maison', 'specs' => ['materiau' => 'chêne', 'largeur_cm' => 160],
-                'images' => [$img('1595428774223-ef779077a013')],
+                'images' => [$img('1586023492125-27b2c045efd7')],
                 'ville' => 'Abidjan', 'quartier' => 'Treichville', 'statut' => Article::STATUT_PUBLISHED,
             ],
             [
@@ -216,7 +216,7 @@ class ArticlesSeeder extends Seeder
                 'prix' => 220000, 'prix_negociable' => true, 'condition' => Article::CONDITION_BON_ETAT,
                 'mode_transaction' => Article::MODE_VENTE, 'est_trocable' => false, 'stock' => 1,
                 'categorie' => 'High-Tech', 'specs' => ['marque' => 'HP', 'processeur' => 'i5-8250U', 'ram_go' => 8, 'ssd_go' => 256],
-                'images' => [$img('1588872657578-7efd1f1554cf')],
+                'images' => [$img('1517694712202-14dd9538aa97')],
                 'ville' => 'Bouaké', 'quartier' => 'Air France', 'statut' => Article::STATUT_PUBLISHED,
             ],
         ];

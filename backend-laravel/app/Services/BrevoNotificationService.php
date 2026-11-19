@@ -27,6 +27,17 @@ class BrevoNotificationService
         if (! $this->isConfigured()) {
             Log::info('[Brevo:DEV] email', ['to' => $toEmail, 'subject' => $subject, 'params' => $params]);
 
+            // En développement : double dépôt dans Mailpit (http://127.0.0.1:8025) pour visualiser les e-mails (PIN, reçus…)
+            try {
+                if (config('mail.default') !== 'log') {
+                    \Illuminate\Support\Facades\Mail::html($htmlContent ?? $this->renderFallback($subject, $params), function ($mail) use ($toEmail, $toName, $subject) {
+                        $mail->to($toEmail, $toName)->subject($subject)->from(config('mail.from.address'), config('mail.from.name'));
+                    });
+                }
+            } catch (\Throwable $mailException) {
+                Log::warning('[Brevo:DEV] Mailpit indisponible', ['error' => $mailException->getMessage()]);
+            }
+
             return true;
         }
 
