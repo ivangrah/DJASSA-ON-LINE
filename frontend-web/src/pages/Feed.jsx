@@ -11,6 +11,7 @@ import { useCart } from '../context/CartContext';
 import { useToast } from '../context/ToastContext';
 import ProductCardWide from '../components/ProductCardWide';
 import ProductGallery from '../components/ProductGallery';
+import MobileMenu from '../components/MobileMenu';
 import { CONDITION_LABELS, formatFCFA } from '../lib/format';
 import { ProductCardSkeleton, EmptyState, Spinner } from '../components/ui';
 
@@ -316,6 +317,7 @@ export default function Feed() {
                 Djassa<span className="text-[#E60023]">&nbsp;Online</span>
               </span>
             </Link>
+            <MobileMenu />
             <nav className="hidden items-center gap-7 font-jakarta text-[10.5px] font-bold uppercase tracking-[0.16em] text-white/85 lg:flex" aria-label="Navigation">
               <a href="#feed" className="transition hover:text-white">Catalogue</a>
               <Link to="/publier" className="transition hover:text-white">Vendre</Link>
@@ -323,11 +325,11 @@ export default function Feed() {
               <a href="#feed" className="transition hover:text-white">Boutiques Pro</a>
             </nav>
             {isAuthenticated ? (
-              <Link to="/moi" className="inline-flex h-9 items-center rounded-full bg-[#ED0F02] px-4 font-jakarta text-[9.5px] font-extrabold uppercase tracking-[0.18em] text-white transition hover:bg-[#ff1e12] active:scale-95 sm:h-10 sm:px-5 sm:text-[10.5px]">
+              <Link to="/moi" className="hidden h-9 items-center rounded-full bg-[#ED0F02] px-4 font-jakarta text-[9.5px] font-extrabold uppercase tracking-[0.18em] text-white transition hover:bg-[#ff1e12] active:scale-95 sm:h-10 sm:px-5 sm:text-[10.5px] lg:inline-flex">
                 Mon Djassa
               </Link>
             ) : (
-              <div className="flex items-center gap-2">
+              <div className="hidden items-center gap-2 lg:flex">
                 <Link to="/login" className="hidden h-9 items-center rounded-full border border-white/45 px-4 font-jakarta text-[9.5px] font-extrabold uppercase tracking-[0.18em] text-white transition hover:border-white hover:bg-white/10 active:scale-95 sm:inline-flex sm:h-10 sm:px-5 sm:text-[10.5px]">
                   Se connecter
                 </Link>

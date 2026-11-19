@@ -22,7 +22,7 @@ export default function AppShell() {
   }, []);
 
   return (
-    <div className={`min-h-screen ${isAuthPage ? '' : 'bg-djassa-cloud pb-20 md:pb-0'}`}>
+    <div className={`min-h-screen ${isAuthPage || pathname === '/' ? '' : 'bg-djassa-cloud pb-20 md:pb-0'}`}>
       {!isAuthPage && <TopNav />}
       <main className="route-enter" key={pathname}>
         <Outlet />
@@ -102,7 +102,7 @@ export default function AppShell() {
           </div>
         </div>
       </footer>}
-      {!isAuthPage && <BottomTabBar />}
+      {!isAuthPage && pathname !== '/' && <BottomTabBar />}
 
       {/* Retour haut discret sur longs feeds */}
       {showTop && (

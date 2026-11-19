@@ -45,16 +45,21 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-screen items-stretch justify-center bg-[#f3f4f6]">
+    <div className="flex min-h-[calc(100vh-3.5rem)] items-center justify-center bg-[#f3f4f6] px-4 py-8 sm:px-6">
       {/* Carte blanche arrondie */}
-      <div className="grid w-full overflow-hidden bg-white md:grid-cols-2">
+      <div className="grid w-full max-w-5xl overflow-hidden rounded-[32px] bg-white shadow-[0_20px_60px_rgba(18,18,18,0.08)] md:grid-cols-2">
 
         {/* Panneau rouge vif */}
-        <div className="relative hidden min-h-[380px] flex-col overflow-hidden bg-[#ED0F02] p-5 text-white sm:min-h-[460px] sm:p-8 md:flex md:min-h-screen md:p-10">
+        <div className="relative hidden min-h-[380px] flex-col overflow-hidden bg-[#ED0F02] p-5 text-white sm:min-h-[460px] sm:p-8 md:flex md:min-h-[560px] md:p-10">
           {/* dégradé vers un rouge plus soutenu */}
           <div className="absolute inset-0 bg-gradient-to-br from-[#ff2d1f] via-[#ED0F02] to-[#b80b00]" aria-hidden="true" />
           <div className="absolute -left-16 top-10 h-56 w-56 rounded-full bg-white/10 blur-2xl" aria-hidden="true" />
           <div className="absolute bottom-0 right-0 h-64 w-64 rounded-full bg-black/10 blur-2xl" aria-hidden="true" />
+
+          {/* Retour à l'accueil — desktop (dans le panneau) */}
+          <Link to="/" className="absolute right-8 top-8 z-20 hidden items-center gap-1.5 rounded-full bg-white/15 px-3 py-1.5 font-jakarta text-[10px] font-extrabold uppercase tracking-wide text-white backdrop-blur-sm ring-1 ring-white/25 transition hover:bg-white/25 md:inline-flex">
+            <ArrowLeft size={13} strokeWidth={2.8} /> Retour à l'accueil
+          </Link>
 
           <div className="relative z-10 pt-8 sm:pt-10 md:pt-12">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-white/15 px-3 py-1 font-jakarta text-[9px] font-extrabold uppercase tracking-[0.18em] text-white ring-1 ring-white/25">
@@ -85,7 +90,7 @@ export default function Login() {
         </div>
 
         {/* Formulaire */}
-        <div className="flex min-h-screen flex-col justify-center px-5 py-8 sm:px-10 sm:py-9 md:min-h-0 md:px-16 lg:px-24">
+        <div className="flex flex-col justify-center px-5 py-8 sm:px-10 sm:py-9 md:px-16 lg:px-24">
           <div className="mx-auto w-full max-w-sm">
             {/* Retour à l'accueil — mobile uniquement */}
             <Link to="/" className="mb-6 inline-flex items-center gap-1.5 rounded-full bg-djassa-cloud px-3 py-1.5 font-jakarta text-[10px] font-extrabold uppercase tracking-wide text-djassa-black transition hover:bg-djassa-red/10 md:hidden">
