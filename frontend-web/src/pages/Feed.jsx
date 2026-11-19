@@ -121,8 +121,15 @@ export default function Feed() {
             )}
           </div>
 
+          {/* Visuel e-commerce — mobile (au-dessus du titre) */}
+          <img
+            src="/images/hero-ecommerce.png"
+            alt="Achats en ligne et livraison Djassa"
+            className="pointer-events-none relative z-0 mx-auto -mb-2 mt-2 w-[150px] select-none object-contain opacity-95 drop-shadow-[0_18px_30px_rgba(0,0,0,0.55)] animate-floaty sm:w-[190px] lg:hidden"
+          />
+
           {/* Headline centré */}
-          <div className="flex flex-1 flex-col items-center justify-center pb-28 pt-10 text-center sm:pb-32 sm:pt-12 md:pb-40 md:pt-16">
+          <div className="relative z-10 flex flex-1 flex-col items-center justify-center pb-28 pt-6 text-center sm:pb-32 sm:pt-8 md:pb-40 md:pt-10">
             <h1 className="font-jakarta text-[15vw] font-extrabold leading-[0.95] tracking-tight text-white sm:text-[80px] md:text-[84px]">
               Achète. Vends.<br /><span className="text-[#E60023]">Troque.</span>
             </h1>
@@ -135,6 +142,13 @@ export default function Feed() {
               </a>
             </div>
           </div>
+
+          {/* Visuel e-commerce — desktop (flottant à droite) */}
+          <img
+            src="/images/hero-ecommerce.png"
+            alt="Achats en ligne et livraison Djassa"
+            className="pointer-events-none absolute right-[2%] top-[52%] z-0 hidden w-[clamp(280px,26vw,430px)] -translate-y-1/2 select-none object-contain opacity-95 drop-shadow-[0_30px_60px_rgba(0,0,0,0.6)] animate-floaty xl:block"
+          />
 
           {/* Barre de réassurance — 4 statistiques */}
           <div className="absolute inset-x-3 bottom-[78px] sm:inset-x-4 md:inset-x-8 md:bottom-6 xl:inset-x-12">
