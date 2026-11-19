@@ -3,7 +3,7 @@ import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Star, Package, ShieldCheck, ArrowRight, BadgeCheck, X, Tag, Zap, ChevronLeft, ChevronRight, ArrowLeftRight, ChevronDown, Search, SlidersHorizontal, ShoppingCart, Check } from 'lucide-react';
+import { Star, Package, ShieldCheck, ArrowRight, BadgeCheck, X, Tag, Zap, ChevronLeft, ChevronRight, ArrowLeftRight, ChevronDown, Search, SlidersHorizontal, ShoppingCart, Check, ChevronUp } from 'lucide-react';
 gsap.registerPlugin(ScrollTrigger);
 import { api } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
@@ -26,11 +26,14 @@ export default function Feed() {
   const q = searchParams.get('q') ?? '';
   const sort = searchParams.get('sort') ?? 'latest';
   const [searchInput, setSearchInput] = useState(q);
+  const [visiblePages, setVisiblePages] = useState(1);
 
   const queryParams = useMemo(() => ({ per_page: 12, sort, ...(q ? { q } : {}) }), [q, sort]);
 
   // Synchronise le champ avec l'URL (navigation / retour arrière)
   useEffect(() => { setSearchInput(q); }, [q]);
+  // Replie la liste quand la recherche ou le tri change
+  useEffect(() => { setVisiblePages(1); }, [q, sort]);
 
   const updateParams = (mutate) => setSearchParams((prev) => {
     const next = new URLSearchParams(prev);
@@ -100,7 +103,23 @@ export default function Feed() {
     el.scrollBy({ left: dir * amount, behavior: 'smooth' });
   };
 
-  const articles = useMemo(() => (data?.pages ?? []).flatMap((p) => p.data ?? []), [data]);
+  const articles = useMemo(
+    () => (data?.pages ?? []).slice(0, visiblePages).flatMap((p) => p.data ?? []),
+    [data, visiblePages],
+  );
+  const loadedPages = data?.pages?.length ?? 0;
+  const canLoadMore = hasNextPage || visiblePages < loadedPages;
+
+  const loadMore = async () => {
+    if (visiblePages < loadedPages) { setVisiblePages((v) => v + 1); return; }
+    const res = await fetchNextPage();
+    if (!res?.error) setVisiblePages((v) => v + 1);
+  };
+
+  const collapseList = () => {
+    setVisiblePages(1);
+    gridRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
   const total = data?.pages?.[0]?.meta?.total ?? articles.length;
 
   // GSAP — entrée en cascade des cartes
@@ -684,11 +703,18 @@ export default function Feed() {
                   </div>
                 ))}
               </div>
-              {hasNextPage && (
-                <div className="flex justify-center pt-5">
-                  <button className="btn-outline btn-sm" onClick={() => fetchNextPage()} disabled={isFetchingNextPage}>
-                    {isFetchingNextPage ? <><Spinner size={15} /> Chargement…</> : 'Charger plus d’annonces'}
-                  </button>
+              {(canLoadMore || visiblePages > 1) && (
+                <div className="flex flex-wrap items-center justify-center gap-3 pt-5">
+                  {canLoadMore && (
+                    <button className="btn-outline btn-sm" onClick={loadMore} disabled={isFetchingNextPage}>
+                      {isFetchingNextPage ? <><Spinner size={15} /> Chargement…</> : <><ChevronDown size={14} /> Charger plus d’annonces</>}
+                    </button>
+                  )}
+                  {visiblePages > 1 && (
+                    <button className="inline-flex items-center gap-1.5 rounded-full bg-djassa-black px-4 py-2 font-jakarta text-[11px] font-bold text-white transition hover:bg-djassa-red active:scale-95" onClick={collapseList}>
+                      <ChevronUp size={14} /> Réduire la liste
+                    </button>
+                  )}
                 </div>
               )}
             </>
