@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "Djassa Online",
+    "slug": "djassa-online",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "djassa",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#121212",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "ci.djassaonline.app"
+    },
+    "android": {
+      "package": "ci.djassaonline.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#E11D48",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "name": "Djassa Online",
+      "shortName": "Djassa Online",
+      "themeColor": "#121212",
+      "backgroundColor": "#121212"
+    },
+    "plugins": [
+      "expo-secure-store",
+      "expo-font"
+    ]
+  }
+}
