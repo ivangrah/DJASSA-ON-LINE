@@ -19,11 +19,8 @@ export default function TopNav() {
   const [query, setQuery] = useState('');
   const [unread, setUnread] = useState(0);
 
-  // Landing : aucune barre de navigation — l'affiche parle d'elle-même
-  if (isHome) return null;
-
   useEffect(() => {
-    if (!isAuthenticated) return undefined;
+    if (isHome || !isAuthenticated) return undefined;
     let alive = true;
     const poll = async () => {
       try {
@@ -34,13 +31,16 @@ export default function TopNav() {
     poll();
     const t = window.setInterval(poll, 15000);
     return () => { alive = false; window.clearInterval(t); };
-  }, [isAuthenticated, location.pathname]);
+  }, [isHome, isAuthenticated, location.pathname]);
 
   const submitSearch = (e) => {
     e.preventDefault();
     const q = query.trim();
     navigate(q ? `/?q=${encodeURIComponent(q)}` : '/');
   };
+
+  // Landing : aucune barre de navigation — l'affiche parle d'elle-même
+  if (isHome) return null;
 
   return (
     <header className="sticky top-0 z-50 bg-djassa-black text-white">
