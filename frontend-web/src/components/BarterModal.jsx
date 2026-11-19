@@ -68,10 +68,11 @@ export default function BarterModal({ open, onClose, targetArticle, onSuccess })
     return (
       <Modal open={open} onClose={reset} title="Proposition envoyée">
         <div className="flex flex-col items-center py-2 text-center">
-          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-djassa-red/10">
-            <span className="flex h-14 w-14 items-center justify-center rounded-full bg-djassa-red text-white">
-              <Check size={30} strokeWidth={3} />
-            </span>
+          <div className="flex h-28 w-28 items-center justify-center">
+            <svg viewBox="0 0 120 120" className="h-full w-full" role="img" aria-label="Proposition envoyée">
+              <circle className="circle-draw" cx="60" cy="60" r="52" fill="none" stroke="#E11D48" strokeWidth="9" strokeLinecap="round" pathLength="100" />
+              <path className="check-draw" d="M38 63 L54 79 L86 45" fill="none" stroke="#121212" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round" pathLength="100" />
+            </svg>
           </div>
           <h4 className="mt-4 font-jakarta text-lg font-extrabold text-djassa-black">C'est envoyé !</h4>
           <p className="mt-1 max-w-xs text-sm text-djassa-slate">

@@ -1,17 +1,26 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { Bell, MessageCircle, PlusCircle, Search, UserRound } from 'lucide-react';
+import { MessageCircle, PlusCircle, Search, UserRound } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Avatar } from '../components/ui';
 import { api } from '../lib/api';
 
-/** Barre supérieure Djassa — noir profond, logo blanc + point rouge, recherche centrale. */
+/**
+ * Barre de navigation Djassa.
+ * Sur la landing (`/`), elle est SUPPRIMÉE : l'affiche hero porte elle-même
+ * la navigation (liens typographiques + CTA), conformément à la DA « affiche ».
+ * Sur les autres pages : barre noire sobre sticky.
+ */
 export default function TopNav() {
   const { isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const isHome = location.pathname === '/';
   const [query, setQuery] = useState('');
   const [unread, setUnread] = useState(0);
+
+  // Landing : aucune barre de navigation — l'affiche parle d'elle-même
+  if (isHome) return null;
 
   useEffect(() => {
     if (!isAuthenticated) return undefined;
@@ -36,23 +45,25 @@ export default function TopNav() {
   return (
     <header className="sticky top-0 z-50 bg-djassa-black text-white">
       <div className="mx-auto flex h-14 max-w-7xl items-center gap-2 px-3 sm:gap-4 sm:px-6">
-        {/* Logo */}
-        <Link to="/" className="flex shrink-0 items-center gap-1.5" aria-label="Djassa Online — accueil">
-          <span className="relative font-jakarta text-[17px] font-extrabold leading-none tracking-tight text-white">
+        {/* Logo — carré rouge/noir Djassa + wordmark */}
+        <Link to="/" className="flex shrink-0 items-center gap-2" aria-label="Djassa Online — accueil">
+          <img src="/images/logo-256.png" alt="Logo Djassa Online" className="h-8 w-8 rounded-[10px] shadow-[0_2px_10px_rgba(237,15,2,0.45)]" />
+          <span className="font-jakarta text-[16px] font-extrabold leading-none tracking-tight text-white">
             Djassa<span className="text-djassa-red">&nbsp;Online</span>
-            <span className="absolute -right-2 -top-0.5 h-1.5 w-1.5 rounded-full bg-djassa-red animate-pulseDot" aria-hidden="true" />
           </span>
         </Link>
 
         {/* Recherche (desktop) */}
-        <form onSubmit={submitSearch} className="hidden min-w-0 flex-1 items-center md:flex" role="search">
-          <label className="flex h-10 w-full max-w-xl items-center gap-2 rounded-full bg-white/10 px-4 ring-1 ring-white/10 transition focus-within:bg-white focus-within:ring-djassa-red">
+        <form onSubmit={submitSearch} className="hidden min-w-0 flex-1 items-center justify-center md:flex" role="search">
+          <label className="flex h-10 w-full max-w-md items-center gap-2 rounded-full border border-white/10 bg-white/10 px-4 transition focus-within:bg-white focus-within:ring-2 focus-within:ring-djassa-red">
             <Search size={17} className="shrink-0 text-white/60" />
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Rechercher un article, une boutique, une catégorie…"
-              className="w-full bg-transparent text-sm text-white placeholder-white/50 outline-none focus-within:text-djassa-black placeholder:focus-within:text-djassa-slate"
+              placeholder="Rechercher : meuleuse, iPhone, groupe électrogène…"
+              className={`w-full bg-transparent text-sm placeholder-white/50 outline-none focus-within:text-djassa-black placeholder:focus-within:text-djassa-slate ${
+                isHome ? 'text-white' : 'text-white'
+              }`}
               aria-label="Rechercher sur Djassa Online"
             />
           </label>
@@ -60,7 +71,7 @@ export default function TopNav() {
 
         {/* Actions */}
         <nav className="ml-auto flex shrink-0 items-center gap-1 sm:gap-2" aria-label="Actions principales">
-          <Link to="/publier" className="btn-red btn-sm hidden sm:inline-flex">
+          <Link to="/publier" className="btn-red btn-sm hidden sm:inline-flex shadow-[0_6px_20px_rgba(230,0,35,0.4)]">
             <PlusCircle size={16} /> Publier
           </Link>
 
@@ -86,9 +97,9 @@ export default function TopNav() {
         </nav>
       </div>
 
-      {/* Recherche (mobile) */}
-      <form onSubmit={submitSearch} className="border-t border-white/10 px-3 pb-2 pt-1.5 md:hidden" role="search">
-        <label className="flex h-9 w-full items-center gap-2 rounded-full bg-white/10 px-3.5 ring-1 ring-white/10 focus-within:bg-white">
+      {/* Recherche (mobile) — fondu sur le hero */}
+      <form onSubmit={submitSearch} className="px-3 pb-2 pt-1 md:hidden" role="search">
+        <label className="flex h-9 w-full items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3.5 transition focus-within:bg-white focus-within:ring-2 focus-within:ring-djassa-red">
           <Search size={15} className="shrink-0 text-white/60" />
           <input
             value={query}
@@ -99,11 +110,6 @@ export default function TopNav() {
           />
         </label>
       </form>
-
-      {/* Fil d'Ariane ventes flash (lien discret) */}
-      <Link to="/?flash=1" className="hidden items-center justify-center gap-1.5 bg-djassa-red py-1 text-[10px] font-jakarta font-bold uppercase tracking-[0.2em] text-white md:flex">
-        <Bell size={10} strokeWidth={3} /> Ventes Flash Boutiques tous les jours
-      </Link>
     </header>
   );
 }

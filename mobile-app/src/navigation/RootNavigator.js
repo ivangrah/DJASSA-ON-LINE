@@ -3,7 +3,7 @@ import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useFonts } from 'expo-font';
-import { ActivityIndicator, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Image, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Home, MessageCircle, Plus, Search, User } from 'lucide-react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
@@ -140,8 +140,9 @@ function RootNavigator() {
   if (!booted) {
     return (
       <View style={styles.splash}>
-        <Text style={styles.splashLogo}>Djassa<Text style={styles.splashLogoRed}> Online</Text></Text>
-        <ActivityIndicator color={Couleurs.red} style={{ marginTop: 18 }} />
+        <Image source={require('../../assets/splash-icon.png')} style={styles.splashArt} resizeMode="contain" accessibilityLabel="Djassa Online" />
+        <Text style={styles.splashWordmark}>DJASSA<Text style={styles.splashWordmarkLight}> ONLINE</Text></Text>
+        <ActivityIndicator color="#000000" style={{ marginTop: 22 }} />
       </View>
     );
   }
@@ -189,7 +190,7 @@ export default function Root() {
   if (!fontsLoaded) {
     return (
       <View style={styles.splash}>
-        <ActivityIndicator color={Couleurs.red} />
+        <Image source={require('../../assets/splash-icon.png')} style={styles.splashArt} resizeMode="contain" accessibilityLabel="Djassa Online" />
       </View>
     );
   }
@@ -208,9 +209,10 @@ export default function Root() {
 }
 
 const styles = StyleSheet.create({
-  splash: { flex: 1, backgroundColor: Couleurs.black, alignItems: 'center', justifyContent: 'center' },
-  splashLogo: { fontFamily: Polices.jakarta, fontSize: 28, color: '#fff' },
-  splashLogoRed: { color: Couleurs.red },
+  splash: { flex: 1, backgroundColor: '#ED0F02', alignItems: 'center', justifyContent: 'center' },
+  splashArt: { width: 168, height: 168 },
+  splashWordmark: { marginTop: 26, fontFamily: Polices.jakarta, fontSize: 21, letterSpacing: 2, color: '#000000' },
+  splashWordmarkLight: { color: 'rgba(0,0,0,0.55)', fontFamily: Polices.jakartaSemi },
   badge: {
     position: 'absolute', top: -4, right: -6, minWidth: 15, height: 15, borderRadius: 8,
     backgroundColor: Couleurs.red, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 3,

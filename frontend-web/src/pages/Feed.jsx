@@ -1,38 +1,20 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { useEffect, useMemo, useRef } from 'react';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import { useSearchParams, Link } from 'react-router-dom';
 import { gsap } from 'gsap';
-import { ArrowLeftRight, Zap, ChevronRight } from 'lucide-react';
+import { Star, Package, ShieldCheck, ArrowRight, BadgeCheck, X } from 'lucide-react';
 import { api } from '../lib/api';
-import { MARKET_CATEGORIES } from '../lib/categories';
+import { useAuth } from '../context/AuthContext';
 import ProductCard from '../components/ProductCard';
-import FlashBanner from '../components/FlashBanner';
 import { ProductCardSkeleton, EmptyState, Spinner } from '../components/ui';
-
-const TABS = [
-  { key: 'tout', label: 'Tout' },
-  { key: 'occ', label: 'Seconde Main & Troc' },
-  { key: 'neuf', label: 'Boutiques Neuves' },
-];
 
 export default function Feed() {
   const gridRef = useRef(null);
   const [searchParams, setSearchParams] = useSearchParams();
-  const [tab, setTab] = useState(searchParams.get('tab') ?? 'tout');
-  const [category, setCategory] = useState(searchParams.get('category') ?? '');
-  const [sort, setSort] = useState('latest');
+  const { isAuthenticated } = useAuth();
   const q = searchParams.get('q') ?? '';
-  const flashOnly = searchParams.get('flash') === '1';
 
-  const queryParams = useMemo(() => {
-    const p = { per_page: 12, sort };
-    if (tab === 'occ') p.marche = 'occ';
-    if (tab === 'neuf') p.marche = 'neuf';
-    if (category) p.category = category;
-    if (q) p.q = q;
-    if (flashOnly) p.flash = 1;
-    return p;
-  }, [tab, category, q, sort, flashOnly]);
+  const queryParams = useMemo(() => ({ per_page: 12, sort: 'latest', ...(q ? { q } : {}) }), [q]);
 
   const {
     data,
@@ -49,7 +31,6 @@ export default function Feed() {
   });
 
   const articles = useMemo(() => (data?.pages ?? []).flatMap((p) => p.data ?? []), [data]);
-  const total = data?.pages?.[0]?.meta?.total ?? 0;
 
   // GSAP — entrée en cascade des cartes
   useEffect(() => {
@@ -60,92 +41,114 @@ export default function Feed() {
     }
   }, [isLoading, articles.length]);
 
-  const { data: flashData } = useQuery({
-    queryKey: ['products', 'flash'],
-    queryFn: async () => (await api.get('/products/flash')).data,
-    staleTime: 30_000,
-  });
-  const flashItems = flashData?.data ?? [];
-
-  const updateParams = (patch) => {
-    const next = new URLSearchParams(searchParams);
-    Object.entries(patch).forEach(([k, v]) => {
-      if (v === '' || v === null || v === undefined) next.delete(k);
-      else next.set(k, v);
-    });
-    setSearchParams(next, { replace: true });
-  };
+  const clearQuery = () => setSearchParams({}, { replace: true });
 
   return (
-    <div className="mx-auto max-w-7xl">
-      {/* En-tête feed (noir, sobre) */}
-      <section className="bg-djassa-black px-3 pb-4 pt-3 text-white sm:px-6">
-        <div className="flex items-end justify-between gap-3">
-          <div>
-            <p className="text-[10px] font-jakarta font-bold uppercase tracking-[0.22em] text-djassa-red-soft/80">Le Djassa, digital</p>
-            <h1 className="font-jakarta text-lg font-extrabold leading-tight sm:text-2xl">
-              Le bon plan <span className="text-djassa-red">près de chez vous</span>
-            </h1>
+    <div>
+      {/* ===== HERO plein écran — photo immersive · Djassa Online ===== */}
+      <section className="relative overflow-hidden bg-[#0c0c0c] text-white" aria-label="Djassa Online">
+        <img
+          src="/images/hero-shopping-bags.jpg"
+          alt="Sacs de shopping rouges et noirs sur fond noir"
+          className="absolute inset-0 h-full w-full select-none object-cover object-[72%_38%] sm:object-[74%_36%]"
+        />
+        {/* Scrims chauds : noir profond à gauche, l'image respire à droite */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0b0b0b] via-[#0b0b0b]/80 via-[46%] to-[#0b0b0b]/5" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0b0b0b]/95 via-[#0b0b0b]/20 to-[#0b0b0b]/30" />
+
+        <div className="relative flex min-h-[100svh] flex-col px-5 sm:px-6 md:min-h-[92vh] md:px-10 xl:px-16">
+          {/* Nav intégrée — logo gauche · liens centre · Se connecter droite */}
+          <div className="flex items-center justify-between gap-4 border-b border-white/10 py-4 md:py-5">
+            <Link to="/" className="flex items-center gap-2.5" aria-label="Djassa Online — accueil">
+              <img src="/images/logo-256.png" alt="" aria-hidden="true" className="h-9 w-9 rounded-xl shadow-[0_4px_16px_rgba(237,15,2,0.5)]" />
+              <span className="font-jakarta text-[15px] font-extrabold uppercase leading-none tracking-tight text-white sm:text-[17px]">
+                Djassa<span className="text-[#E60023]">&nbsp;Online</span>
+              </span>
+            </Link>
+            <nav className="hidden items-center gap-7 font-jakarta text-[10.5px] font-bold uppercase tracking-[0.16em] text-white/85 lg:flex" aria-label="Navigation">
+              <a href="#feed" className="transition hover:text-white">Catalogue</a>
+              <Link to="/publier" className="transition hover:text-white">Vendre</Link>
+              <Link to="/souhaits" className="transition hover:text-white">Souhaits</Link>
+              <a href="#feed" className="transition hover:text-white">Boutiques Pro</a>
+            </nav>
+            {isAuthenticated ? (
+              <Link to="/moi" className="inline-flex h-9 items-center rounded-full bg-[#ED0F02] px-4 font-jakarta text-[9.5px] font-extrabold uppercase tracking-[0.18em] text-white transition hover:bg-[#ff1e12] active:scale-95 sm:h-10 sm:px-5 sm:text-[10.5px]">
+                Mon Djassa
+              </Link>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Link to="/login" className="hidden h-9 items-center rounded-full border border-white/45 px-4 font-jakarta text-[9.5px] font-extrabold uppercase tracking-[0.18em] text-white transition hover:border-white hover:bg-white/10 active:scale-95 sm:inline-flex sm:h-10 sm:px-5 sm:text-[10.5px]">
+                  Se connecter
+                </Link>
+                <Link to="/register" className="inline-flex h-9 items-center rounded-full bg-[#ED0F02] px-4 font-jakarta text-[9.5px] font-extrabold uppercase tracking-[0.18em] text-white shadow-[0_8px_22px_rgba(237,15,2,0.5)] transition hover:bg-[#ff1e12] active:scale-95 sm:h-10 sm:px-5 sm:text-[10.5px]">
+                  S'inscrire
+                </Link>
+              </div>
+            )}
           </div>
-          <Link to="/souhaits" className="hidden items-center gap-1 rounded-full border border-white/15 px-3 py-1.5 text-[11px] font-semibold text-white/80 transition hover:border-djassa-red hover:text-white sm:inline-flex">
-            Publier un souhait <ChevronRight size={12} />
-          </Link>
-        </div>
 
-        {/* Onglets marché */}
-        <div className="no-scrollbar mt-3 flex gap-2 overflow-x-auto pb-1" role="tablist" aria-label="Type de marché">
-          {TABS.map((t) => (
-            <button
-              key={t.key}
-              role="tab"
-              aria-selected={tab === t.key}
-              onClick={() => { setTab(t.key); updateParams({ tab: t.key === 'tout' ? null : t.key }); }}
-              className={`whitespace-nowrap rounded-full px-4 py-2 font-jakarta text-xs font-bold transition ${tab === t.key ? 'bg-djassa-red text-white shadow-pop' : 'bg-white/10 text-white/80 hover:bg-white/15'}`}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
+          {/* Headline minimaliste centré-gauche */}
+          <div className="flex flex-1 flex-col justify-center pb-28 pt-6 sm:pb-32 md:pb-36">
+            <h1 className="font-jakarta text-[15vw] font-extrabold leading-[0.92] tracking-tight text-white sm:text-7xl md:text-[92px] xl:text-[104px]">
+              Achète.<br />Vends.<br /><span className="text-[#E60023]">Troque.</span>
+            </h1>
+            <p className="mt-4 max-w-md font-inter text-[12px] font-medium leading-snug text-white/80 sm:text-[15px]">
+              Outillage, High-Tech, Mode, Électroménager — neuf ou seconde main, troc pur ou mixte avec soulte FCFA. Paiement Mobile Money sécurisé par code PIN.
+            </p>
+            <div className="mt-6">
+              <a href="#feed" className="inline-flex h-12 items-center gap-2 rounded-full bg-[#ED0F02] px-6 font-jakarta text-[12px] font-extrabold uppercase tracking-[0.16em] text-white shadow-[0_14px_36px_rgba(237,15,2,0.45)] transition hover:bg-[#ff1e12] active:scale-95 sm:h-14 sm:px-8 sm:text-[13px]">
+                Explorer le marché <ArrowRight size={17} strokeWidth={2.8} />
+              </a>
+            </div>
+          </div>
 
-        {/* Rayons */}
-        <div className="no-scrollbar mt-2.5 flex gap-2 overflow-x-auto pb-0.5" aria-label="Rayons">
-          {MARKET_CATEGORIES.map(({ key, label, Icon }) => (
-            <button
-              key={key || 'all'}
-              onClick={() => { setCategory(key); updateParams({ category: key || null }); }}
-              className={`flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-medium transition ${category === key ? 'bg-white text-djassa-black' : 'bg-white/5 text-white/70 hover:bg-white/10 hover:text-white'}`}
-            >
-              <Icon size={13} strokeWidth={2.2} /> {label}
-            </button>
-          ))}
+          {/* Barre de réassurance — 4 statistiques */}
+          <div className="absolute inset-x-3 bottom-[78px] sm:inset-x-4 md:inset-x-8 md:bottom-6 xl:inset-x-12">
+            <div className="grid grid-cols-2 divide-white/10 rounded-2xl border border-white/10 bg-black/60 backdrop-blur-md md:grid-cols-4 md:divide-x">
+              <div className="flex flex-col gap-1 px-4 py-3 sm:px-5">
+                <span className="flex items-center gap-1.5 text-white">
+                  <Star size={15} className="fill-[#ED0F02] text-[#ED0F02]" />
+                  <span className="font-jakarta text-base font-extrabold sm:text-lg">4.8/5</span>
+                </span>
+                <span className="font-inter text-[8.5px] font-medium uppercase tracking-[0.14em] text-white/60 sm:text-[9px]">Vendeurs notés</span>
+              </div>
+              <div className="flex flex-col gap-1 border-l border-white/10 px-4 py-3 sm:px-5 md:border-l-0">
+                <span className="flex items-center gap-1.5 text-white">
+                  <BadgeCheck size={15} className="text-[#ED0F02]" strokeWidth={2.6} />
+                  <span className="font-jakarta text-base font-extrabold sm:text-lg">50+</span>
+                </span>
+                <span className="font-inter text-[8.5px] font-medium uppercase tracking-[0.14em] text-white/60 sm:text-[9px]">Boutiques vérifiées</span>
+              </div>
+              <div className="flex flex-col gap-1 border-t border-white/10 px-4 py-3 sm:px-5 md:border-t-0 md:border-l">
+                <span className="flex items-center gap-1.5 text-white">
+                  <Package size={15} className="text-[#ED0F02]" strokeWidth={2.2} />
+                  <span className="font-jakarta text-base font-extrabold sm:text-lg">1 500+</span>
+                </span>
+                <span className="font-inter text-[8.5px] font-medium uppercase tracking-[0.14em] text-white/60 sm:text-[9px]">Articles publiés</span>
+              </div>
+              <div className="flex flex-col gap-1 border-l border-t border-white/10 px-4 py-3 sm:px-5 md:border-l md:border-t-0">
+                <span className="flex items-center gap-1.5 text-white">
+                  <ShieldCheck size={15} className="text-[#ED0F02]" strokeWidth={2.2} />
+                  <span className="font-jakarta text-[13px] font-extrabold leading-tight sm:text-base">Escrow + PIN</span>
+                </span>
+                <span className="font-inter text-[8.5px] font-medium uppercase tracking-[0.14em] text-white/60 sm:text-[9px]">Paiement sécurisé</span>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      <div className="space-y-4 px-3 py-4 sm:px-6">
-        {/* Ventes Flash */}
-        {flashItems.length > 0 && !q && <FlashBanner articles={flashItems} />}
-
-        {/* Barre de tri / contexte */}
-        <div className="flex items-center justify-between gap-2">
-          <p className="text-xs font-inter text-djassa-slate">
-            {isLoading ? 'Chargement…' : (
-              <><strong className="text-djassa-black">{total}</strong> annonce{total > 1 ? 's' : ''}{q && <> pour « <span className="font-semibold text-djassa-black">{q}</span> »</>}</>
-            )}
-          </p>
-          <div className="flex items-center gap-1.5 text-[11px] font-semibold">
-            {[
-              { key: 'latest', label: 'Récents' },
-              { key: 'price_asc', label: 'Prix ↑' },
-              { key: 'price_desc', label: 'Prix ↓' },
-            ].map((s) => (
-              <button key={s.key} onClick={() => setSort(s.key)} className={`rounded-full px-2.5 py-1 ${sort === s.key ? 'bg-djassa-black text-white' : 'text-djassa-slate hover:text-djassa-black'}`}>
-                {s.label}
-              </button>
-            ))}
+      {/* ===== Grille produits — pleine largeur ===== */}
+      <div id="feed" className="mx-auto max-w-7xl space-y-4 px-3 py-5 sm:px-6 md:py-8">
+        {q && (
+          <div className="flex items-center justify-between gap-2">
+            <p className="font-inter text-xs text-djassa-slate">Résultats pour « <span className="font-bold text-djassa-black">{q}</span> »</p>
+            <button onClick={clearQuery} className="inline-flex items-center gap-1 rounded-full border border-djassa-black/15 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-djassa-slate transition hover:border-djassa-red hover:text-djassa-red">
+              <X size={12} /> Effacer
+            </button>
           </div>
-        </div>
+        )}
 
-        {/* Grille */}
         {isLoading ? (
           <div ref={gridRef} className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {Array.from({ length: 8 }).map((_, i) => <ProductCardSkeleton key={i} />)}
@@ -154,6 +157,7 @@ export default function Feed() {
           <EmptyState title="Impossible de charger le fil" hint="Vérifiez que l'API Djassa est démarrée (:8899)." />
         ) : articles.length === 0 ? (
           <EmptyState
+            art="search"
             title="Rien à afficher ici pour l'instant"
             hint={q ? `Aucun article trouvé pour « ${q} ». Essayez un autre mot-clé.` : 'Soyez le premier à publier dans ce rayon.'}
             action={<Link to="/publier" className="btn-red btn-sm">Publier un article</Link>}
@@ -176,16 +180,6 @@ export default function Feed() {
             )}
           </>
         )}
-
-        {/* Pied éditorial troc (signature) */}
-        <aside className="flex items-center gap-3 rounded-2xl border border-djassa-red/25 bg-gradient-to-r from-djassa-red/5 to-transparent p-4">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-djassa-red text-white"><ArrowLeftRight size={20} /></span>
-          <div className="min-w-0 flex-1">
-            <p className="font-jakarta text-xs font-extrabold text-djassa-black">Le troc Djassa, en 3 étapes</p>
-            <p className="text-[11px] text-djassa-slate">Publiez → proposez vos articles + une soulte → échangez avec code PIN. Zéro arnaque.</p>
-          </div>
-          <Link to="/publier" className="btn-red btn-sm shrink-0"><Zap size={14} /> Publier</Link>
-        </aside>
       </div>
     </div>
   );

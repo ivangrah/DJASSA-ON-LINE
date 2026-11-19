@@ -97,6 +97,7 @@ export default function Souhaits() {
           Array.from({ length: 4 }).map((_, i) => <div key={i} className="skeleton h-24 w-full" />)
         ) : souhaits.length === 0 ? (
           <EmptyState
+            art="wishlist"
             title={tab === 'miens' ? 'Aucun souhait publié' : 'Rien ne correspond'}
             hint={tab === 'miens' ? 'Publiez ce que vous cherchez — les vendeurs compatibles vous contacteront.' : 'Élargissez votre recherche ou publiez le vôtre.'}
             action={tab === 'tous' ? <button className="btn-red btn-sm" onClick={() => setComposeOpen(true)}>Publier un besoin</button> : null}

@@ -9,7 +9,7 @@ import { api } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { formatFCFA, timeAgo, BARTER_STATUS } from '../lib/format';
-import { Avatar, Spinner } from '../components/ui';
+import { Avatar, Spinner, EmptyState } from '../components/ui';
 import BarterModal from '../components/BarterModal';
 
 export default function Messages() {
@@ -61,7 +61,7 @@ function Inbox({ partnerId, articleId, onSelect }) {
         {isLoading ? (
           <div className="flex justify-center p-6"><Spinner /></div>
         ) : conversations.length === 0 ? (
-          <p className="p-6 text-center text-sm text-djassa-slate">Aucune conversation pour l'instant.<br />Proposez un troc ou écrivez à un vendeur depuis une fiche article.</p>
+          <EmptyState art="message" title="Aucune conversation" hint="Proposez un troc ou écrivez à un vendeur depuis une fiche article." />
         ) : (
           conversations.map((conv) => {
             const active = conv.with?.id === partnerId && (conv.article?.id ?? '') === (articleId ?? '');

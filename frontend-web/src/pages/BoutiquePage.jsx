@@ -88,7 +88,7 @@ export default function BoutiquePage() {
       {/* Catalogue neuf */}
       <h2 className="section-title mt-5 flex items-center gap-2"><Store size={18} className="text-djassa-red" /> Nouveautés de la boutique</h2>
       {articles.length === 0 ? (
-        <EmptyState title="Aucun article en ligne" hint="Cette boutique n'a pas encore d'article publié." />
+        <EmptyState art="box" title="Aucun article en ligne" hint="Cette boutique n'a pas encore d'article publié." />
       ) : (
         <>
           <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">

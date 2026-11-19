@@ -16,7 +16,7 @@ export default function ProductCard({ article, compact = false }) {
   const prixOriginal = Number(article.prix);
 
   return (
-    <Link to={`/article/${article.id}`} className="djassa-card djassa-card-hover group block" aria-label={article.titre}>
+    <Link to={`/article/${article.id}`} className="djassa-card djassa-card-hover group pressable block" aria-label={article.titre}>
       {/* Image 4:5 */}
       <div className="relative overflow-hidden bg-djassa-cloud">
         {imageOk ? (
@@ -55,7 +55,7 @@ export default function ProductCard({ article, compact = false }) {
           onClick={(e) => { e.preventDefault(); setFaved((v) => !v); }}
           className="absolute right-2 top-2 rounded-full bg-white/90 p-2 shadow backdrop-blur transition hover:scale-110"
         >
-          <Heart size={16} strokeWidth={2.4} className={faved ? 'fill-djassa-red text-djassa-red' : 'text-djassa-black'} />
+          <Heart key={String(faved)} size={16} strokeWidth={2.4} className={`${faved ? 'fill-djassa-red text-djassa-red heart-pop' : 'text-djassa-black'}`} />
         </button>
       </div>
 

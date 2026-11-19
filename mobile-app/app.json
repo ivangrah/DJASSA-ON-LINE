@@ -7,7 +7,7 @@
     "scheme": "djassa",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
-    "backgroundColor": "#121212",
+    "backgroundColor": "#ED0F02",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "ci.djassaonline.app"
@@ -15,7 +15,7 @@
     "android": {
       "package": "ci.djassaonline.app",
       "adaptiveIcon": {
-        "backgroundColor": "#E11D48",
+        "backgroundColor": "#ED0F02",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
@@ -24,13 +24,18 @@
     "web": {
       "favicon": "./assets/favicon.png",
       "name": "Djassa Online",
-      "shortName": "Djassa Online",
-      "themeColor": "#121212",
-      "backgroundColor": "#121212"
+      "shortName": "Djassa",
+      "themeColor": "#ED0F02",
+      "backgroundColor": "#ED0F02"
     },
     "plugins": [
       "expo-secure-store",
       "expo-font"
-    ]
+    ],
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ED0F02"
+    }
   }
 }

@@ -117,7 +117,7 @@ export default function MonDjassa() {
       {tab === 'annonces' && (
         <div className="mt-3">
           {loadingMine ? <div className="flex justify-center p-8"><Spinner /></div> : myArticles.length === 0 ? (
-            <EmptyState title="Aucune annonce publiée" hint="Publiez votre premier article en moins de 60 secondes." action={<Link to="/publier" className="btn-red btn-sm">Publier maintenant</Link>} />
+            <EmptyState art="box" title="Aucune annonce publiée" hint="Publiez votre premier article en moins de 60 secondes." action={<Link to="/publier" className="btn-red btn-sm">Publier maintenant</Link>} />
           ) : (
             <ul className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               {myArticles.map((a) => {

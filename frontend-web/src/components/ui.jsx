@@ -27,10 +27,18 @@ export function ProductCardSkeleton() {
 }
 
 /* ---------- État vide (flat line-art bichrome + accent rouge) ---------- */
-export function EmptyState({ title, hint, action, icon }) {
+export function EmptyState({ title, hint, action, art = 'default', icon }) {
+  const artMap = {
+    default: <DefaultEmptyArt />,
+    search: <SearchArt />,
+    wishlist: <WishlistArt />,
+    box: <BoxArt />,
+    message: <MessageArt />,
+  };
+
   return (
     <div className="flex flex-col items-center justify-center gap-3 py-14 text-center">
-      <div className="flex h-36 w-48 items-center justify-center">{icon ?? <DefaultEmptyArt />}</div>
+      <div className="flex h-36 w-48 items-center justify-center">{icon ?? artMap[art] ?? artMap.default}</div>
       <p className="font-jakarta font-bold text-djassa-black">{title}</p>
       {hint && <p className="max-w-xs text-sm text-djassa-slate">{hint}</p>}
       {action && <div className="mt-2">{action}</div>}
@@ -43,9 +51,53 @@ function DefaultEmptyArt() {
     <svg viewBox="0 0 200 160" className="h-full w-full" fill="none" aria-hidden="true">
       <circle cx="100" cy="80" r="52" stroke="#121212" strokeWidth="3" strokeDasharray="10 8" opacity="0.35" />
       <circle cx="100" cy="80" r="30" stroke="#121212" strokeWidth="3" opacity="0.55" />
-      <path d="M100 62v36M100 98l-12-12M100 98l12-12" stroke="#121212" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" opacity="0.75" transform="rotate(0 100 80)" />
+      <path d="M100 62v36M100 98l-12-12M100 98l12-12" stroke="#121212" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" opacity="0.75" />
       <circle cx="148" cy="46" r="10" fill="#E11D48" />
       <path d="M145 46l2.2 2.2L152.5 43" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function SearchArt() {
+  return (
+    <svg viewBox="0 0 200 160" className="h-full w-full" fill="none" aria-hidden="true">
+      <circle cx="88" cy="72" r="40" stroke="#121212" strokeWidth="6" opacity="0.75" />
+      <line x1="118" y1="102" x2="152" y2="136" stroke="#121212" strokeWidth="7" strokeLinecap="round" />
+      <path d="M72 66c4-10 14-16 24-15" stroke="#121212" strokeWidth="5" strokeLinecap="round" opacity="0.5" />
+      <circle cx="150" cy="42" r="9" fill="#E11D48" />
+    </svg>
+  );
+}
+
+function WishlistArt() {
+  return (
+    <svg viewBox="0 0 200 160" className="h-full w-full" fill="none" aria-hidden="true">
+      <path d="M60 30h80l-8 26H68L60 30Z" stroke="#121212" strokeWidth="5" strokeLinejoin="round" />
+      <path d="M72 62h56l-6 62H78l-6-62Z" stroke="#121212" strokeWidth="5" strokeLinejoin="round" />
+      <path d="M92 84h16M92 102h16" stroke="#121212" strokeWidth="4" strokeLinecap="round" opacity="0.5" />
+      <circle cx="150" cy="44" r="13" fill="#E11D48" />
+      <path d="M144.5 44l4 4 7-8.5" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function BoxArt() {
+  return (
+    <svg viewBox="0 0 200 160" className="h-full w-full" fill="none" aria-hidden="true">
+      <path d="M100 20 L160 52 L160 110 L100 142 L40 110 L40 52 L100 20Z" stroke="#121212" strokeWidth="5" strokeLinejoin="round" />
+      <path d="M100 20 L160 52 L100 84 L40 52" stroke="#121212" strokeWidth="5" strokeLinejoin="round" opacity="0.6" />
+      <line x1="100" y1="84" x2="100" y2="142" stroke="#121212" strokeWidth="5" opacity="0.6" />
+      <circle cx="162" cy="34" r="11" fill="#E11D48" />
+    </svg>
+  );
+}
+
+function MessageArt() {
+  return (
+    <svg viewBox="0 0 200 160" className="h-full w-full" fill="none" aria-hidden="true">
+      <path d="M40 40h120v64H92l-26 22v-22H40V40Z" stroke="#121212" strokeWidth="5" strokeLinejoin="round" />
+      <path d="M64 66h72M64 84h48" stroke="#121212" strokeWidth="4" strokeLinecap="round" opacity="0.5" />
+      <circle cx="160" cy="34" r="10" fill="#E11D48" />
     </svg>
   );
 }
@@ -91,6 +143,7 @@ export function Modal({ open, onClose, title, children, wide = false, footer }) 
 /* ---------- Countdown de Vente Flash ---------- */
 export function FlashCountdown({ targetIso, className = '' }) {
   const [label, setLabel] = useState('--:--:--');
+  const [urgent, setUrgent] = useState(false);
 
   useEffect(() => {
     const tick = () => {
@@ -99,13 +152,14 @@ export function FlashCountdown({ targetIso, className = '' }) {
       const m = String(Math.floor((total % 3600) / 60)).padStart(2, '0');
       const s = String(total % 60).padStart(2, '0');
       setLabel(`${h}:${m}:${s}`);
+      setUrgent(total > 0 && total < 600);
     };
     tick();
     const t = window.setInterval(tick, 1000);
     return () => window.clearInterval(t);
   }, [targetIso]);
 
-  return <span className={`tabular-nums font-jakarta font-extrabold ${className}`}>{label}</span>;
+  return <span className={`tabular-nums font-jakarta font-extrabold ${urgent ? 'flash-urgent' : ''} ${className}`}>{label}</span>;
 }
 
 /* ---------- Saisie PIN à 4 chiffres (remise physique) ---------- */
