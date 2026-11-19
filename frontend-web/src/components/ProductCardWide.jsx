@@ -4,8 +4,8 @@ import { ArrowLeftRight, BadgeCheck, Heart, Star, Zap } from 'lucide-react';
 import { CONDITION_LABELS, formatFCFA } from '../lib/format';
 
 /**
- * Carte produit compacte (style épuré, presque carrée).
- * Image 4:3, titre, prix FCFA + barré, note, description, 2 boutons.
+ * Carte produit compacte — conteneur div cliquable (pas de <a> imbriqué).
+ * Toute la carte mène à la fiche sauf boutons/liens internes.
  */
 export default function ProductCardWide({ article }) {
   const navigate = useNavigate();
@@ -21,30 +21,42 @@ export default function ProductCardWide({ article }) {
   const sellerName = isPro ? article.boutique?.nom_boutique : article.proprietaire?.nom ?? 'Particulier';
   const description = (article.description ?? '').trim();
 
-  const goPrimary = (e) => {
-    e.preventDefault();
-    navigate(`/article/${article.id}${trocable ? '?troc=1' : ''}`);
+  const goPrimary = () => navigate(`/article/${article.id}${trocable ? '?troc=1' : ''}`);
+  const goDetails = () => navigate(`/article/${article.id}`);
+  const handleCardClick = (e) => {
+    if (e.target.closest('button, a')) return;
+    navigate(`/article/${article.id}`);
   };
 
   return (
-    <Link
-      to={`/article/${article.id}`}
-      className="group flex flex-col overflow-hidden rounded-[20px] bg-white p-2.5 shadow-card ring-1 ring-djassa-black/6 transition-all duration-300 hover:-translate-y-1 hover:shadow-pop focus-visible:ring-djassa-red"
+    <div
+      onClick={handleCardClick}
+      role="link"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if ((e.key === 'Enter' || e.key === ' ') && !e.target.closest('button, a')) {
+          e.preventDefault();
+          navigate(`/article/${article.id}`);
+        }
+      }}
+      className="group flex cursor-pointer flex-col overflow-hidden rounded-[20px] bg-white p-2.5 shadow-card ring-1 ring-djassa-black/6 transition-all duration-300 hover:-translate-y-1 hover:shadow-pop focus-visible:ring-djassa-red"
       aria-label={`${article.titre} — ${formatFCFA(prixActuel)}`}
     >
       {/* Image */}
       <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl bg-djassa-cloud">
-        {imageOk && image ? (
-          <img
-            src={image}
-            alt={article.titre}
-            loading="lazy"
-            onError={() => setImageOk(false)}
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
-          />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center bg-djassa-mist font-jakarta text-lg font-extrabold text-djassa-black/15">Djassa</div>
-        )}
+        <Link to={`/article/${article.id}`} className="block h-full w-full" aria-label={`Voir ${article.titre}`} tabIndex={-1}>
+          {imageOk && image ? (
+            <img
+              src={image}
+              alt={article.titre}
+              loading="lazy"
+              onError={() => setImageOk(false)}
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.05]"
+            />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-djassa-mist font-jakarta text-lg font-extrabold text-djassa-black/15">Djassa</div>
+          )}
+        </Link>
 
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-black/40 to-transparent" />
 
@@ -64,7 +76,7 @@ export default function ProductCardWide({ article }) {
           type="button"
           aria-pressed={faved}
           aria-label={faved ? 'Retirer des favoris' : 'Ajouter aux favoris'}
-          onClick={(e) => { e.preventDefault(); setFaved((v) => !v); }}
+          onClick={() => setFaved((v) => !v)}
           className="absolute right-2 top-2 rounded-full bg-white/92 p-1.5 shadow-sm transition hover:scale-110 active:scale-95"
         >
           <Heart size={12} strokeWidth={2.6} className={faved ? 'fill-djassa-red text-djassa-red heart-pop' : 'text-djassa-black'} />
@@ -78,30 +90,32 @@ export default function ProductCardWide({ article }) {
       {/* Infos */}
       <div className="flex flex-1 flex-col px-1.5 pb-1.5 pt-2.5">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="line-clamp-2 min-h-[2.15rem] font-jakarta text-[11.5px] font-bold leading-snug text-djassa-black transition group-hover:text-djassa-red">
-            {article.titre}
-          </h3>
-          <span className="mt-0.5 hidden shrink-0 rounded-full bg-djassa-cloud px-2 py-0.5 text-[7.5px] font-bold uppercase tracking-wide text-djassa-slate sm:inline-flex">
+          <Link to={`/article/${article.id}`} className="min-w-0 flex-1">
+            <h3 className="line-clamp-2 min-h-[2.2rem] font-jakarta text-[13px] font-bold leading-[1.3] tracking-[-0.015em] text-djassa-black transition group-hover:text-djassa-red sm:text-[13.5px]">
+              {article.titre}
+            </h3>
+          </Link>
+          <span className="mt-0.5 hidden shrink-0 rounded-full bg-djassa-cloud px-2 py-0.5 text-[7.5px] font-semibold uppercase tracking-wide text-djassa-slate sm:inline-flex">
             {article.categorie}
           </span>
         </div>
 
         <p className="mt-1 flex flex-wrap items-baseline gap-1.5">
-          <span className="font-jakarta text-[17px] font-extrabold tracking-tight text-[#E60023]">{formatFCFA(prixActuel)}</span>
-          {isFlash && <span className="font-inter text-[9px] text-djassa-slate line-through">{formatFCFA(prixOriginal)}</span>}
-          {article.prix_negociable && <span className="rounded-full bg-emerald-50 px-1.5 py-0.5 text-[7px] font-extrabold uppercase tracking-wide text-emerald-700">Nég.</span>}
+          <span className="font-jakarta text-[17px] font-extrabold tracking-tight text-[#E60023] sm:text-[18px]">{formatFCFA(prixActuel)}</span>
+          {isFlash && <span className="font-inter text-[10px] font-medium text-djassa-slate line-through">{formatFCFA(prixOriginal)}</span>}
+          {article.prix_negociable && <span className="rounded-full bg-emerald-50 px-1.5 py-0.5 text-[7px] font-bold uppercase tracking-wide text-emerald-700">Nég.</span>}
         </p>
 
-        <p className="mt-1 flex items-center gap-1 text-[9px] text-djassa-slate">
+        <p className="mt-1 flex items-center gap-1 text-[10px] text-djassa-slate">
           <span className="flex items-center gap-0.5 text-amber-400">
             {[0, 1, 2, 3, 4].map((i) => <Star key={i} size={9} className="fill-amber-400 text-amber-400" />)}
           </span>
-          <span className="font-semibold text-djassa-black/75">4.8</span>
+          <span className="font-inter font-semibold text-djassa-black/75">4.8</span>
           <span>·</span>
-          <span className="truncate">{sellerName}{isPro && article.boutique?.verifie ? ' ✓' : ''}</span>
+          <span className="truncate font-inter">{sellerName}{isPro && article.boutique?.verifie ? ' ✓' : ''}</span>
         </p>
 
-        <p className="mt-1 line-clamp-1 font-inter text-[10px] leading-relaxed text-djassa-slate">
+        <p className="mt-1 line-clamp-2 min-h-[2rem] font-inter text-[11px] leading-[1.45] text-djassa-slate">
           {description || 'Bon état, remise en main propre ou troc possible.'}
         </p>
 
@@ -115,13 +129,13 @@ export default function ProductCardWide({ article }) {
           </button>
           <button
             type="button"
-            onClick={(e) => { e.preventDefault(); navigate(`/article/${article.id}`); }}
+            onClick={goDetails}
             className="inline-flex h-8 items-center justify-center rounded-full border-[1.5px] border-djassa-black/20 px-3 font-jakarta text-[9px] font-extrabold uppercase tracking-[0.1em] text-djassa-black transition hover:border-djassa-black hover:bg-djassa-black hover:text-white active:scale-95"
           >
             Détails
           </button>
         </div>
       </div>
-    </Link>
+    </div>
   );
 }

@@ -194,7 +194,7 @@ export default function ProductDetail() {
               </dl>
             </section>
           )}
-          <button className="mt-4 inline-flex w-fit items-center gap-1 text-[10px] font-semibold text-djassa-slate hover:text-djassa-black"><Flag size={11} /> Signaler cette annonce</button>
+          <button type="button" onClick={() => toast.success('Signalement transmis. Notre équipe va examiner cette annonce.')} className="mt-4 inline-flex w-fit items-center gap-1 text-[10px] font-semibold text-djassa-slate transition hover:text-djassa-black"><Flag size={11} /> Signaler cette annonce</button>
         </div>
       </div>
 

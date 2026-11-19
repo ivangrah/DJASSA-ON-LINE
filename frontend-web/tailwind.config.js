@@ -18,8 +18,8 @@ export default {
         },
       },
       fontFamily: {
-        jakarta: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
-        inter: ['Inter', 'system-ui', 'sans-serif'],
+        jakarta: ['"Outfit"', 'system-ui', 'sans-serif'],
+        inter: ['"DM Sans"', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
         card: '0 10px 34px rgba(18,18,18,0.10)',
