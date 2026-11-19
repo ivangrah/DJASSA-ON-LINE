@@ -88,14 +88,14 @@ export default function Feed() {
           </div>
 
           {/* Headline centré */}
-          <div className="flex flex-1 flex-col items-center justify-center pb-28 pt-6 text-center sm:pb-32 md:pb-36">
-            <h1 className="font-jakarta text-[15vw] font-extrabold leading-[0.92] tracking-tight text-white sm:text-7xl md:text-[92px] xl:text-[104px]">
-              Achète.<br />Vends.<br /><span className="text-[#E60023]">Troque.</span>
+          <div className="flex flex-1 flex-col items-center justify-center pb-28 pt-10 text-center sm:pb-32 sm:pt-12 md:pb-40 md:pt-16">
+            <h1 className="font-jakarta text-[17vw] font-extrabold leading-[0.95] tracking-tight text-white sm:text-[88px] md:text-[96px]">
+              Achète. Vends.<br /><span className="text-[#E60023]">Troque.</span>
             </h1>
-            <p className="mt-4 max-w-md font-inter text-[12px] font-medium leading-snug text-white/80 sm:text-[15px]">
-              Outillage, High-Tech, Mode, Électroménager — neuf ou seconde main, troc pur ou mixte avec soulte FCFA. Paiement Mobile Money sécurisé par code PIN.
+            <p className="mt-7 max-w-lg font-inter text-[14px] font-medium leading-7 tracking-wide text-white/85 sm:text-[16px] sm:leading-8">
+              Tout le Djassa dans ta poche — occasion, troc malin, neuf au meilleur prix. Payé en confiance, remis en main propre.
             </p>
-            <div className="mt-6">
+            <div className="mt-9">
               <a href="#feed" className="inline-flex h-12 items-center gap-2 rounded-full bg-[#ED0F02] px-6 font-jakarta text-[12px] font-extrabold uppercase tracking-[0.16em] text-white shadow-[0_14px_36px_rgba(237,15,2,0.45)] transition hover:bg-[#ff1e12] active:scale-95 sm:h-14 sm:px-8 sm:text-[13px]">
                 Explorer le marché <ArrowRight size={17} strokeWidth={2.8} />
               </a>
@@ -105,33 +105,33 @@ export default function Feed() {
           {/* Barre de réassurance — 4 statistiques */}
           <div className="absolute inset-x-3 bottom-[78px] sm:inset-x-4 md:inset-x-8 md:bottom-6 xl:inset-x-12">
             <div className="grid grid-cols-2 divide-white/10 rounded-2xl border border-white/10 bg-black/60 backdrop-blur-md md:grid-cols-4 md:divide-x">
-              <div className="flex flex-col gap-1 px-4 py-3 sm:px-5">
+              <div className="flex flex-col gap-1.5 px-4 py-4 sm:px-6">
                 <span className="flex items-center gap-1.5 text-white">
                   <Star size={15} className="fill-[#ED0F02] text-[#ED0F02]" />
                   <span className="font-jakarta text-base font-extrabold sm:text-lg">4.8/5</span>
                 </span>
-                <span className="font-inter text-[8.5px] font-medium uppercase tracking-[0.14em] text-white/60 sm:text-[9px]">Vendeurs notés</span>
+                <span className="font-inter text-[8.5px] font-medium uppercase tracking-[0.16em] text-white/60 sm:text-[9px]">Vendeurs notés</span>
               </div>
-              <div className="flex flex-col gap-1 border-l border-white/10 px-4 py-3 sm:px-5 md:border-l-0">
+              <div className="flex flex-col gap-1.5 border-l border-white/10 px-4 py-4 sm:px-6 md:border-l-0">
                 <span className="flex items-center gap-1.5 text-white">
                   <BadgeCheck size={15} className="text-[#ED0F02]" strokeWidth={2.6} />
                   <span className="font-jakarta text-base font-extrabold sm:text-lg">50+</span>
                 </span>
-                <span className="font-inter text-[8.5px] font-medium uppercase tracking-[0.14em] text-white/60 sm:text-[9px]">Boutiques vérifiées</span>
+                <span className="font-inter text-[8.5px] font-medium uppercase tracking-[0.16em] text-white/60 sm:text-[9px]">Boutiques vérifiées</span>
               </div>
-              <div className="flex flex-col gap-1 border-t border-white/10 px-4 py-3 sm:px-5 md:border-t-0 md:border-l">
+              <div className="flex flex-col gap-1.5 border-t border-white/10 px-4 py-4 sm:px-6 md:border-t-0 md:border-l">
                 <span className="flex items-center gap-1.5 text-white">
                   <Package size={15} className="text-[#ED0F02]" strokeWidth={2.2} />
                   <span className="font-jakarta text-base font-extrabold sm:text-lg">1 500+</span>
                 </span>
-                <span className="font-inter text-[8.5px] font-medium uppercase tracking-[0.14em] text-white/60 sm:text-[9px]">Articles publiés</span>
+                <span className="font-inter text-[8.5px] font-medium uppercase tracking-[0.16em] text-white/60 sm:text-[9px]">Articles publiés</span>
               </div>
-              <div className="flex flex-col gap-1 border-l border-t border-white/10 px-4 py-3 sm:px-5 md:border-l md:border-t-0">
+              <div className="flex flex-col gap-1.5 border-l border-t border-white/10 px-4 py-4 sm:px-6 md:border-l md:border-t-0">
                 <span className="flex items-center gap-1.5 text-white">
                   <ShieldCheck size={15} className="text-[#ED0F02]" strokeWidth={2.2} />
                   <span className="font-jakarta text-[13px] font-extrabold leading-tight sm:text-base">Escrow + PIN</span>
                 </span>
-                <span className="font-inter text-[8.5px] font-medium uppercase tracking-[0.14em] text-white/60 sm:text-[9px]">Paiement sécurisé</span>
+                <span className="font-inter text-[8.5px] font-medium uppercase tracking-[0.16em] text-white/60 sm:text-[9px]">Paiement sécurisé</span>
               </div>
             </div>
           </div>
