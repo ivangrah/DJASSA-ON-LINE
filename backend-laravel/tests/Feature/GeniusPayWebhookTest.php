@@ -2,6 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\Abonnement;
+use App\Models\User;
+use App\Models\WebhookLog;
 use App\Services\GeniusPayService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -77,9 +80,35 @@ class GeniusPayWebhookTest extends TestCase
 
     public function test_deux_webhooks_identiques_ne_creent_pas_deux_activations(): void
     {
-        $this->markTestIncomplete(
-            'Idempotence assurée par webhooks_logs(reference, payload_hash) dans database/schemas/djassa_escrow_db.sql ; '
-            .'à porter dans la table active backend-laravel/database/migrations/ puis à tester ici.'
+        $user = User::factory()->create(['plan_abonnement' => null]);
+        $abonnement = Abonnement::create([
+            'utilisateur_id' => $user->id,
+            'formule' => Abonnement::FORMULE_PRO,
+            'montant_fcfa' => Abonnement::PRIX_PRO,
+            'statut' => Abonnement::STATUT_PENDING,
+            'reference' => 'DJASSA-PRO-'.strtoupper(bin2hex(random_bytes(6))),
+        ]);
+
+        $body = json_encode([
+            'event_id' => 'evt-idempotence-1',
+            'reference' => $abonnement->reference,
+            'status' => 'success',
+        ], JSON_UNESCAPED_SLASHES);
+        $signature = hash_hmac('sha256', $body, self::SECRET);
+
+        $call = fn () => $this->call(
+            'POST',
+            '/api/v1/webhooks/geniuspay',
+            [], [], [],
+            ['CONTENT_TYPE' => 'application/json', 'HTTP_X_GENIUSPAY_SIGNATURE' => $signature],
+            $body
         );
+
+        $call()->assertStatus(200)->assertJsonPath('abonnement', 'active');
+        $call()->assertStatus(200)->assertJsonPath('idempotent', true);
+
+        $this->assertSame(1, WebhookLog::count());
+        $this->assertSame(1, Abonnement::where('statut', Abonnement::STATUT_ACTIVE)->count());
+        $this->assertSame(User::ROLE_VENDEUR_PRO, $user->refresh()->role);
     }
 }

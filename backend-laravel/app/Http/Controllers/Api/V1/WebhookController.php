@@ -7,6 +7,7 @@ use App\Models\Abonnement;
 use App\Models\Article;
 use App\Models\Message;
 use App\Models\Transaction;
+use App\Models\WebhookLog;
 use App\Services\BrevoNotificationService;
 use App\Services\EscrowService;
 use App\Services\GeniusPayService;
@@ -47,8 +48,39 @@ class WebhookController extends Controller
             return response()->json(['message' => 'Référence manquante.'], 422);
         }
 
+        $payloadHash = hash('sha256', $rawBody);
+        $eventId = (string) ($payload['event_id'] ?? $payload['id'] ?? $payloadHash);
+
+        // Idempotence : un même événement rejoué est acquitté sans rejouer l'effet métier.
+        $dejaTraite = WebhookLog::query()
+            ->where('fournisseur', 'geniuspay')
+            ->where('reference', $reference)
+            ->where('event_id', $eventId)
+            ->exists();
+
+        if ($dejaTraite) {
+            Log::info('[Webhook GeniusPay] Événement déjà traité (idempotent)', ['reference' => $reference, 'event_id' => $eventId]);
+
+            return response()->json(['received' => true, 'idempotent' => true]);
+        }
+
         Log::info('[Webhook GeniusPay] Événement reçu', ['reference' => $reference, 'status' => $status]);
 
+        $response = $this->processGeniusPay($payload, $reference, $status);
+
+        WebhookLog::create([
+            'fournisseur' => 'geniuspay',
+            'reference' => $reference,
+            'event_id' => $eventId,
+            'payload_hash' => $payloadHash,
+            'traite_le' => now(),
+        ]);
+
+        return $response;
+    }
+
+    private function processGeniusPay(array $payload, string $reference, ?string $status): JsonResponse
+    {
         // Abonnement Pro (DJASSA-PRO-…) — activé avant toute recherche de transaction
         if (str_starts_with($reference, 'DJASSA-PRO-') || Abonnement::where('geniuspay_ref', $reference)->exists()) {
             $abonnement = Abonnement::where('geniuspay_ref', $reference)
