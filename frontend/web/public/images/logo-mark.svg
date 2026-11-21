@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <!-- Base rouge Djassa -->
+  <rect x="0" y="0" width="100" height="100" rx="22" fill="#780000"/>
+  <!-- Icône intérieure blanche (D stylisé) -->
+  <path fill="#ffffff" d="M34 26 H56 Q72 26 72 50 Q72 74 56 74 H34 V57 H52 Q60 57 60 50 Q60 43 52 43 H34 Z"/>
+</svg>

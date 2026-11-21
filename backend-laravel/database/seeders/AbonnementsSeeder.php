@@ -22,7 +22,7 @@ class AbonnementsSeeder extends Seeder
             Abonnement::updateOrCreate(
                 ['utilisateur_id' => $user->id],
                 [
-                    'formule' => $isPro ? Abonnement::FORMULE_PRO : Abonnement::FORMULE_FREE,
+                    'formule' => $isPro ? Abonnement::FORMULE_PRO : Abonnement::FORMULE_GRATUIT,
                     'montant_fcfa' => $isPro ? Abonnement::PRIX_PRO : 0,
                     'statut' => Abonnement::STATUT_ACTIVE,
                     'reference' => 'DJASSA-'.($isPro ? 'PRO' : 'FREE').'-'.strtoupper(substr($user->id, 0, 12)),

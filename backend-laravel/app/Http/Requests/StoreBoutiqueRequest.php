@@ -9,7 +9,7 @@ class StoreBoutiqueRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        // Ouverture de boutique : rôle pro_seller requis (App Flow §2 étape 2)
+        // Ouverture de boutique : rôle vendeur_pro requis (App Flow §2 étape 2)
         return $this->user()?->isProSeller() ?? false;
     }
 

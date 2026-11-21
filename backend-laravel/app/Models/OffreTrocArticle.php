@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  */
 class OffreTrocArticle extends Model
 {
+    protected $connection = 'troc';
+
     use HasFactory, HasUuids;
 
     protected $table = 'offres_troc_articles';

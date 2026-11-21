@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Souhait extends Model
 {
+    protected $connection = 'catalog';
+
     use HasFactory, HasUuids;
 
     protected $fillable = [

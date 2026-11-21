@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Article extends Model
 {
+    protected $connection = 'catalog';
+
     use HasFactory, HasUuids;
 
     protected $fillable = [

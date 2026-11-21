@@ -1,0 +1,324 @@
+{
+  "version": 1,
+  "historyId": "aa45a9db-73e4-4714-a501-7484caceaf13",
+  "currentRevision": "fe4bc345-87fa-44d2-90c8-eb9dc90e305b",
+  "pendingChanges": false,
+  "files": {
+    "AGENTS.md": {
+      "hash": "729e31835a21c7b42ee006e2aacc63016abc05d26883f871ad3bf206943f2cfb",
+      "content": "/home/aizen/.cache/hyperframes/history/aa45a9db-73e4-4714-a501-7484caceaf13/blobs/72/729e31835a21c7b42ee006e2aacc63016abc05d26883f871ad3bf206943f2cfb"
+    },
+    "CLAUDE.md": {
+      "hash": "729e31835a21c7b42ee006e2aacc63016abc05d26883f871ad3bf206943f2cfb",
+      "content": "/home/aizen/.cache/hyperframes/history/aa45a9db-73e4-4714-a501-7484caceaf13/blobs/72/729e31835a21c7b42ee006e2aacc63016abc05d26883f871ad3bf206943f2cfb"
+    },
+    "assets/1511707171634-5f897ff02aa9.jpg": {
+      "hash": "53994371821d9d5733b8e845b01628daa4eab7d9c8b2d7d4f3c62a1ae5d7203a",
+      "content": "/home/aizen/.cache/hyperframes/history/aa45a9db-73e4-4714-a501-7484caceaf13/blobs/53/53994371821d9d5733b8e845b01628daa4eab7d9c8b2d7d4f3c62a1ae5d7203a"
+    },
+    "assets/1517694712202-14dd9538aa97.jpg": {
+      "hash": "df6a7bc956f81f82bce1207bdfec01a3dc43922e2702344d77c1015b99ea947c",
+      "content": "/home/aizen/.cache/hyperframes/history/aa45a9db-73e4-4714-a501-7484caceaf13/blobs/df/df6a7bc956f81f82bce1207bdfec01a3dc43922e2702344d77c1015b99ea947c"
+    },
+    "assets/hero-shopping-bags.jpg": {
+      "hash": "57193be19e8444a1a088702f7fdfb258f670d8980622fda753da606a565127e1",
+      "content": "/home/aizen/.cache/hyperframes/history/aa45a9db-73e4-4714-a501-7484caceaf13/blobs/57/57193be19e8444a1a088702f7fdfb258f670d8980622fda753da606a565127e1"
+    },
+    "assets/logo-256.png": {
+      "hash": "a981a24f601965db7a1f0fdaa777a8055db89524c3de9a566c861ae1b915e4ad",
+      "content": "/home/aizen/.cache/hyperframes/history/aa45a9db-73e4-4714-a501-7484caceaf13/blobs/a9/a981a24f601965db7a1f0fdaa777a8055db89524c3de9a566c861ae1b915e4ad"
+    },
+    "hyperframes.json": {
+      "hash": "53dbce1e19aa713cbb12ee0bc4d206143b45ab15e6ffbfcaa8f69572d4d24d50",
+      "content": "/home/aizen/.cache/hyperframes/history/aa45a9db-73e4-4714-a501-7484caceaf13/blobs/53/53dbce1e19aa713cbb12ee0bc4d206143b45ab15e6ffbfcaa8f69572d4d24d50"
+    },
+    "index.html": {
+      "hash": "2517fd690a515e4e717804c4dd566ec3a20cf65f80cc8d5d5f9b036cd79b66a2",
+      "content": "/home/aizen/.cache/hyperframes/history/aa45a9db-73e4-4714-a501-7484caceaf13/blobs/25/2517fd690a515e4e717804c4dd566ec3a20cf65f80cc8d5d5f9b036cd79b66a2"
+    },
+    "meta.json": {
+      "hash": "1c97f86c9aaaac1ef4aa0cf3642a1e4f50a15cfe49a8653a1d68985c78f33c6a",
+      "content": "/home/aizen/.cache/hyperframes/history/aa45a9db-73e4-4714-a501-7484caceaf13/blobs/1c/1c97f86c9aaaac1ef4aa0cf3642a1e4f50a15cfe49a8653a1d68985c78f33c6a"
+    },
+    "package.json": {
+      "hash": "3584aaaac45c70bb26bc5165c591209b2f9874bf8de582a3599077e6f35d8ecd",
+      "content": "/home/aizen/.cache/hyperframes/history/aa45a9db-73e4-4714-a501-7484caceaf13/blobs/35/3584aaaac45c70bb26bc5165c591209b2f9874bf8de582a3599077e6f35d8ecd"
+    },
+    "assets/corporate-music.mp3": {
+      "hash": "2729601e95ce85380fe7102b4dbfcbfcd4905ce5bc76269186f05dd91c450987",
+      "content": "/home/aizen/.cache/hyperframes/history/aa45a9db-73e4-4714-a501-7484caceaf13/blobs/27/2729601e95ce85380fe7102b4dbfcbfcd4905ce5bc76269186f05dd91c450987"
+    },
+    "output-with-music.mp4": {
+      "hash": "1f15223eff06d5a9d2725f2ea108d174303123e692f4efbdb4f66f2b8bb93d91",
+      "content": "/home/aizen/.cache/hyperframes/history/aa45a9db-73e4-4714-a501-7484caceaf13/blobs/1f/1f15223eff06d5a9d2725f2ea108d174303123e692f4efbdb4f66f2b8bb93d91"
+    }
+  },
+  "revisions": {
+    "fd196ba1-320d-4e11-9cb2-a243a575952a": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1795130683575,
+      "endedAt": 1795130683576,
+      "files": {
+        "index.html": {
+          "before": "/home/aizen/.cache/hyperframes/history/aa45a9db-73e4-4714-a501-7484caceaf13/blobs/74/742fad401902fa641bf37717088dade35bd4449b839c86fdb38e8944df8f4745",
+          "after": "/home/aizen/.cache/hyperframes/history/aa45a9db-73e4-4714-a501-7484caceaf13/blobs/0f/0febc1e888f51ddb12e63fb17cc489f3acce3d4f0a308909f123948af68dd353"
+        }
+      }
+    },
+    "cf97a79d-e6fc-4c27-8ae5-bd4599d01b7c": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1795131126378,
+      "endedAt": 1795131128379,
+      "files": {
+        "index.html": {
+          "before": "/home/aizen/.cache/hyperframes/history/aa45a9db-73e4-4714-a501-7484caceaf13/blobs/0f/0febc1e888f51ddb12e63fb17cc489f3acce3d4f0a308909f123948af68dd353",
+          "after": "/home/aizen/.cache/hyperframes/history/aa45a9db-73e4-4714-a501-7484caceaf13/blobs/4a/4a2da464dd46fe445c8c82d11b47bbebe0edcf0b6d02454b0c896c95f2f5555e"
+        }
+      }
+    },
+    "51b28975-f291-41ab-b98e-b75ec886c866": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1795131149111,
+      "endedAt": 1795131151111,
+      "files": {
+        "index.html": {
+          "before": "/home/aizen/.cache/hyperframes/history/aa45a9db-73e4-4714-a501-7484caceaf13/blobs/4a/4a2da464dd46fe445c8c82d11b47bbebe0edcf0b6d02454b0c896c95f2f5555e",
+          "after": "/home/aizen/.cache/hyperframes/history/aa45a9db-73e4-4714-a501-7484caceaf13/blobs/25/2517fd690a515e4e717804c4dd566ec3a20cf65f80cc8d5d5f9b036cd79b66a2"
+        }
+      }
+    },
+    "8be15600-5c97-4141-bfc9-b622a7c66559": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1795131775501,
+      "endedAt": 1795131777502,
+      "files": {
+        "assets/corporate-music.mp3": {
+          "before": null,
+          "after": "/home/aizen/.cache/hyperframes/history/aa45a9db-73e4-4714-a501-7484caceaf13/blobs/e3/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    "5349688b-6b18-4dbe-b609-e523dc5aa3dc": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1795131819163,
+      "endedAt": 1795131821164,
+      "files": {
+        "assets/corporate-music.mp3": {
+          "before": "/home/aizen/.cache/hyperframes/history/aa45a9db-73e4-4714-a501-7484caceaf13/blobs/e3/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "after": "/home/aizen/.cache/hyperframes/history/aa45a9db-73e4-4714-a501-7484caceaf13/blobs/1c/1c2a05b064bf0a7c6fba5f114a8b5059fabee4c28d9df2b806c292619e19ed73"
+        }
+      }
+    },
+    "1c1d9b3f-237c-4142-94a5-c4446444f892": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1795131823418,
+      "endedAt": 1795131825419,
+      "files": {
+        "assets/corporate-music.mp3": {
+          "before": "/home/aizen/.cache/hyperframes/history/aa45a9db-73e4-4714-a501-7484caceaf13/blobs/1c/1c2a05b064bf0a7c6fba5f114a8b5059fabee4c28d9df2b806c292619e19ed73",
+          "after": null
+        }
+      }
+    },
+    "790f7462-4461-4935-82b2-3f1ee8381c16": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1795131837268,
+      "endedAt": 1795131839469,
+      "files": {
+        "assets/corporate-music.mp3": {
+          "before": null,
+          "after": "/home/aizen/.cache/hyperframes/history/aa45a9db-73e4-4714-a501-7484caceaf13/blobs/df/dfec81006c1e3ef5ce81b205b01362b50ed52c2a93fdd14267b699ecb39bffee"
+        }
+      }
+    },
+    "7e018244-7b59-402f-be9a-ec803cba2ca4": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1795131840170,
+      "endedAt": 1795131842171,
+      "files": {
+        "output-with-music.mp4": {
+          "before": null,
+          "after": "/home/aizen/.cache/hyperframes/history/aa45a9db-73e4-4714-a501-7484caceaf13/blobs/e3/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    "0fec8ab9-9294-458e-afc0-d7c0deb85fae": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1795131855661,
+      "endedAt": 1795131858921,
+      "files": {
+        "output-with-music.mp4": {
+          "before": "/home/aizen/.cache/hyperframes/history/aa45a9db-73e4-4714-a501-7484caceaf13/blobs/e3/e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "after": "/home/aizen/.cache/hyperframes/history/aa45a9db-73e4-4714-a501-7484caceaf13/blobs/cb/cbffcd9ab939f65d016c0b7e53e2a0fa5b594f4c7386da86214365f200b83e20"
+        }
+      }
+    },
+    "a2426961-e7a6-475f-af16-5f041ae68682": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1795131864014,
+      "endedAt": 1795131866174,
+      "files": {
+        "assets/corporate-music.mp3": {
+          "before": "/home/aizen/.cache/hyperframes/history/aa45a9db-73e4-4714-a501-7484caceaf13/blobs/df/dfec81006c1e3ef5ce81b205b01362b50ed52c2a93fdd14267b699ecb39bffee",
+          "after": "/home/aizen/.cache/hyperframes/history/aa45a9db-73e4-4714-a501-7484caceaf13/blobs/27/2729601e95ce85380fe7102b4dbfcbfcd4905ce5bc76269186f05dd91c450987"
+        }
+      }
+    },
+    "fe4bc345-87fa-44d2-90c8-eb9dc90e305b": {
+      "actor": {
+        "kind": "outside",
+        "name": "Outside"
+      },
+      "label": "Changed outside the app",
+      "startedAt": 1795131866189,
+      "endedAt": 1795131868870,
+      "files": {
+        "output-with-music.mp4": {
+          "before": "/home/aizen/.cache/hyperframes/history/aa45a9db-73e4-4714-a501-7484caceaf13/blobs/cb/cbffcd9ab939f65d016c0b7e53e2a0fa5b594f4c7386da86214365f200b83e20",
+          "after": "/home/aizen/.cache/hyperframes/history/aa45a9db-73e4-4714-a501-7484caceaf13/blobs/1f/1f15223eff06d5a9d2725f2ea108d174303123e692f4efbdb4f66f2b8bb93d91"
+        }
+      }
+    }
+  },
+  "checks": {
+    "latest": {
+      "revision": null,
+      "id": "1f869f56-3879-44b6-94ed-ac427021999f"
+    },
+    "revisions": {
+      "fd196ba1-320d-4e11-9cb2-a243a575952a": [
+        {
+          "id": "732e5ff9-f28a-4675-abaf-388c7696bcf1",
+          "scope": "project",
+          "metadata": {
+            "ok": false,
+            "browserSkipped": false,
+            "options": {
+              "samples": 9,
+              "atTransitions": false,
+              "maxIssues": 80,
+              "collapseStatic": true,
+              "tolerance": 2,
+              "timeout": 45000,
+              "cache": true,
+              "contrast": true,
+              "craft": true,
+              "strict": false,
+              "snapshots": false,
+              "safeZones": [
+                "tiktok",
+                "reels",
+                "shorts"
+              ],
+              "browserGpuMode": "auto",
+              "includeUnmounted": false
+            }
+          },
+          "createdAt": 1795130695998,
+          "contentHash": "d78cc7854a64a9d2cc172b881513ae7386811c34a0d214241f0a45cf720af79a",
+          "revision": "fd196ba1-320d-4e11-9cb2-a243a575952a",
+          "inputFingerprint": "62f495d1479f504d83b6638247dc63f92000a950946937f263b9100c6d8f5fe2",
+          "inputScope": "local-project-files",
+          "attribution": "recorded-revision",
+          "status": "cleaned",
+          "cleanedAfterRender": "aec67782-bdad-41ee-8eab-60bc59b6434a"
+        }
+      ]
+    },
+    "unversioned": [
+      {
+        "id": "1f869f56-3879-44b6-94ed-ac427021999f",
+        "scope": "project",
+        "report": "/home/aizen/DJASSA ON LINE/video-promo/djassa-promo/.hyperframes/artifacts/checks/1f869f56-3879-44b6-94ed-ac427021999f.json",
+        "metadata": {
+          "ok": false,
+          "browserSkipped": false,
+          "options": {
+            "samples": 9,
+            "atTransitions": false,
+            "maxIssues": 80,
+            "collapseStatic": true,
+            "tolerance": 2,
+            "timeout": 45000,
+            "cache": true,
+            "contrast": true,
+            "craft": true,
+            "strict": false,
+            "snapshots": false,
+            "safeZones": [
+              "tiktok",
+              "reels",
+              "shorts"
+            ],
+            "browserGpuMode": "auto",
+            "includeUnmounted": false
+          }
+        },
+        "createdAt": 1795130634252,
+        "contentHash": "a5bc8f08c0239a2a1530a9f1b53c1c8345c55e9e0b72179666dbfbfb486f6855",
+        "revision": null,
+        "inputFingerprint": "d122c15c8c325219e02d7bd27f58be323dadc61a0d8246a048d6a42063a2d015",
+        "inputScope": "local-project-files",
+        "attribution": "unversioned"
+      }
+    ]
+  },
+  "snapshots": {
+    "latest": null,
+    "revisions": {},
+    "unversioned": []
+  },
+  "renders": {
+    "latest": {
+      "id": "aec67782-bdad-41ee-8eab-60bc59b6434a",
+      "completedAt": 1795131496139,
+      "output": "/home/aizen/DJASSA ON LINE/video-promo/djassa-promo/renders/djassa-promo_2026-11-19_23-36-18.mp4",
+      "status": "completed",
+      "revision": "51b28975-f291-41ab-b98e-b75ec886c866"
+    },
+    "retainedRevisions": [
+      "51b28975-f291-41ab-b98e-b75ec886c866"
+    ]
+  },
+  "pendingArtifactCleanup": []
+}

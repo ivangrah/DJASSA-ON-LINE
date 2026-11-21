@@ -1,0 +1,90 @@
+# Djassa Online — orchestration locale de la cible microservices.
+# NOTE : le monolithe backend-laravel tourne encore sur :8899 (voir README.md).
+# Cette stack cible utilise des ports distincts (5433, 6380, 8080) : aucun conflit.
+#   docker compose up -d        # tous les services (infra + gateway + 5 microservices)
+
+name: djassa
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-djassa_dev}
+      POSTGRES_DB: postgres
+    ports:
+      - "5433:5432"          # 5432 déjà occupé sur l'hôte
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./database/init/01-create-databases.sql:/docker-entrypoint-initdb.d/01-create-databases.sql:ro
+      - ./database/schemas:/docker-entrypoint-initdb.d/schemas:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6380:6379"          # 6379 déjà occupé sur l'hôte
+    volumes:
+      - redisdata:/data
+
+  api-gateway:
+    image: nginx:1.27-alpine
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend/gateway/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on: [auth-subscription-service, catalog-boutique-service, troc-engine-service, escrow-payment-service, notification-chat-service]
+
+  auth-subscription-service:
+    build: { context: ./services, args: { SERVICE: auth-subscription-service } }
+    environment:
+      DJASSA_SERVICE: auth-subscription-service
+      DB_URL: postgresql://djassa_auth:change_me_djassa_auth@postgres:5432/djassa_auth_db
+      REDIS_URL: redis://redis:6379
+    depends_on: { postgres: { condition: service_healthy }, redis: { condition: service_started } }
+
+  catalog-boutique-service:
+    build: { context: ./services, args: { SERVICE: catalog-boutique-service } }
+    environment:
+      DJASSA_SERVICE: catalog-boutique-service
+      DB_URL: postgresql://djassa_catalog:change_me_djassa_catalog@postgres:5432/djassa_catalog_db
+      REDIS_URL: redis://redis:6379
+    depends_on: { postgres: { condition: service_healthy }, redis: { condition: service_started } }
+
+  troc-engine-service:
+    build: { context: ./services, args: { SERVICE: troc-engine-service } }
+    environment:
+      DJASSA_SERVICE: troc-engine-service
+      DB_URL: postgresql://djassa_troc:change_me_djassa_troc@postgres:5432/djassa_troc_db
+      REDIS_URL: redis://redis:6379
+    depends_on: { postgres: { condition: service_healthy }, redis: { condition: service_started } }
+
+  escrow-payment-service:
+    build: { context: ./services, args: { SERVICE: escrow-payment-service } }
+    environment:
+      DJASSA_SERVICE: escrow-payment-service
+      DB_URL: postgresql://djassa_escrow:change_me_djassa_escrow@postgres:5432/djassa_escrow_db
+      REDIS_URL: redis://redis:6379
+      GENIUSPAY_API_KEY: ${GENIUSPAY_API_KEY:-}
+      GENIUSPAY_WEBHOOK_SECRET: ${GENIUSPAY_WEBHOOK_SECRET:-}
+    depends_on: { postgres: { condition: service_healthy }, redis: { condition: service_started } }
+
+  notification-chat-service:
+    build: { context: ./services, args: { SERVICE: notification-chat-service } }
+    environment:
+      DJASSA_SERVICE: notification-chat-service
+      DB_URL: postgresql://djassa_chat:change_me_djassa_chat@postgres:5432/djassa_chat_db
+      REDIS_URL: redis://redis:6379
+      BREVO_API_KEY: ${BREVO_API_KEY:-}
+    depends_on: { postgres: { condition: service_healthy }, redis: { condition: service_started } }
+
+volumes:
+  pgdata:
+  redisdata:
+
+networks:
+  default:
+    name: djassa-net

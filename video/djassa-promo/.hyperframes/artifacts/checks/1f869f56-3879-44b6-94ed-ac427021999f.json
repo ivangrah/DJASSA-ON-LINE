@@ -1,0 +1,1634 @@
+{
+  "ok": false,
+  "strict": false,
+  "browserSkipped": false,
+  "lint": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 11,
+    "infoCount": 0,
+    "findings": [
+      {
+        "code": "duplicate_media_discovery_risk",
+        "severity": "warning",
+        "message": "Detected 2 matching img entries with the same source/start/duration.",
+        "selector": "[data-composition-id]",
+        "dataAttributes": {},
+        "sourceFile": "/home/aizen/DJASSA ON LINE/video-promo/djassa-promo/index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Avoid duplicated media nodes that can be discovered twice during compilation."
+      },
+      {
+        "code": "timeline_track_too_dense",
+        "severity": "warning",
+        "message": "This HTML file has 27 timed elements. Smaller sub-compositions keep timelines easier to read, iterate on, and diff.",
+        "selector": "[data-composition-id]",
+        "dataAttributes": {},
+        "sourceFile": "/home/aizen/DJASSA ON LINE/video-promo/djassa-promo/index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Move coherent scene groups into separate .html files under compositions/ and mount them from the parent with data-composition-src so the timeline stays easier to inspect, revise, and validate."
+      },
+      {
+        "code": "nested_structure_needs_subcomposition",
+        "severity": "warning",
+        "message": "<div id=\"shot1\"> is a timeline element that contains nested <div>. The timeline shows one row per top-level element, and the root composition is built only from sub-compositions.",
+        "selector": "#shot1",
+        "dataAttributes": {},
+        "sourceFile": "/home/aizen/DJASSA ON LINE/video-promo/djassa-promo/index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Move <div id=\"shot1\"> and its contents into a sub-composition file and mount it with data-composition-src."
+      },
+      {
+        "code": "nested_structure_needs_subcomposition",
+        "severity": "warning",
+        "message": "<div id=\"shot2\"> is a timeline element that contains nested <div>. The timeline shows one row per top-level element, and the root composition is built only from sub-compositions.",
+        "selector": "#shot2",
+        "dataAttributes": {},
+        "sourceFile": "/home/aizen/DJASSA ON LINE/video-promo/djassa-promo/index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Move <div id=\"shot2\"> and its contents into a sub-composition file and mount it with data-composition-src."
+      },
+      {
+        "code": "nested_structure_needs_subcomposition",
+        "severity": "warning",
+        "message": "<div id=\"shot3\"> is a timeline element that contains nested <div>. The timeline shows one row per top-level element, and the root composition is built only from sub-compositions.",
+        "selector": "#shot3",
+        "dataAttributes": {},
+        "sourceFile": "/home/aizen/DJASSA ON LINE/video-promo/djassa-promo/index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Move <div id=\"shot3\"> and its contents into a sub-composition file and mount it with data-composition-src."
+      },
+      {
+        "code": "nested_structure_needs_subcomposition",
+        "severity": "warning",
+        "message": "<div id=\"shot4\"> is a timeline element that contains nested <div>. The timeline shows one row per top-level element, and the root composition is built only from sub-compositions.",
+        "selector": "#shot4",
+        "dataAttributes": {},
+        "sourceFile": "/home/aizen/DJASSA ON LINE/video-promo/djassa-promo/index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Move <div id=\"shot4\"> and its contents into a sub-composition file and mount it with data-composition-src."
+      },
+      {
+        "code": "nested_structure_needs_subcomposition",
+        "severity": "warning",
+        "message": "<div id=\"shot5\"> is a timeline element that contains nested <div>. The timeline shows one row per top-level element, and the root composition is built only from sub-compositions.",
+        "selector": "#shot5",
+        "dataAttributes": {},
+        "sourceFile": "/home/aizen/DJASSA ON LINE/video-promo/djassa-promo/index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Move <div id=\"shot5\"> and its contents into a sub-composition file and mount it with data-composition-src."
+      },
+      {
+        "code": "nested_structure_needs_subcomposition",
+        "severity": "warning",
+        "message": "<div id=\"shot6\"> is a timeline element that contains nested <div>. The timeline shows one row per top-level element, and the root composition is built only from sub-compositions.",
+        "selector": "#shot6",
+        "dataAttributes": {},
+        "sourceFile": "/home/aizen/DJASSA ON LINE/video-promo/djassa-promo/index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Move <div id=\"shot6\"> and its contents into a sub-composition file and mount it with data-composition-src."
+      },
+      {
+        "code": "nested_structure_needs_subcomposition",
+        "severity": "warning",
+        "message": "<div id=\"shot7\"> is a timeline element that contains nested <div>. The timeline shows one row per top-level element, and the root composition is built only from sub-compositions.",
+        "selector": "#shot7",
+        "dataAttributes": {},
+        "sourceFile": "/home/aizen/DJASSA ON LINE/video-promo/djassa-promo/index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Move <div id=\"shot7\"> and its contents into a sub-composition file and mount it with data-composition-src."
+      },
+      {
+        "code": "nested_structure_needs_subcomposition",
+        "severity": "warning",
+        "message": "<div id=\"shot8\"> is a timeline element that contains nested <div>. The timeline shows one row per top-level element, and the root composition is built only from sub-compositions.",
+        "selector": "#shot8",
+        "dataAttributes": {},
+        "sourceFile": "/home/aizen/DJASSA ON LINE/video-promo/djassa-promo/index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Move <div id=\"shot8\"> and its contents into a sub-composition file and mount it with data-composition-src."
+      },
+      {
+        "code": "nested_structure_needs_subcomposition",
+        "severity": "warning",
+        "message": "<div id=\"shot9\"> is a timeline element that contains nested <div>. The timeline shows one row per top-level element, and the root composition is built only from sub-compositions.",
+        "selector": "#shot9",
+        "dataAttributes": {},
+        "sourceFile": "/home/aizen/DJASSA ON LINE/video-promo/djassa-promo/index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0,
+        "fixHint": "Move <div id=\"shot9\"> and its contents into a sub-composition file and mount it with data-composition-src."
+      }
+    ],
+    "filesScanned": 1
+  },
+  "runtime": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 0,
+    "findings": []
+  },
+  "layout": {
+    "ok": false,
+    "errorCount": 6,
+    "warningCount": 5,
+    "infoCount": 6,
+    "findings": [
+      {
+        "code": "content_overlap",
+        "severity": "error",
+        "time": 0,
+        "selector": "#r1 > div:nth-of-type(1) > span:nth-of-type(2)",
+        "message": "Two text blocks overlap and may render unreadable.",
+        "rect": {
+          "left": 437.84,
+          "top": 725.68,
+          "right": 515.2,
+          "bottom": 750.53,
+          "width": 77.36,
+          "height": 24.85
+        },
+        "containerSelector": "#r3 > div:nth-of-type(1) > span:nth-of-type(1)",
+        "text": "12 000 FCFA",
+        "fixHint": "Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply. Decoration nobody needs to read can take data-layout-ignore.",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 437.84,
+          "y": 725.68,
+          "width": 77.36,
+          "height": 24.85
+        },
+        "firstSeen": 0,
+        "lastSeen": 0.503,
+        "occurrences": 4,
+        "heldMs": 503,
+        "times": [
+          0,
+          0.168,
+          0.335,
+          0.503
+        ]
+      },
+      {
+        "code": "content_overlap",
+        "severity": "error",
+        "time": 0,
+        "selector": "#r1 > div:nth-of-type(2) > span:nth-of-type(2)",
+        "message": "Two text blocks overlap and may render unreadable.",
+        "rect": {
+          "left": 444.65,
+          "top": 746.56,
+          "right": 517.4,
+          "bottom": 770.93,
+          "width": 72.75,
+          "height": 24.37
+        },
+        "containerSelector": "#r3 > div:nth-of-type(2) > span:nth-of-type(1)",
+        "text": "8 500 FCFA",
+        "fixHint": "Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply. Decoration nobody needs to read can take data-layout-ignore.",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 444.65,
+          "y": 746.56,
+          "width": 72.75,
+          "height": 24.37
+        },
+        "firstSeen": 0,
+        "lastSeen": 0.503,
+        "occurrences": 4,
+        "heldMs": 503,
+        "times": [
+          0,
+          0.168,
+          0.335,
+          0.503
+        ]
+      },
+      {
+        "code": "content_overlap",
+        "severity": "error",
+        "time": 0,
+        "selector": "#r1 > div:nth-of-type(3) > span:nth-of-type(2)",
+        "message": "Two text blocks overlap and may render unreadable.",
+        "rect": {
+          "left": 425.32,
+          "top": 776.4,
+          "right": 520.85,
+          "bottom": 806.11,
+          "width": 95.53,
+          "height": 29.71
+        },
+        "containerSelector": "#r3 > div:nth-of-type(3) > span:nth-of-type(1)",
+        "text": "20 500 FCFA",
+        "fixHint": "Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply. Decoration nobody needs to read can take data-layout-ignore.",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 425.32,
+          "y": 776.4,
+          "width": 95.53,
+          "height": 29.71
+        },
+        "firstSeen": 0,
+        "lastSeen": 0.67,
+        "occurrences": 5,
+        "heldMs": 670,
+        "times": [
+          0,
+          0.168,
+          0.335,
+          0.503,
+          0.67
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "error",
+        "time": 1.667,
+        "selector": "#rStay > div:nth-of-type(1) > span:nth-of-type(1)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 382,
+          "top": 762,
+          "right": 466.16,
+          "bottom": 779,
+          "width": 84.16,
+          "height": 17
+        },
+        "containerSelector": "#hand",
+        "text": "Djassa · Achat",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 0.44,
+        "lifetime": {
+          "start": 0,
+          "end": 3
+        },
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 382,
+          "y": 762,
+          "width": 84.16,
+          "height": 17
+        },
+        "firstSeen": 1.667,
+        "lastSeen": 1.667,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          1.667
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "error",
+        "time": 1.667,
+        "selector": "#rStay > div:nth-of-type(2) > span:nth-of-type(1)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 382,
+          "top": 783,
+          "right": 425.44,
+          "bottom": 800,
+          "width": 43.44,
+          "height": 17
+        },
+        "containerSelector": "#hand",
+        "text": "Escrow",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 0.78,
+        "lifetime": {
+          "start": 0,
+          "end": 3
+        },
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 382,
+          "y": 783,
+          "width": 43.44,
+          "height": 17
+        },
+        "firstSeen": 1.667,
+        "lastSeen": 1.667,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          1.667
+        ]
+      },
+      {
+        "code": "text_occluded",
+        "severity": "error",
+        "time": 1.667,
+        "selector": "#rStay > div:nth-of-type(3) > span:nth-of-type(1)",
+        "message": "Text is hidden beneath an opaque element.",
+        "rect": {
+          "left": 382,
+          "top": 813,
+          "right": 406.23,
+          "bottom": 833,
+          "width": 24.23,
+          "height": 20
+        },
+        "containerSelector": "#hand",
+        "text": "PIN",
+        "fixHint": "Give the text its own zone, raise its stacking order above the covering element, or mark intentional layering with data-layout-allow-occlusion.",
+        "coveredFraction": 1,
+        "lifetime": {
+          "start": 0,
+          "end": 3
+        },
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 382,
+          "y": 813,
+          "width": 24.23,
+          "height": 20
+        },
+        "firstSeen": 1.667,
+        "lastSeen": 1.667,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          1.667
+        ]
+      },
+      {
+        "code": "content_overlap",
+        "severity": "warning",
+        "time": 1.006,
+        "selector": "#r2 > div:nth-of-type(1) > span:nth-of-type(1)",
+        "message": "Two text blocks overlap and may render unreadable.",
+        "rect": {
+          "left": 395.28,
+          "top": 771.21,
+          "right": 473.25,
+          "bottom": 793.54,
+          "width": 77.97,
+          "height": 22.33
+        },
+        "containerSelector": "#rStay > div:nth-of-type(1) > span:nth-of-type(1)",
+        "text": "Reçu #0044",
+        "fixHint": "Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply. Decoration nobody needs to read can take data-layout-ignore.",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 395.28,
+          "y": 771.21,
+          "width": 77.97,
+          "height": 22.33
+        },
+        "firstSeen": 1.006,
+        "lastSeen": 1.173,
+        "occurrences": 2,
+        "heldMs": 167.00000000000003,
+        "times": [
+          1.006,
+          1.173
+        ]
+      },
+      {
+        "selector": "#hookText > p:nth-of-type(1)",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 94.5,
+          "y": 245,
+          "width": 891,
+          "height": 121
+        },
+        "time": 1.667,
+        "rect": {
+          "left": 94.5,
+          "top": 245,
+          "right": 985.5,
+          "bottom": 366,
+          "width": 891,
+          "height": 121
+        },
+        "code": "outside_safe_zone",
+        "severity": "warning",
+        "text": "Trop cher ? Troque.",
+        "message": "<p> \"Trop cher ? Troque.\" is outside the safe area: TikTok (left and right edges), Instagram Reels (top edge), YouTube Shorts (top and right edges).",
+        "fixHint": "Move the text inside the safe area, or mark text meant to sit there with data-layout-allow-safe-zone.",
+        "firstSeen": 1.667,
+        "lastSeen": 1.667,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          1.667
+        ]
+      },
+      {
+        "selector": "#flashText > p:nth-of-type(1)",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 311.63,
+          "y": 247,
+          "width": 456.73,
+          "height": 101
+        },
+        "time": 11.667,
+        "rect": {
+          "left": 311.63,
+          "top": 247,
+          "right": 768.36,
+          "bottom": 348,
+          "width": 456.73,
+          "height": 101
+        },
+        "code": "outside_safe_zone",
+        "severity": "warning",
+        "text": "Vente flash.",
+        "message": "<p> \"Vente flash.\" is outside the safe area: Instagram Reels (top edge), YouTube Shorts (top edge).",
+        "fixHint": "Move the text inside the safe area, or mark text meant to sit there with data-layout-allow-safe-zone.",
+        "firstSeen": 11.667,
+        "lastSeen": 11.667,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          11.667
+        ]
+      },
+      {
+        "selector": "#trocText > p:nth-of-type(1)",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 325.23,
+          "y": 247,
+          "width": 429.54,
+          "height": 101
+        },
+        "time": 15,
+        "rect": {
+          "left": 325.23,
+          "top": 247,
+          "right": 754.77,
+          "bottom": 348,
+          "width": 429.54,
+          "height": 101
+        },
+        "code": "outside_safe_zone",
+        "severity": "warning",
+        "text": "Troc malin.",
+        "message": "<p> \"Troc malin.\" is outside the safe area: Instagram Reels (top edge), YouTube Shorts (top edge).",
+        "fixHint": "Move the text inside the safe area, or mark text meant to sit there with data-layout-allow-safe-zone.",
+        "firstSeen": 15,
+        "lastSeen": 15,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          15
+        ]
+      },
+      {
+        "selector": "#boutiqueText > p:nth-of-type(1)",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 281.33,
+          "y": 248.46,
+          "width": 517.33,
+          "height": 91
+        },
+        "time": 21.667,
+        "rect": {
+          "left": 281.33,
+          "top": 248.46,
+          "right": 798.66,
+          "bottom": 339.46,
+          "width": 517.33,
+          "height": 91
+        },
+        "code": "outside_safe_zone",
+        "severity": "warning",
+        "text": "Boutiques Pro.",
+        "message": "<p> \"Boutiques Pro.\" is outside the safe area: Instagram Reels (top edge), YouTube Shorts (top edge).",
+        "fixHint": "Move the text inside the safe area, or mark text meant to sit there with data-layout-allow-safe-zone.",
+        "firstSeen": 21.667,
+        "lastSeen": 21.667,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          21.667
+        ]
+      },
+      {
+        "code": "content_overlap",
+        "severity": "info",
+        "time": 1.006,
+        "selector": "#r2 > div:nth-of-type(1) > span:nth-of-type(2)",
+        "message": "Two text blocks overlap and may render unreadable.",
+        "rect": {
+          "left": 639.84,
+          "top": 788.32,
+          "right": 711.7,
+          "bottom": 810.22,
+          "width": 71.86,
+          "height": 21.9
+        },
+        "containerSelector": "#rStay > div:nth-of-type(2) > span:nth-of-type(2)",
+        "text": "4 200 FCFA",
+        "fixHint": "Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply. Decoration nobody needs to read can take data-layout-ignore.",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 639.84,
+          "y": 788.32,
+          "width": 71.86,
+          "height": 21.9
+        },
+        "firstSeen": 1.006,
+        "lastSeen": 1.173,
+        "occurrences": 2,
+        "heldMs": 167.00000000000003,
+        "times": [
+          1.006,
+          1.173
+        ]
+      },
+      {
+        "code": "content_overlap",
+        "severity": "info",
+        "time": 1.006,
+        "selector": "#r2 > div:nth-of-type(2) > span:nth-of-type(2)",
+        "message": "Two text blocks overlap and may render unreadable.",
+        "rect": {
+          "left": 636.62,
+          "top": 809.14,
+          "right": 710.24,
+          "bottom": 831.17,
+          "width": 73.62,
+          "height": 22.03
+        },
+        "containerSelector": "#rStay > div:nth-of-type(3) > span:nth-of-type(2)",
+        "text": "11 000 FCFA",
+        "fixHint": "Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply. Decoration nobody needs to read can take data-layout-ignore.",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 636.62,
+          "y": 809.14,
+          "width": 73.62,
+          "height": 22.03
+        },
+        "firstSeen": 1.006,
+        "lastSeen": 1.173,
+        "occurrences": 2,
+        "heldMs": 167.00000000000003,
+        "times": [
+          1.006,
+          1.173
+        ]
+      },
+      {
+        "code": "content_overlap",
+        "severity": "info",
+        "time": 1.173,
+        "selector": "#r2 > div:nth-of-type(2) > span:nth-of-type(1)",
+        "message": "Two text blocks overlap and may render unreadable.",
+        "rect": {
+          "left": 440.16,
+          "top": 774.34,
+          "right": 518.14,
+          "bottom": 796.67,
+          "width": 77.98,
+          "height": 22.33
+        },
+        "containerSelector": "#r3 > div:nth-of-type(1) > span:nth-of-type(1)",
+        "text": "Reçu #0045",
+        "fixHint": "Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply. Decoration nobody needs to read can take data-layout-ignore.",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 440.16,
+          "y": 774.34,
+          "width": 77.98,
+          "height": 22.33
+        },
+        "firstSeen": 1.173,
+        "lastSeen": 1.173,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          1.173
+        ]
+      },
+      {
+        "code": "content_overlap",
+        "severity": "info",
+        "time": 1.173,
+        "selector": "#r3 > div:nth-of-type(1) > span:nth-of-type(1)",
+        "message": "Two text blocks overlap and may render unreadable.",
+        "rect": {
+          "left": 438.2,
+          "top": 762.79,
+          "right": 516.2,
+          "bottom": 783.8,
+          "width": 78,
+          "height": 21.01
+        },
+        "containerSelector": "#rStay > div:nth-of-type(1) > span:nth-of-type(1)",
+        "text": "Reçu #0046",
+        "fixHint": "Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply. Decoration nobody needs to read can take data-layout-ignore.",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 438.2,
+          "y": 762.79,
+          "width": 78,
+          "height": 21.01
+        },
+        "firstSeen": 1.173,
+        "lastSeen": 1.173,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          1.173
+        ]
+      },
+      {
+        "code": "content_overlap",
+        "severity": "info",
+        "time": 1.341,
+        "selector": "#r3 > div:nth-of-type(1) > span:nth-of-type(2)",
+        "message": "Two text blocks overlap and may render unreadable.",
+        "rect": {
+          "left": 640.33,
+          "top": 779.65,
+          "right": 712.71,
+          "bottom": 800.37,
+          "width": 72.38,
+          "height": 20.72
+        },
+        "containerSelector": "#rStay > div:nth-of-type(2) > span:nth-of-type(2)",
+        "text": "6 800 FCFA",
+        "fixHint": "Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply. Decoration nobody needs to read can take data-layout-ignore.",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 640.33,
+          "y": 779.65,
+          "width": 72.38,
+          "height": 20.72
+        },
+        "firstSeen": 1.341,
+        "lastSeen": 1.341,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          1.341
+        ]
+      },
+      {
+        "code": "content_overlap",
+        "severity": "info",
+        "time": 1.341,
+        "selector": "#r3 > div:nth-of-type(2) > span:nth-of-type(1)",
+        "message": "Two text blocks overlap and may render unreadable.",
+        "rect": {
+          "left": 397.36,
+          "top": 813.18,
+          "right": 474.14,
+          "bottom": 834.14,
+          "width": 76.78,
+          "height": 20.96
+        },
+        "containerSelector": "#rStay > div:nth-of-type(3) > span:nth-of-type(1)",
+        "text": "Reçu #0047",
+        "fixHint": "Give each block its own zone, or put data-layout-allow-overlap on the text or on a container inside the scene. A marker on the scene root does not apply. Decoration nobody needs to read can take data-layout-ignore.",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 397.36,
+          "y": 813.18,
+          "width": 76.78,
+          "height": 20.96
+        },
+        "firstSeen": 1.341,
+        "lastSeen": 1.341,
+        "occurrences": 1,
+        "heldMs": 0,
+        "times": [
+          1.341
+        ]
+      }
+    ],
+    "duration": 30,
+    "samples": [
+      1.667,
+      5,
+      8.333,
+      11.667,
+      15,
+      18.333,
+      21.667,
+      25,
+      28.333
+    ],
+    "transitionSamples": [],
+    "transitionSamplesDropped": 0,
+    "tolerance": 2,
+    "totalIssueCount": 17,
+    "truncated": false,
+    "faceCheck": {
+      "ran": true,
+      "candidates": 0,
+      "faces": 0
+    }
+  },
+  "motion": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 0,
+    "findings": [],
+    "enabled": false,
+    "samples": 0
+  },
+  "contrast": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 4,
+    "infoCount": 0,
+    "findings": [
+      {
+        "code": "contrast_aa_failure",
+        "severity": "warning",
+        "message": "Contrast is 1.64:1; WCAG AA requires 4.5:1.",
+        "text": "Escrow",
+        "fg": "rgb(18,18,18)",
+        "bg": "rgb(54,57,71)",
+        "ratio": 1.64,
+        "requiredRatio": 4.5,
+        "suggestedColor": "rgb(163,163,163)",
+        "large": false,
+        "selector": "div > div:nth-of-type(1) > div:nth-of-type(5) > div:nth-of-type(2) > span:nth-of-type(1)",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 382,
+          "y": 783,
+          "width": 43.4375,
+          "height": 17
+        },
+        "time": 1.667,
+        "times": [
+          1.667
+        ]
+      },
+      {
+        "code": "contrast_aa_failure",
+        "severity": "warning",
+        "message": "Contrast is 1.28:1; WCAG AA requires 4.5:1.",
+        "text": "PIN",
+        "fg": "rgb(18,18,18)",
+        "bg": "rgb(34,41,53)",
+        "ratio": 1.28,
+        "requiredRatio": 4.5,
+        "suggestedColor": "rgb(143,143,143)",
+        "large": false,
+        "selector": "div > div:nth-of-type(1) > div:nth-of-type(5) > div:nth-of-type(3) > span:nth-of-type(1)",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 382,
+          "y": 813,
+          "width": 24.234375,
+          "height": 20
+        },
+        "time": 1.667,
+        "times": [
+          1.667
+        ]
+      },
+      {
+        "code": "contrast_aa_failure",
+        "severity": "warning",
+        "message": "Contrast is 1.67:1; WCAG AA requires 3:1.",
+        "text": "★",
+        "fg": "rgb(251,191,36)",
+        "bg": "rgb(255,255,255)",
+        "ratio": 1.67,
+        "requiredRatio": 3,
+        "suggestedColor": "rgb(187,142,27)",
+        "large": true,
+        "selector": "div > div:nth-of-type(7) > div:nth-of-type(2) > div:nth-of-type(2) > div:nth-of-type(1) > p:nth-of-type(2) > span",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 370.78125,
+          "y": 747.0003051757812,
+          "width": 17.9375,
+          "height": 25
+        },
+        "time": 21.667,
+        "times": [
+          21.667
+        ]
+      },
+      {
+        "code": "contrast_aa_failure",
+        "severity": "warning",
+        "message": "Contrast is 4.23:1; WCAG AA requires 4.5:1.",
+        "text": "Wave · Orange Money · MTN · Moov · Séquestre + PIN",
+        "fg": "rgb(100,116,139)",
+        "bg": "rgb(247,241,230)",
+        "ratio": 4.23,
+        "requiredRatio": 4.5,
+        "suggestedColor": "rgb(96,111,134)",
+        "large": false,
+        "selector": "div > div:nth-of-type(9) > div:nth-of-type(2) > p:nth-of-type(3)",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 0,
+          "y": 931.5775756835938,
+          "width": 1080,
+          "height": 17
+        },
+        "time": 28.333,
+        "times": [
+          28.333
+        ]
+      }
+    ],
+    "enabled": true,
+    "samples": [
+      1.667,
+      8.333,
+      15,
+      21.667,
+      28.333
+    ],
+    "checked": 46,
+    "passed": 42
+  },
+  "craft": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 5,
+    "infoCount": 0,
+    "findings": [
+      {
+        "code": "film_silent",
+        "severity": "warning",
+        "message": "This 30 s film has no sound source (no <audio>, no <video> with sound): add a music bed and sounds on the visible actions unless the person asked for silence; see references/sound.md.",
+        "selector": "[data-composition-id]",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0
+      },
+      {
+        "code": "text_below_floor",
+        "severity": "warning",
+        "message": "Type floor is 28 px (2.6% of the 1080 px short side, what a phone can read) and 55 text elements stay under it for 0.5 s or more, the smallest \"HELD\" at 10 px: set reading text to at least 28 px, or put data-layout-ignore on text that is texture rather than reading; see references/look.md.",
+        "text": "HELD",
+        "selector": "div.status",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 344,
+          "y": 662.85,
+          "width": 25.7,
+          "height": 13
+        },
+        "time": 5.75,
+        "times": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1,
+          1,
+          5.75,
+          5.75,
+          5.75,
+          5.75,
+          5.75,
+          5.75,
+          9.75,
+          9.75,
+          9.75,
+          9.75,
+          14.25,
+          14.25,
+          14.25,
+          14.25,
+          18,
+          18,
+          21.25,
+          21.25,
+          21.25,
+          21.25,
+          21.25,
+          21.25,
+          21.25,
+          21.25,
+          21.25,
+          21.25,
+          21.25,
+          25.125,
+          25.125,
+          25.125,
+          25.125,
+          28.25
+        ],
+        "fontPx": 10,
+        "floorPx": 28,
+        "seconds": 3.75,
+        "elements": [
+          {
+            "selector": "div.status",
+            "text": "HELD",
+            "fontPx": 10,
+            "time": 5.75,
+            "seconds": 3.75
+          },
+          {
+            "selector": "#flashCard > div:nth-of-type(2) > span:nth-of-type(1)",
+            "text": "−15 % · Vente flash",
+            "fontPx": 10,
+            "time": 9.75,
+            "seconds": 4.25
+          },
+          {
+            "selector": "span.badge.badge-troc",
+            "text": "Troc + soulte",
+            "fontPx": 10,
+            "time": 14.25,
+            "seconds": 3.75
+          },
+          {
+            "selector": "#flashCard2 > div:nth-of-type(2) > span:nth-of-type(1)",
+            "text": "−15 % · Vente flash",
+            "fontPx": 10,
+            "time": 18,
+            "seconds": 3
+          },
+          {
+            "selector": "#boutiqueCard > div:nth-of-type(1) > span:nth-of-type(1)",
+            "text": "VÉRIFIÉ",
+            "fontPx": 10,
+            "time": 21.25,
+            "seconds": 3.75
+          },
+          {
+            "selector": "#boutiqueCard > div:nth-of-type(2) > div:nth-of-type(1) > p:nth-of-type(1)",
+            "text": "Note",
+            "fontPx": 10,
+            "time": 21.25,
+            "seconds": 3.75
+          },
+          {
+            "selector": "#boutiqueCard > div:nth-of-type(2) > div:nth-of-type(2) > p:nth-of-type(1)",
+            "text": "Avis",
+            "fontPx": 10,
+            "time": 21.25,
+            "seconds": 3.75
+          },
+          {
+            "selector": "#boutiqueCard > div:nth-of-type(2) > div:nth-of-type(3) > p:nth-of-type(1)",
+            "text": "Ventes",
+            "fontPx": 10,
+            "time": 21.25,
+            "seconds": 3.75
+          },
+          {
+            "selector": "#escrowCard > p:nth-of-type(3)",
+            "text": "Fonds bloqués jusqu'à la remise en main propre.",
+            "fontPx": 11,
+            "time": 5.75,
+            "seconds": 3.75
+          },
+          {
+            "selector": "#boutiqueCard > div:nth-of-type(1) > div:nth-of-type(2) > p:nth-of-type(2)",
+            "text": "Boutique Pro vérifiée · Abidjan",
+            "fontPx": 11,
+            "time": 21.25,
+            "seconds": 3.75
+          },
+          {
+            "selector": "#boutiqueCard > p:nth-of-type(1)",
+            "text": "Facture PDF · Neuf garanti · KYC vérifié",
+            "fontPx": 11,
+            "time": 21.25,
+            "seconds": 3.75
+          },
+          {
+            "selector": "#ctaCard > div:nth-of-type(1) > span:nth-of-type(1)",
+            "text": "App Store",
+            "fontPx": 11.17,
+            "time": 25.125,
+            "seconds": 2.875
+          },
+          {
+            "selector": "#ctaCard > div:nth-of-type(1) > span:nth-of-type(2)",
+            "text": "Google Play",
+            "fontPx": 11.17,
+            "time": 25.125,
+            "seconds": 2.875
+          },
+          {
+            "selector": "#escrowCard > div:nth-of-type(2) > span:nth-of-type(1)",
+            "text": "Frais séquestre",
+            "fontPx": 12,
+            "time": 5.75,
+            "seconds": 3.75
+          },
+          {
+            "selector": "#escrowCard > div:nth-of-type(2) > span:nth-of-type(2)",
+            "text": "2 550 FCFA",
+            "fontPx": 12,
+            "time": 5.75,
+            "seconds": 3.75
+          },
+          {
+            "selector": "#escrowCard > div:nth-of-type(3) > span:nth-of-type(1)",
+            "text": "Code PIN",
+            "fontPx": 12,
+            "time": 5.75,
+            "seconds": 3.75
+          },
+          {
+            "selector": "#rStay > div:nth-of-type(1) > span:nth-of-type(1)",
+            "text": "Djassa · Achat",
+            "fontPx": 12.49,
+            "time": 1,
+            "seconds": 2
+          },
+          {
+            "selector": "#rStay > div:nth-of-type(1) > span:nth-of-type(2)",
+            "text": "85 000 FCFA",
+            "fontPx": 12.49,
+            "time": 1,
+            "seconds": 2
+          },
+          {
+            "selector": "#rStay > div:nth-of-type(2) > span:nth-of-type(1)",
+            "text": "Escrow",
+            "fontPx": 12.49,
+            "time": 1,
+            "seconds": 2
+          },
+          {
+            "selector": "#rStay > div:nth-of-type(2) > span:nth-of-type(2)",
+            "text": "HELD",
+            "fontPx": 12.49,
+            "time": 1,
+            "seconds": 2
+          },
+          {
+            "selector": "#r1 > div:nth-of-type(1) > span:nth-of-type(1)",
+            "text": "Reçu #0042",
+            "fontPx": 13,
+            "time": 0,
+            "seconds": 1.25
+          },
+          {
+            "selector": "#r1 > div:nth-of-type(1) > span:nth-of-type(2)",
+            "text": "12 000 FCFA",
+            "fontPx": 13,
+            "time": 0,
+            "seconds": 1.25
+          },
+          {
+            "selector": "#r1 > div:nth-of-type(2) > span:nth-of-type(1)",
+            "text": "Reçu #0043",
+            "fontPx": 13,
+            "time": 0,
+            "seconds": 1.25
+          },
+          {
+            "selector": "#r1 > div:nth-of-type(2) > span:nth-of-type(2)",
+            "text": "8 500 FCFA",
+            "fontPx": 13,
+            "time": 0,
+            "seconds": 1.25
+          },
+          {
+            "selector": "#r2 > div:nth-of-type(1) > span:nth-of-type(1)",
+            "text": "Reçu #0044",
+            "fontPx": 13,
+            "time": 0,
+            "seconds": 1.375
+          },
+          {
+            "selector": "#r2 > div:nth-of-type(1) > span:nth-of-type(2)",
+            "text": "4 200 FCFA",
+            "fontPx": 13,
+            "time": 0,
+            "seconds": 1.375
+          },
+          {
+            "selector": "#r2 > div:nth-of-type(2) > span:nth-of-type(1)",
+            "text": "Reçu #0045",
+            "fontPx": 13,
+            "time": 0,
+            "seconds": 1.375
+          },
+          {
+            "selector": "#r2 > div:nth-of-type(2) > span:nth-of-type(2)",
+            "text": "11 000 FCFA",
+            "fontPx": 13,
+            "time": 0,
+            "seconds": 1.375
+          },
+          {
+            "selector": "#r3 > div:nth-of-type(1) > span:nth-of-type(1)",
+            "text": "Reçu #0046",
+            "fontPx": 13,
+            "time": 0,
+            "seconds": 1.375
+          },
+          {
+            "selector": "#r3 > div:nth-of-type(1) > span:nth-of-type(2)",
+            "text": "6 800 FCFA",
+            "fontPx": 13,
+            "time": 0,
+            "seconds": 1.375
+          },
+          {
+            "selector": "#r3 > div:nth-of-type(2) > span:nth-of-type(1)",
+            "text": "Reçu #0047",
+            "fontPx": 13,
+            "time": 0,
+            "seconds": 1.375
+          },
+          {
+            "selector": "#r3 > div:nth-of-type(2) > span:nth-of-type(2)",
+            "text": "9 300 FCFA",
+            "fontPx": 13,
+            "time": 0,
+            "seconds": 1.375
+          },
+          {
+            "selector": "#escrowCard > p:nth-of-type(1)",
+            "text": "Achat · Meuleuse Makita",
+            "fontPx": 13,
+            "time": 5.75,
+            "seconds": 3.75
+          },
+          {
+            "selector": "p.price > span:nth-of-type(1)",
+            "text": "32 500",
+            "fontPx": 13,
+            "time": 9.75,
+            "seconds": 4.25
+          },
+          {
+            "selector": "#outro > p:nth-of-type(3)",
+            "text": "Wave · Orange Money · MTN · Moov · Séquestre + PIN",
+            "fontPx": 13,
+            "time": 28.25,
+            "seconds": 1.75
+          },
+          {
+            "selector": "span.btn",
+            "text": "Télécharger l'app",
+            "fontPx": 13.03,
+            "time": 25.125,
+            "seconds": 2.875
+          },
+          {
+            "selector": "#rStay > div:nth-of-type(3) > span:nth-of-type(1)",
+            "text": "PIN",
+            "fontPx": 14.41,
+            "time": 1,
+            "seconds": 2
+          },
+          {
+            "selector": "#ctaCard > p:nth-of-type(2)",
+            "text": "Télécharge Djassa Online. Achète, vends, troque en confiance.",
+            "fontPx": 14.89,
+            "time": 25.125,
+            "seconds": 2.875
+          },
+          {
+            "selector": "#r1 > div:nth-of-type(3) > span:nth-of-type(1)",
+            "text": "Total",
+            "fontPx": 15,
+            "time": 0,
+            "seconds": 1.25
+          },
+          {
+            "selector": "#r1 > div:nth-of-type(3) > span:nth-of-type(2)",
+            "text": "20 500 FCFA",
+            "fontPx": 15,
+            "time": 0,
+            "seconds": 1.25
+          },
+          {
+            "selector": "#r2 > div:nth-of-type(3) > span:nth-of-type(1)",
+            "text": "Total",
+            "fontPx": 15,
+            "time": 0,
+            "seconds": 1.375
+          },
+          {
+            "selector": "#r2 > div:nth-of-type(3) > span:nth-of-type(2)",
+            "text": "15 200 FCFA",
+            "fontPx": 15,
+            "time": 0,
+            "seconds": 1.375
+          },
+          {
+            "selector": "#r3 > div:nth-of-type(3) > span:nth-of-type(1)",
+            "text": "Total",
+            "fontPx": 15,
+            "time": 0,
+            "seconds": 1.375
+          },
+          {
+            "selector": "#r3 > div:nth-of-type(3) > span:nth-of-type(2)",
+            "text": "16 100 FCFA",
+            "fontPx": 15,
+            "time": 0,
+            "seconds": 1.375
+          },
+          {
+            "selector": "#flashCard > div:nth-of-type(2) > p:nth-of-type(1)",
+            "text": "Meuleuse d'angle Makita GA5030 720W",
+            "fontPx": 17,
+            "time": 9.75,
+            "seconds": 4.25
+          },
+          {
+            "selector": "#trocCard > div:nth-of-type(2) > p:nth-of-type(1)",
+            "text": "iPhone 13 Pro + 15 000 FCFA de soulte",
+            "fontPx": 17,
+            "time": 14.25,
+            "seconds": 3.75
+          },
+          {
+            "selector": "#flashCard2 > div:nth-of-type(2) > p:nth-of-type(1)",
+            "text": "Meuleuse d'angle Makita GA5030",
+            "fontPx": 17,
+            "time": 18,
+            "seconds": 3
+          },
+          {
+            "selector": "p.name",
+            "text": "Quincaillerie Moderne",
+            "fontPx": 20,
+            "time": 21.25,
+            "seconds": 3.75
+          },
+          {
+            "selector": "#boutiqueCard > div:nth-of-type(2) > div:nth-of-type(1) > p:nth-of-type(2)",
+            "text": "4.8",
+            "fontPx": 20,
+            "time": 21.25,
+            "seconds": 3.75
+          },
+          {
+            "selector": "#boutiqueCard > div:nth-of-type(2) > div:nth-of-type(2) > p:nth-of-type(2)",
+            "text": "128",
+            "fontPx": 20,
+            "time": 21.25,
+            "seconds": 3.75
+          },
+          {
+            "selector": "#boutiqueCard > div:nth-of-type(2) > div:nth-of-type(3) > p:nth-of-type(2)",
+            "text": "486",
+            "fontPx": 20,
+            "time": 21.25,
+            "seconds": 3.75
+          },
+          {
+            "selector": "div.img > span:nth-of-type(2)",
+            "text": "15 000 FCFA",
+            "fontPx": 22,
+            "time": 14.25,
+            "seconds": 3.75
+          },
+          {
+            "selector": "#boutiqueCard > div:nth-of-type(1) > div:nth-of-type(1)",
+            "text": "Q",
+            "fontPx": 22,
+            "time": 21.25,
+            "seconds": 3.75
+          },
+          {
+            "selector": "#flashCard > div:nth-of-type(2) > p:nth-of-type(2)",
+            "text": "27 500 FCFA",
+            "fontPx": 24,
+            "time": 9.75,
+            "seconds": 4.25
+          },
+          {
+            "selector": "#trocCard > div:nth-of-type(2) > p:nth-of-type(2)",
+            "text": "Échange équitable",
+            "fontPx": 24,
+            "time": 14.25,
+            "seconds": 3.75
+          }
+        ]
+      },
+      {
+        "code": "dead_stretch",
+        "severity": "warning",
+        "message": "Nothing on screen changes for 3.50 s (10.38–13.88 s): start the next move within 3 s, or put data-hold on the element whose stillness is deliberate; see references/motion.md.",
+        "selector": "[data-composition-id]",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 10.375,
+        "seconds": 3.5,
+        "floorSeconds": 3,
+        "until": 13.875
+      },
+      {
+        "code": "line_unread",
+        "severity": "warning",
+        "message": "The film's last line \"Djassa Online\" (2 words) is on screen 1.86 s (±0.01 s), under the 2.00 s a closing line needs: hold it about 0.5 s + 0.3 s a word and at least 2 s before the film ends; see references/motion.md.",
+        "text": "Djassa Online",
+        "selector": "#outro > p:nth-of-type(1)",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 347.84,
+          "y": 787.55,
+          "width": 384.3,
+          "height": 70
+        },
+        "time": 28.141,
+        "words": 2,
+        "seconds": 1.863,
+        "floorSeconds": 2,
+        "measured": [
+          {
+            "time": 27.875,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 28,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 28.125,
+            "opacity": 0.41,
+            "heightPx": 70
+          },
+          {
+            "time": 28.25,
+            "opacity": 0.75,
+            "heightPx": 70
+          },
+          {
+            "time": 28.375,
+            "opacity": 0.91,
+            "heightPx": 70
+          },
+          {
+            "time": 28.5,
+            "opacity": 0.98,
+            "heightPx": 70
+          },
+          {
+            "time": 28.625,
+            "opacity": 1,
+            "heightPx": 70
+          },
+          {
+            "time": 29.5,
+            "opacity": 1,
+            "heightPx": 70
+          },
+          {
+            "time": 29.625,
+            "opacity": 1,
+            "heightPx": 70
+          },
+          {
+            "time": 29.75,
+            "opacity": 1,
+            "heightPx": 70
+          },
+          {
+            "time": 29.875,
+            "opacity": 1,
+            "heightPx": 70
+          }
+        ]
+      },
+      {
+        "code": "line_unread",
+        "severity": "warning",
+        "message": "The film's last line \"Le Djassa dans ta poche.\" (5 words) is on screen 1.86 s (±0.01 s), under the 2.00 s a closing line needs: hold it about 0.5 s + 0.3 s a word and at least 2 s before the film ends; see references/motion.md.",
+        "text": "Le Djassa dans ta poche.",
+        "selector": "#outro > p:nth-of-type(2)",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 371.95,
+          "y": 871.55,
+          "width": 336.08,
+          "height": 39
+        },
+        "time": 28.141,
+        "words": 5,
+        "seconds": 1.863,
+        "floorSeconds": 2,
+        "measured": [
+          {
+            "time": 27.875,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 28,
+            "opacity": null,
+            "heightPx": null
+          },
+          {
+            "time": 28.125,
+            "opacity": 0.41,
+            "heightPx": 39
+          },
+          {
+            "time": 28.25,
+            "opacity": 0.75,
+            "heightPx": 39
+          },
+          {
+            "time": 28.375,
+            "opacity": 0.91,
+            "heightPx": 39
+          },
+          {
+            "time": 28.5,
+            "opacity": 0.98,
+            "heightPx": 39
+          },
+          {
+            "time": 28.625,
+            "opacity": 1,
+            "heightPx": 39
+          },
+          {
+            "time": 29.5,
+            "opacity": 1,
+            "heightPx": 39
+          },
+          {
+            "time": 29.625,
+            "opacity": 1,
+            "heightPx": 39
+          },
+          {
+            "time": 29.75,
+            "opacity": 1,
+            "heightPx": 39
+          },
+          {
+            "time": 29.875,
+            "opacity": 1,
+            "heightPx": 39
+          }
+        ]
+      }
+    ],
+    "enabled": true,
+    "step": 0.125,
+    "samples": 240
+  },
+  "audio": {
+    "ok": true,
+    "errorCount": 0,
+    "warningCount": 0,
+    "infoCount": 1,
+    "findings": [
+      {
+        "code": "audio_none",
+        "severity": "info",
+        "message": "The film has no sound: no clip in it plays audio.",
+        "selector": "[data-composition-id]",
+        "dataAttributes": {},
+        "sourceFile": "index.html",
+        "bbox": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0
+        },
+        "time": 0
+      }
+    ]
+  },
+  "hdr": {
+    "autoPromotion": null,
+    "inspection": "available",
+    "remoteNotInspected": [
+      "https://images.unsplash.com/photo-1589848315097-ba7b903cc1cc"
+    ]
+  },
+  "snapshots": {
+    "enabled": false,
+    "files": [],
+    "times": [],
+    "findingFiles": []
+  }
+}

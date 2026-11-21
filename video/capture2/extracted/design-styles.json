@@ -1,0 +1,134 @@
+{
+  "typography": [
+    {
+      "role": "display",
+      "fontFamily": "Sora",
+      "fontSize": "36px",
+      "fontWeight": "800",
+      "lineHeight": "40px",
+      "letterSpacing": "normal",
+      "color": "#121212",
+      "sampleText": "404"
+    },
+    {
+      "role": "body",
+      "fontFamily": "Sora",
+      "fontSize": "16px",
+      "fontWeight": "700",
+      "lineHeight": "24px",
+      "letterSpacing": "normal",
+      "color": "#121212",
+      "sampleText": "Cette page n'existe pas (encore)."
+    },
+    {
+      "role": "label",
+      "fontFamily": "DM Sans",
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "lineHeight": "24px",
+      "letterSpacing": "normal",
+      "color": "#FFFFFF",
+      "sampleText": ""
+    },
+    {
+      "role": "heading",
+      "fontFamily": "Sora",
+      "fontSize": "11px",
+      "fontWeight": "800",
+      "lineHeight": "16.5px",
+      "letterSpacing": "1.98px",
+      "color": "#FFFFFF",
+      "sampleText": "Marketplace"
+    }
+  ],
+  "spacing": {
+    "observed": [
+      6,
+      8,
+      10,
+      12,
+      14,
+      16,
+      24,
+      40
+    ],
+    "baseUnit": 8
+  },
+  "radius": [
+    "8px",
+    "12px"
+  ],
+  "shadows": [
+    {
+      "value": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(225, 29, 72, 0.38) 0px 14px 44px 0px",
+      "count": 2
+    },
+    {
+      "value": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(230, 0, 35, 0.4) 0px 6px 20px 0px",
+      "count": 1
+    }
+  ],
+  "buttons": [
+    {
+      "label": "Publier",
+      "background": "#E11D48",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#FFFFFF",
+      "padding": "8px 14px",
+      "borderRadius": "8px",
+      "border": "0px solid rgb(229, 231, 235)",
+      "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(230, 0, 35, 0.4) 0px 6px 20px 0px",
+      "fontSize": "14px",
+      "fontWeight": "700",
+      "height": "36px"
+    },
+    {
+      "label": "Retour au fil",
+      "background": "#E11D48",
+      "backgroundImage": "",
+      "backdropFilter": "",
+      "color": "#FFFFFF",
+      "padding": "12px 20px",
+      "borderRadius": "12px",
+      "border": "0px solid rgb(229, 231, 235)",
+      "boxShadow": "rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(0, 0, 0, 0) 0px 0px 0px 0px, rgba(225, 29, 72, 0.38) 0px 14px 44px 0px",
+      "fontSize": "16px",
+      "fontWeight": "700",
+      "height": "48px"
+    }
+  ],
+  "cards": [],
+  "nav": {
+    "label": "navigation",
+    "background": "#121212",
+    "backgroundImage": "",
+    "backdropFilter": "",
+    "color": "#FFFFFF",
+    "padding": "0px",
+    "borderRadius": "0px",
+    "border": "0px solid rgb(229, 231, 235)",
+    "boxShadow": "none",
+    "fontSize": "16px",
+    "fontWeight": "400",
+    "height": "56px"
+  },
+  "chips": [
+    {
+      "label": "Escrow + PIN",
+      "background": "#FFFFFF",
+      "color": "#FFFFFF",
+      "padding": "6px 12px",
+      "borderRadius": "9999px",
+      "border": "0px solid rgb(229, 231, 235)",
+      "boxShadow": "rgb(255, 255, 255) 0px 0px 0px 0px, rgba(255, 255, 255, 0.1) 0px 0px 0px 1px, rgba(0, 0, 0, 0) 0px 0px 0px 0px",
+      "fontSize": "10px",
+      "fontWeight": "600",
+      "height": "27px"
+    }
+  ],
+  "statCells": [],
+  "tabs": [],
+  "backgrounds": [],
+  "glass": []
+}

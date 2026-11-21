@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --red: #ED0F02;
+        --red-dark: #C1112E;
+        --ink: #121212;
+        --cream: #F7F1E6;
+        --white: #FFFFFF;
+        --slate: #64748B;
+        --gray: #ececec;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        margin: 0; width: 1080px; height: 1920px; overflow: hidden;
+        background: var(--gray); font-family: 'DM Sans', system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+      }
+      #root {
+        width: 100%; height: 100%; position: relative; overflow: hidden;
+        perspective: 1500px;
+        background: linear-gradient(180deg, #f2f2f2 0%, #e8e8e8 100%);
+      }
+      .clip { position: absolute; }
+      .font-display { font-family: 'Sora', system-ui, sans-serif; }
+
+      /* Scène 3D */
+      .scene {
+        position: absolute; inset: 0;
+        transform-style: preserve-3d;
+        transform: rotateX(4deg) rotateY(-2deg) translateZ(0);
+      }
+      .depth-1 { transform: translateZ(30px); }
+      .depth-2 { transform: translateZ(60px); }
+      .depth-3 { transform: translateZ(90px); }
+
+      /* Receipt */
+      .receipt {
+        position: absolute; width: 460px; padding: 22px 26px;
+        background: #fff; border-radius: 10px;
+        box-shadow: 0 12px 32px rgba(0,0,0,0.16), 0 2px 6px rgba(0,0,0,0.08);
+        font-family: 'DM Sans', system-ui, sans-serif; color: var(--ink);
+      }
+      .receipt .row { display: flex; justify-content: space-between; font-size: 16px; margin: 6px 0; }
+      .receipt .total { font-weight: 800; font-size: 18px; border-top: 1px dashed #ccc; padding-top: 8px; margin-top: 8px; }
+      .receipt.glow { box-shadow: 0 0 0 4px var(--red), 0 12px 32px rgba(237,15,2,0.4); }
+      .receipt .pin { color: var(--red); font-weight: 800; letter-spacing: 0.18em; }
+
+      /* Carte produit */
+      .product-card {
+        position: absolute; width: 620px;
+        background: #fff; border-radius: 24px; overflow: hidden;
+        box-shadow: 0 22px 56px rgba(18,18,18,0.16);
+      }
+      .product-card .img { height: 380px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+      .product-card .img img { width: 100%; height: 100%; object-fit: cover; }
+      .product-card .body { padding: 20px 24px; }
+      .product-card .title { font-family: 'Sora'; font-size: 22px; font-weight: 800; color: var(--ink); line-height: 1.15; }
+      .product-card .price { font-family: 'Sora'; font-size: 30px; font-weight: 800; color: var(--red); margin-top: 8px; }
+      .product-card .badge { display: inline-block; padding: 5px 12px; border-radius: 999px; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.08em; color: #fff; }
+      .badge-flash { background: linear-gradient(90deg, #ED0F02, #ff5a3c); }
+      .badge-troc { background: #ED0F02; }
+
+      /* Escrow card */
+      .escrow-card {
+        position: absolute; width: 560px;
+        background: #121212; color: #fff; border-radius: 24px; padding: 30px;
+        box-shadow: 0 22px 56px rgba(237,15,2,0.28);
+      }
+      .escrow-card .amount { font-family: 'Sora'; font-size: 44px; font-weight: 800; color: var(--red); }
+      .escrow-card .status { display: inline-block; padding: 5px 12px; border-radius: 999px; background: #ED0F02; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+      .escrow-card .row { display: flex; justify-content: space-between; margin-top: 12px; font-size: 14px; color: rgba(255,255,255,0.7); }
+
+      /* Boutique card */
+      .boutique-card {
+        position: absolute; width: 560px;
+        background: #fff; border-radius: 24px; padding: 30px;
+        box-shadow: 0 22px 56px rgba(18,18,18,0.14);
+      }
+      .boutique-card .name { font-family: 'Sora'; font-size: 24px; font-weight: 800; color: var(--ink); }
+      .boutique-card .stars { color: #fbbf24; font-size: 20px; }
+
+      /* CTA final */
+      .cta-card {
+        position: absolute; width: 820px;
+        background: linear-gradient(135deg, #ED0F02, #b80b00);
+        border-radius: 32px; padding: 48px; color: #fff; text-align: center;
+        box-shadow: 0 30px 70px rgba(237,15,2,0.45);
+      }
+      .cta-card .title { font-family: 'Sora'; font-size: 56px; font-weight: 800; line-height: 1.0; }
+      .cta-card .btn { display: inline-block; margin-top: 24px; padding: 16px 40px; background: #fff; color: var(--red); border-radius: 999px; font-family: 'Sora'; font-weight: 800; font-size: 15px; text-transform: uppercase; letter-spacing: 0.1em; }
+
+      /* Logo mark */
+      .logo-mark { width: 80px; height: 80px; border-radius: 20px; box-shadow: 0 8px 24px rgba(237,15,2,0.4); }
+
+      /* Titre hero */
+      .hero-title { font-family: 'Sora'; font-size: 150px; font-weight: 800; line-height: 0.92; letter-spacing: -0.03em; color: var(--ink); text-align: center; }
+      .hero-title .red { color: var(--red); }
+
+      /* Wordmark */
+      .wordmark { font-family: 'Sora'; font-size: 64px; font-weight: 800; letter-spacing: -0.02em; color: var(--ink); }
+      .wordmark .red { color: var(--red); }
+
+      /* Tagline */
+      .tagline { font-family: 'DM Sans'; font-size: 34px; font-weight: 500; color: var(--slate); text-align: center; line-height: 1.3; }
+
+      /* Stat */
+      .stat { font-family: 'Sora'; font-size: 48px; font-weight: 800; color: var(--ink); }
+      .stat-label { font-family: 'DM Sans'; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.16em; color: var(--slate); }
+
+      /* Hand */
+      .hand { position: absolute; width: 260px; pointer-events: none; filter: drop-shadow(0 18px 30px rgba(0,0,0,0.25)); }
+
+      /* Desk surface (gris laiteux) */
+      .desk { position: absolute; inset: 0; background: linear-gradient(180deg, #f2f2f2 0%, #e6e6e6 100%); }
+      .desk::before { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent 0 50px, rgba(0,0,0,0.025) 50px 51px); }
+    </style>
+  </head>
+  <body>
+    <div
+      id="root"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="30.5"
+      data-width="1080"
+      data-height="1920"
+    >
+      <div class="scene" id="scene">
+      <!-- ===== SHOT 1 : Hook — reçus balayés (0 → 3s) ===== -->
+      <div class="clip" data-start="0" data-duration="3" data-track-index="0" id="shot1">
+        <div class="desk"></div>
+        <!-- Reçus imprimés -->
+        <div class="receipt depth-1" id="r1" style="left: 140px; top: 820px; transform: rotate(-6deg);">
+          <div class="row"><span>Reçu #0042</span><span>12 000 FCFA</span></div>
+          <div class="row"><span>Reçu #0043</span><span>8 500 FCFA</span></div>
+          <div class="row total"><span>Total</span><span>20 500 FCFA</span></div>
+        </div>
+        <div class="receipt depth-1" id="r2" style="left: 320px; top: 880px; transform: rotate(4deg);">
+          <div class="row"><span>Reçu #0044</span><span>4 200 FCFA</span></div>
+          <div class="row"><span>Reçu #0045</span><span>11 000 FCFA</span></div>
+          <div class="row total"><span>Total</span><span>15 200 FCFA</span></div>
+        </div>
+        <div class="receipt depth-1" id="r3" style="left: 500px; top: 800px; transform: rotate(-3deg);">
+          <div class="row"><span>Reçu #0046</span><span>6 800 FCFA</span></div>
+          <div class="row"><span>Reçu #0047</span><span>9 300 FCFA</span></div>
+          <div class="row total"><span>Total</span><span>16 100 FCFA</span></div>
+        </div>
+        <!-- Reçu qui reste (paiement Djassa) -->
+        <div class="receipt glow depth-1" id="rStay" style="left: 310px; top: 840px; transform: rotate(0deg);">
+          <div class="row"><span>Djassa · Achat</span><span>85 000 FCFA</span></div>
+          <div class="row"><span>Escrow</span><span>HELD</span></div>
+          <div class="row total"><span>PIN</span><span class="pin">••••</span></div>
+        </div>
+        <!-- Main qui balaie -->
+        <img class="clip hand" id="hand" data-start="0" data-duration="3" data-track-index="0" src="https://images.unsplash.com/photo-1589848315097-ba7b903cc1cc?q=80&w=400&auto=format&fit=crop" alt="" style="left: 900px; top: 780px;" />
+        <!-- Texte hook -->
+        <div class="clip" data-start="0.2" data-duration="2.8" data-track-index="1" id="hookText" style="left: 0; top: 320px; width: 1080px; text-align: center;">
+          <p class="hero-title">Trop cher ? <span class="red">Troque.</span></p>
+        </div>
+      </div>
+
+      <!-- ===== SHOT 2 : Reveal — logo Djassa (3 → 5.5s) ===== -->
+      <div class="clip" data-start="3" data-duration="2.5" data-track-index="0" id="shot2">
+        <div class="desk"></div>
+        <img class="logo-mark" id="logoMark" data-start="3" data-duration="2.5" data-track-index="1" src="./assets/logo-256.png" alt="" style="left: 500px; top: 860px;" />
+        <div class="clip" data-start="3.2" data-duration="2.3" data-track-index="2" id="wordmark" style="left: 0; top: 960px; width: 1080px; text-align: center;">
+          <p class="wordmark">Djassa <span class="red">Online</span></p>
+        </div>
+        <div class="clip" data-start="3.6" data-duration="1.9" data-track-index="3" id="tagline" style="left: 0; top: 1050px; width: 1080px; text-align: center;">
+          <p class="tagline">Le Djassa dans ta poche.</p>
+        </div>
+      </div>
+
+      <!-- ===== SHOT 3 : Proof — séquestre + PIN (5.5 → 9.5s) ===== -->
+      <div class="clip" data-start="5.5" data-duration="4" data-track-index="0" id="shot3">
+        <div class="desk"></div>
+        <div class="escrow-card clip depth-3" data-start="5.5" data-duration="4" data-track-index="1" id="escrowCard" style="left: 260px; top: 700px;">
+          <div class="status">HELD</div>
+          <p style="font-family:'DM Sans'; font-size:15px; color:#fff; margin-top:10px;">Achat · Meuleuse Makita</p>
+          <p class="amount">85 000 FCFA</p>
+          <div class="row"><span>Frais séquestre</span><span>2 550 FCFA</span></div>
+          <div class="row"><span>Code PIN</span><span class="pin">••••</span></div>
+          <p style="margin-top:14px; font-size:12px; color:rgba(255,255,255,0.55);">Fonds bloqués jusqu'à la remise en main propre.</p>
+        </div>
+        <div class="clip" data-start="6" data-duration="3.5" data-track-index="2" id="escrowText" style="left: 0; top: 360px; width: 1080px; text-align: center;">
+          <p class="hero-title" style="font-size: 80px;">Paiement <span class="red">sécurisé.</span></p>
+          <p class="tagline" style="margin-top: 20px;">Séquestre GeniusPay + code PIN à la remise.</p>
+        </div>
+      </div>
+
+      <!-- ===== SHOT 4 : Reveal — vente flash (9.5 → 14s) ===== -->
+      <div class="clip" data-start="9.5" data-duration="4.5" data-track-index="0" id="shot4">
+        <div class="desk"></div>
+        <div class="product-card clip depth-2" data-start="9.5" data-duration="4.5" data-track-index="1" id="flashCard" style="left: 230px; top: 660px;">
+          <div class="img"><img src="./assets/1511707171634-5f897ff02aa9.jpg" alt="" /></div>
+          <div class="body">
+            <span class="badge badge-flash">−15 % · Vente flash</span>
+            <p class="title" style="margin-top: 10px;">Meuleuse d'angle Makita GA5030 720W</p>
+            <p class="price">27 500 FCFA <span style="font-size:16px; color:#999; text-decoration: line-through; margin-left:10px;">32 500</span></p>
+          </div>
+        </div>
+        <div class="clip" data-start="9.8" data-duration="4.2" data-track-index="2" id="flashText" style="left: 0; top: 320px; width: 1080px; text-align: center;">
+          <p class="hero-title" style="font-size: 88px;">Vente <span class="red">flash.</span></p>
+          <p class="tagline" style="margin-top: 20px;">Prix barré · Stock limité · 24 h.</p>
+        </div>
+      </div>
+
+      <!-- ===== SHOT 5 : Proof — troc mixte (14 → 18s) ===== -->
+      <div class="clip" data-start="14" data-duration="4" data-track-index="0" id="shot5">
+        <div class="desk"></div>
+        <div class="product-card clip depth-2" data-start="14" data-duration="4" data-track-index="1" id="trocCard" style="left: 230px; top: 660px;">
+          <div class="img" style="display:flex; align-items:center; justify-content:center; gap:16px; background:#f0f0f0;">
+            <img src="./assets/1517694712202-14dd9538aa97.jpg" alt="" style="width:160px; height:160px; object-fit:cover; border-radius:16px;" />
+            <span style="font-family:'Sora'; font-size:34px; font-weight:800; color:var(--red);">+</span>
+            <span style="font-family:'Sora'; font-size:26px; font-weight:800; color:var(--ink);">15 000 FCFA</span>
+          </div>
+          <div class="body">
+            <span class="badge badge-troc">Troc + soulte</span>
+            <p class="title" style="margin-top: 10px;">iPhone 13 Pro + 15 000 FCFA de soulte</p>
+            <p class="price">Échange équitable</p>
+          </div>
+        </div>
+        <div class="clip" data-start="14.3" data-duration="3.7" data-track-index="2" id="trocText" style="left: 0; top: 320px; width: 1080px; text-align: center;">
+          <p class="hero-title" style="font-size: 88px;">Troc <span class="red">malin.</span></p>
+          <p class="tagline" style="margin-top: 20px;">Troc pur ou mixte avec soulte FCFA.</p>
+        </div>
+      </div>
+
+      <!-- ===== SHOT 6 : Surprise — freeze puis drop (18 → 21s) ===== -->
+      <div class="clip" data-start="18" data-duration="3" data-track-index="0" id="shot6">
+        <div class="desk"></div>
+        <div class="product-card clip depth-2" data-start="18" data-duration="3" data-track-index="1" id="flashCard2" style="left: 230px; top: 660px;">
+          <div class="img"><img src="./assets/1511707171634-5f897ff02aa9.jpg" alt="" /></div>
+          <div class="body">
+            <span class="badge badge-flash">−15 % · Vente flash</span>
+            <p class="title" style="margin-top: 10px;">Meuleuse d'angle Makita GA5030</p>
+            <p class="price" id="strikePrice">32 500 FCFA</p>
+          </div>
+        </div>
+        <div class="clip" data-start="18" data-duration="3" data-track-index="2" id="surpriseText" style="left: 0; top: 320px; width: 1080px; text-align: center;">
+          <p class="hero-title" style="font-size: 88px;">Le prix <span class="red">drop.</span></p>
+        </div>
+      </div>
+
+      <!-- ===== SHOT 7 : Proof — boutique vérifiée (21 → 25s) ===== -->
+      <div class="clip" data-start="21" data-duration="4" data-track-index="0" id="shot7">
+        <div class="desk"></div>
+        <div class="boutique-card clip depth-2" data-start="21" data-duration="4" data-track-index="1" id="boutiqueCard" style="left: 260px; top: 720px;">
+          <div style="display:flex; align-items:center; gap:16px;">
+            <div style="width:64px; height:64px; border-radius:18px; background:linear-gradient(135deg,#ED0F02,#b80b00); display:flex; align-items:center; justify-content:center; font-family:'Sora'; font-weight:800; color:#fff; font-size:26px;">Q</div>
+            <div>
+              <p class="name">Quincaillerie Moderne</p>
+              <p style="font-size:12px; color:var(--slate);">Boutique Pro vérifiée · Abidjan</p>
+            </div>
+            <span style="margin-left:auto; padding:5px 12px; border-radius:999px; background:#ED0F02; color:#fff; font-size:11px; font-weight:800;">VÉRIFIÉ</span>
+          </div>
+          <div style="margin-top:16px; display:flex; gap:24px;">
+            <div><p style="font-size:11px; color:var(--slate); text-transform:uppercase; letter-spacing:0.1em;">Note</p><p style="font-family:'Sora'; font-size:24px; font-weight:800;">4.8 <span style="color:#fbbf24;">★</span></p></div>
+            <div><p style="font-size:11px; color:var(--slate); text-transform:uppercase; letter-spacing:0.1em;">Avis</p><p style="font-family:'Sora'; font-size:24px; font-weight:800;">128</p></div>
+            <div><p style="font-size:11px; color:var(--slate); text-transform:uppercase; letter-spacing:0.1em;">Ventes</p><p style="font-family:'Sora'; font-size:24px; font-weight:800;">486</p></div>
+          </div>
+          <p style="margin-top:16px; font-size:12px; color:var(--slate);">Facture PDF · Neuf garanti · KYC vérifié</p>
+        </div>
+        <div class="clip" data-start="21.3" data-duration="3.7" data-track-index="2" id="boutiqueText" style="left: 0; top: 320px; width: 1080px; text-align: center;">
+          <p class="hero-title" style="font-size: 80px;">Boutiques <span class="red">Pro.</span></p>
+          <p class="tagline" style="margin-top: 20px;">Neuf vérifié · Factures · Ventes flash.</p>
+        </div>
+      </div>
+
+      <!-- ===== SHOT 8 : CTA (25 → 28s) ===== -->
+      <div class="clip" data-start="25" data-duration="3" data-track-index="0" id="shot8">
+        <div class="desk"></div>
+        <div class="cta-card clip depth-3" data-start="25" data-duration="3" data-track-index="1" id="ctaCard" style="left: 130px; top: 640px;">
+          <p class="title">Le Djassa dans<br/>ta poche.</p>
+          <p style="margin-top:16px; font-size:18px; color:rgba(255,255,255,0.85);">Télécharge Djassa Online. Achète, vends, troque en confiance.</p>
+          <span class="btn">Télécharger l'app</span>
+          <div style="margin-top:20px; display:flex; justify-content:center; gap:16px;">
+            <span style="padding:10px 20px; border-radius:10px; background:rgba(255,255,255,0.15); font-size:13px; font-weight:700;">App Store</span>
+            <span style="padding:10px 20px; border-radius:10px; background:rgba(255,255,255,0.15); font-size:13px; font-weight:700;">Google Play</span>
+          </div>
+        </div>
+        <div class="clip" data-start="25" data-duration="3" data-track-index="2" id="logoFinal" style="left: 500px; top: 500px;">
+          <img src="./assets/logo-256.png" alt="" class="logo-mark" />
+        </div>
+      </div>
+
+      <!-- ===== SHOT 9 : Outro (28 → 30.5s) ===== -->
+      <div class="clip" data-start="28" data-duration="2.5" data-track-index="0" id="shot9">
+        <div style="position:absolute; inset:0; background: var(--cream);"></div>
+        <div class="clip" data-start="28" data-duration="2.5" data-track-index="1" id="outro" style="left: 0; top: 780px; width: 1080px; text-align: center;">
+          <p class="wordmark" style="color: var(--ink);">Djassa <span class="red">Online</span></p>
+          <p class="tagline" style="color: var(--slate); margin-top: 16px;">Le Djassa dans ta poche.</p>
+          <p style="margin-top: 28px; font-family:'DM Sans'; font-size: 14px; color: var(--slate);">Wave · Orange Money · MTN · Moov · Séquestre + PIN</p>
+        </div>
+      </div>
+    </div>
+      </div>
+
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      // Shot 1 — Receipt Sweep (composant forgé)
+      tl.fromTo('#r1', { x: 0, y: 0, opacity: 1 }, { x: -260, y: -120, opacity: 0, duration: 1.2, ease: 'power2.in' }, 0.2);
+      tl.fromTo('#r2', { x: 0, y: 0, opacity: 1 }, { x: 260, y: -100, opacity: 0, duration: 1.2, ease: 'power2.in' }, 0.3);
+      tl.fromTo('#r3', { x: 0, y: 0, opacity: 1 }, { x: -200, y: 140, opacity: 0, duration: 1.2, ease: 'power2.in' }, 0.4);
+      tl.fromTo('#rStay', { scale: 0.9, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, ease: 'back.out(1.6)' }, 0.9);
+      tl.fromTo('#rStay', { boxShadow: '0 8px 24px rgba(0,0,0,0.18)' }, { boxShadow: '0 0 0 4px #ED0F02, 0 8px 24px rgba(237,15,2,0.4)', duration: 0.4, ease: 'power2.out' }, 1.3);
+      tl.fromTo('#hand', { x: 0, y: 0 }, { x: -700, y: 0, duration: 1.4, ease: 'power2.inOut' }, 0);
+      tl.fromTo('#hookText', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, 0.3);
+      // Shot 2 — logo
+      tl.fromTo('#logoMark', { scale: 0.4, opacity: 0, y: 40 }, { scale: 1, opacity: 1, y: 0, duration: 0.7, ease: 'back.out(1.7)' }, 3.0);
+      tl.fromTo('#wordmark', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out' }, 3.3);
+      tl.fromTo('#tagline', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, 3.7);
+      // Shot 3 — escrow
+      tl.fromTo('#escrowCard', { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, ease: 'power3.out' }, 5.5);
+      tl.fromTo('#escrowText', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, 5.8);
+      // Shot 4 — flash
+      tl.fromTo('#flashCard', { x: 200, opacity: 0 }, { x: 0, opacity: 1, duration: 0.7, ease: 'power3.out' }, 9.5);
+      tl.fromTo('#flashText', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, 9.8);
+      // Shot 5 — troc
+      tl.fromTo('#trocCard', { x: -200, opacity: 0 }, { x: 0, opacity: 1, duration: 0.7, ease: 'power3.out' }, 14);
+      tl.fromTo('#trocText', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, 14.3);
+      // Shot 6 — surprise freeze puis drop
+      tl.fromTo('#flashCard2', { scale: 1, opacity: 1 }, { scale: 1, opacity: 1, duration: 0.3, ease: 'none' }, 18);
+      tl.fromTo('#strikePrice', { scale: 1 }, { scale: 1.4, color: '#ED0F02', duration: 0.4, ease: 'expo.out' }, 18.3);
+      tl.fromTo('#surpriseText', { opacity: 0, scale: 0.9 }, { opacity: 1, scale: 1, duration: 0.5, ease: 'back.out(1.6)' }, 18.3);
+      // Shot 7 — boutique
+      tl.fromTo('#boutiqueCard', { y: 60, opacity: 0 }, { y: 0, opacity: 1, duration: 0.7, ease: 'power3.out' }, 21);
+      tl.fromTo('#boutiqueText', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out' }, 21.3);
+      // Shot 8 — CTA
+      tl.fromTo('#ctaCard', { scale: 0.85, opacity: 0, y: 40 }, { scale: 1, opacity: 1, y: 0, duration: 0.7, ease: 'back.out(1.6)' }, 25);
+      tl.fromTo('#logoFinal', { scale: 0.4, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.6, ease: 'back.out(1.7)' }, 25);
+      // Shot 9 — outro
+      tl.fromTo('#outro', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, 28);
+
+      // Léger drift 3D de la caméra (oscillation douce) — donne du relief sans bouger les illustrations
+      tl.fromTo('#scene', { rotationX: 4, rotationY: -2 }, { rotationX: 6, rotationY: 2, duration: 30.5, ease: 'sine.inOut', yoyo: true, repeat: 0 }, 0);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
+EOF
+echo "written"

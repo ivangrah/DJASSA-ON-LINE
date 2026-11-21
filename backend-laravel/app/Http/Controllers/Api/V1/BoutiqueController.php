@@ -64,23 +64,29 @@ class BoutiqueController extends Controller
     }
 
     /**
-     * POST /api/v1/boutiques — ouverture d'une Boutique Pro (rôle pro_seller).
+     * POST /api/v1/boutiques — ouverture d'une Boutique Pro (rôle vendeur_pro).
      * Badge « Vendeur Vérifié » : attribué par l'admin après KYC rapide (App Flow §2 étape 3).
      */
     public function store(StoreBoutiqueRequest $request): JsonResponse
     {
         $user = $request->user();
 
+        $this->authorize('create', Boutique::class);
+
         if ($user->boutique) {
             return response()->json(['message' => 'Vous possédez déjà une boutique.'], 409);
         }
 
-        $boutique = Boutique::create($request->boutiqueData() + [
-            'utilisateur_id' => $user->id,
-            'verifie' => false,
-        ]);
+        $boutique = DB::transaction(function () use ($request, $user): Boutique {
+            $boutique = Boutique::create($request->boutiqueData() + [
+                'utilisateur_id' => $user->id,
+                'verifie' => false,
+            ]);
 
-        $user->update(['kyc_status' => \App\Models\User::KYC_PENDING]);
+            $user->update(['kyc_status' => \App\Models\User::KYC_PENDING]);
+
+            return $boutique;
+        });
 
         return BoutiqueResource::make($boutique)->response()->setStatusCode(201);
     }

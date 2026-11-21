@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Transaction",
+  "type": "object",
+  "required": [
+    "reference",
+    "montant_fcfa",
+    "statut"
+  ],
+  "properties": {
+    "reference": {
+      "type": "string",
+      "minLength": 1
+    },
+    "montant_fcfa": {
+      "type": "number",
+      "exclusiveMinimum": 0,
+      "multipleOf": 0.01
+    },
+    "statut": {
+      "enum": [
+        "pending",
+        "held",
+        "released",
+        "refunded",
+        "failed"
+      ]
+    },
+    "acheteur_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "vendeur_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "pin_visible": {
+      "const": false
+    }
+  },
+  "description": "Le PIN et son hash ne doivent jamais apparaître dans ce contrat."
+}

@@ -6,11 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\GoogleTokenRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\SelectPlanRequest;
 use App\Http\Resources\UserResource;
 use App\Models\Boutique;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -29,8 +31,10 @@ class AuthController extends Controller
             'telephone' => $request->validated('telephone'),
             'password' => $request->validated('password'),
             'ville' => $request->validated('ville', 'Abidjan'),
-            'role' => User::ROLE_USER,
-            'plan' => User::PLAN_FREE,
+            'role' => User::ROLE_PARTICULIER,
+            // NULL = l'utilisateur doit encore passer par /choisir-offre.
+            'plan_abonnement' => null,
+            'abonnement_actif_jusqu_au' => null,
         ]);
 
         $token = $user->createToken('djassa-web')->plainTextToken;
@@ -84,13 +88,11 @@ class AuthController extends Controller
             return response()->json(['message' => 'Un e-mail Google vérifié est requis.'], 422);
         }
 
-        $wantedRole = $request->validated('wanted_role', User::ROLE_USER);
-
         $user = User::where('google_id', $googleId)->first()
             ?? User::where('email', $email)->first();
 
         if ($user) {
-            // Liaison / complétion du compte existant
+            // Liaison / complétion du compte existant — le rôle et l'offre ne changent jamais ici.
             $user->fill([
                 'google_id' => $user->google_id ?? $googleId,
                 'avatar' => $user->avatar ?? $avatar,
@@ -103,8 +105,9 @@ class AuthController extends Controller
                 'google_id' => $googleId,
                 'avatar' => $avatar,
                 'email_verified_at' => now(),
-                'role' => User::ROLE_USER,
-                'plan' => User::PLAN_FREE,
+                'role' => User::ROLE_PARTICULIER,
+                'plan_abonnement' => null,
+                'abonnement_actif_jusqu_au' => null,
                 'password' => null,
             ]);
         }
@@ -115,7 +118,65 @@ class AuthController extends Controller
             'user' => UserResource::make($user->load(['boutique', 'abonnement'])),
             'token' => $token,
             'token_type' => 'Bearer',
+            'needs_plan' => ! $user->hasChosenPlan(),
             'needs_boutique' => $user->isProSeller() && ! $user->boutique,
+        ]);
+    }
+
+    /**
+     * POST /api/v1/auth/select-plan — choix obligatoire de l'offre après inscription.
+     *
+     * gratuit → particulier + plan_abonnement=gratuit
+     * pro     → vendeur_pro + plan_abonnement=pro + période d'un mois
+     */
+    public function selectPlan(SelectPlanRequest $request): JsonResponse
+    {
+        $user = $request->user();
+
+        if ($user->isAdmin()) {
+            return response()->json([
+                'message' => 'Le compte administrateur n’est pas soumis au choix d’une offre.',
+            ], 422);
+        }
+
+        $plan = $request->validated('plan');
+
+        $user = DB::transaction(function () use ($user, $plan): User {
+            /** @var User $locked */
+            $locked = User::query()->lockForUpdate()->findOrFail($user->id);
+
+            if ($plan === User::PLAN_PRO) {
+                $proDejaActif = $locked->isProSeller()
+                    && $locked->plan_abonnement === User::PLAN_PRO
+                    && $locked->abonnement_actif_jusqu_au !== null
+                    && $locked->abonnement_actif_jusqu_au->isFuture();
+
+                $locked->forceFill([
+                    'role' => User::ROLE_VENDEUR_PRO,
+                    'plan_abonnement' => User::PLAN_PRO,
+                    'abonnement_actif_jusqu_au' => $proDejaActif
+                        ? $locked->abonnement_actif_jusqu_au
+                        : now()->addMonth(),
+                ])->save();
+            } else {
+                $locked->forceFill([
+                    'role' => User::ROLE_PARTICULIER,
+                    'plan_abonnement' => User::PLAN_GRATUIT,
+                    'abonnement_actif_jusqu_au' => null,
+                ])->save();
+            }
+
+            return $locked;
+        });
+
+        $user->load(['boutique', 'abonnement']);
+
+        return response()->json([
+            'message' => $plan === User::PLAN_PRO
+                ? 'Votre offre Pro est active. Bienvenue dans votre espace vendeur.'
+                : 'Votre offre gratuite est active. Bienvenue sur Djassa Online.',
+            'user' => UserResource::make($user),
+            'redirect_to' => $plan === User::PLAN_PRO ? '/dashboard-pro' : '/dashboard',
         ]);
     }
 
@@ -135,7 +196,7 @@ class AuthController extends Controller
     public function me(Request $request): JsonResponse
     {
         return response()->json([
-            'user' => UserResource::make($request->user()->load('boutique')),
+            'user' => UserResource::make($request->user()->load(['boutique', 'abonnement'])),
         ]);
     }
 

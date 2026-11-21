@@ -14,10 +14,9 @@ class GoogleTokenRequest extends FormRequest
     public function rules(): array
     {
         return [
-            // Jeton d'identité Google (id_token JWT) récupéré côté Web/Mobile
+            // Jeton d'identité Google (id_token JWT) récupéré côté Web/Mobile.
+            // Le rôle est toujours `particulier` à la création : l'offre se choisit ensuite.
             'id_token' => ['required', 'string'],
-            // Type de compte souhaité à la première connexion (App Flow §2)
-            'wanted_role' => ['sometimes', 'in:user,pro_seller'],
         ];
     }
 }

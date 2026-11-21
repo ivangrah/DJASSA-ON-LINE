@@ -145,7 +145,7 @@ class ProductController extends Controller
         $data['specs'] = $request->input('specs');
         $data['images'] = $this->storeImages($request, $user->id) ?? $request->input('image_urls') ?? [];
 
-        $article = Article::create($data);
+        $article = DB::transaction(fn () => Article::create($data));
 
         // Scan du Mur des Souhaits (App Flow §3 étape 3) — inline en dev (QUEUE_CONNECTION=sync)
         MatchWishesJob::dispatch($article);
@@ -165,6 +165,11 @@ class ProductController extends Controller
         if (array_key_exists('mode_transaction', $data)
             && in_array($data['mode_transaction'], [Article::MODE_TROC, Article::MODE_MIXTE], true)) {
             $data['est_trocable'] = true;
+        }
+
+        // Passage en neuf : rattachement automatique à la boutique Pro vérifiée.
+        if (($data['condition'] ?? null) === Article::CONDITION_NEUF && $request->user()->isProSeller()) {
+            $data['boutique_id'] = $request->user()->boutique?->id;
         }
 
         if ($request->has('image_urls')) {

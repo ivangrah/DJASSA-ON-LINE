@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "User",
+  "type": "object",
+  "required": [
+    "id",
+    "role"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "nom": {
+      "type": "string",
+      "minLength": 1
+    },
+    "email": {
+      "type": "string",
+      "format": "email"
+    },
+    "role": {
+      "enum": [
+        "particulier",
+        "vendeur_pro",
+        "admin"
+      ]
+    },
+    "plan_abonnement": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "gratuit",
+        "pro",
+        null
+      ]
+    },
+    "abonnement_actif_jusqu_au": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "needs_plan": {
+      "type": "boolean"
+    },
+    "has_active_pro_plan": {
+      "type": "boolean"
+    }
+  },
+  "additionalProperties": true
+}

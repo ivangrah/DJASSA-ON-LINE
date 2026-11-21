@@ -19,9 +19,8 @@ class StoreProductRequest extends FormRequest
         }
 
         if ($this->input('condition') === Article::CONDITION_NEUF) {
-            $boutique = $this->user()->boutique;
-
-            return $this->user()->isProSeller() && $boutique && $boutique->verifie;
+            // Policy = source de vérité : rôle vendeur_pro + boutique vérifiée.
+            return $this->user()->can('createNeuf', Article::class);
         }
 
         return true;
@@ -30,7 +29,7 @@ class StoreProductRequest extends FormRequest
     protected function failedAuthorization()
     {
         abort(response()->json([
-            'message' => 'La publication d’articles neufs est réservée aux Boutiques Pro vérifiées. Ouvrez votre boutique et faites-la vérifier pour obtenir le badge Vendeur Vérifié.',
+            'message' => 'La publication d’articles neufs est réservée aux Boutiques Pro vérifiées. Choisissez l’offre Pro, ouvrez votre boutique et faites-la vérifier pour obtenir le badge Vendeur Vérifié.',
         ], 422));
     }
 

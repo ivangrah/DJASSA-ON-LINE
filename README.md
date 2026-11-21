@@ -7,9 +7,9 @@ Plateforme hybride e-commerce **C2C seconde main & troc** + **Boutiques Pro B2C*
 | Dossier | Description |
 |---|---|
 | `backend-laravel/` | API REST Laravel 11 / PHP 8.3+ · PostgreSQL 16 (UUID, NUMERIC(12,2), JSONB, TSVECTOR) · Sanctum + Google OAuth · GeniusPay (Escrow + PIN) · Brevo (emails/SMS) |
-| `frontend-web/` | SPA React (JavaScript / Vite) · Tailwind CSS · GSAP · Lucide Icons |
-| `mobile-app/` | Application React Native (Expo) — bottom tab bar avec bouton central `+` |
-| `docs/` | PRD, TRD, App Flow, schéma backend (MLD/DDL), charte graphique & maquettes |
+| `frontend/web/` | SPA React (JavaScript / Vite) · Tailwind CSS · GSAP · Lucide Icons |
+| `frontend/mobile/` | Application React Native (Expo) — bottom tab bar avec bouton central `+` |
+| `documents/` | PRD, TRD, App Flow, schéma backend (MLD/DDL), charte graphique & maquettes |
 
 ## Contraintes métier clés
 
@@ -30,14 +30,14 @@ docker run --rm --network host -v "$PWD":/app -w /app djassa-php:8.4 php artisan
 docker run --rm -d --name djassa-api --network host -v "$PWD":/app -w /app djassa-php:8.4   # http://127.0.0.1:8899
 
 # Frontend web (proxifie /api → :8899)
-cd ../frontend-web && npm install && npm run dev              # http://127.0.0.1:5199
+cd ../frontend/web && npm install && npm run dev              # http://127.0.0.1:5199
 ```
 
 ## Animations Rive
 
-`rive-animations/djassa-pin-success` — animation « Fonds libérés » (coche Noir & Rouge,
+`design/rive/djassa-pin-success` — animation « Fonds libérés » (coche Noir & Rouge,
 bichrome flat line-art). Le CLI Rive (installé via `curl -fsSL https://releases.rive.app/cli/install.sh | sh`)
-est prêt ; la génération du `.riv` requiert un `rive login` unique (voir `frontend-web/public/animations/README.md`).
+est prêt ; la génération du `.riv` requiert un `rive login` unique (voir `frontend/web/public/animations/README.md`).
 En attendant, le frontend affiche un repli SVG animé identique.
 
 ## Design System

@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class OffreTroc extends Model
 {
+    protected $connection = 'troc';
+
     use HasFactory, HasUuids;
 
     protected $table = 'offres_troc';

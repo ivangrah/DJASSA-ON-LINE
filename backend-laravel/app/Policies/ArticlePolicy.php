@@ -15,7 +15,19 @@ class ArticlePolicy
 
     public function create(User $user): bool
     {
-        return true; // l'attribution neuf/boutique est gérée par StoreProductRequest
+        // Tout compte authentifié peut publier une annonce d'occasion / troc.
+        return true;
+    }
+
+    /**
+     * Publication d'un article neuf : réservée aux vendeurs Pro disposant
+     * d'une boutique vérifiée (vente B2C avec stock).
+     */
+    public function createNeuf(User $user): bool
+    {
+        return $user->isProSeller()
+            && $user->boutique !== null
+            && $user->boutique->verifie;
     }
 
     public function update(User $user, Article $article): bool

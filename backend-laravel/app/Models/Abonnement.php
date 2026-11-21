@@ -9,9 +9,11 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class Abonnement extends Model
 {
+    protected $connection = 'auth';
+
     use HasFactory, HasUuids;
 
-    public const FORMULE_FREE = 'free';
+    public const FORMULE_GRATUIT = 'gratuit';
     public const FORMULE_PRO = 'pro';
 
     public const STATUT_PENDING = 'pending';

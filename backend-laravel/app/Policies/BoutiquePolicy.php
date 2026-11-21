@@ -14,6 +14,7 @@ class BoutiquePolicy
 
     public function create(User $user): bool
     {
+        // Ouverture de Boutique officielle réservée aux comptes vendeur_pro.
         return $user->isProSeller();
     }
 

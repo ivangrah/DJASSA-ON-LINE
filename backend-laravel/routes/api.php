@@ -59,7 +59,8 @@ Route::prefix('v1')->group(function () {
      |  Vitrines boutiques pro — publiques
      * ---------------------------------------------------------------- */
     Route::get('/boutiques', [BoutiqueController::class, 'index']);
-    Route::get('/boutiques/me/dashboard', [BoutiqueController::class, 'dashboard'])->middleware('auth:sanctum');
+    Route::get('/boutiques/me/dashboard', [BoutiqueController::class, 'dashboard'])
+        ->middleware(['auth:sanctum', 'role:vendeur_pro']);
     Route::get('/boutiques/{boutique:slug}', [BoutiqueController::class, 'show']);
 
     /* ----------------------------------------------------------------
@@ -77,6 +78,7 @@ Route::prefix('v1')->group(function () {
         // Auth
         Route::post('/auth/logout', [AuthController::class, 'logout']);
         Route::get('/auth/me', [AuthController::class, 'me']);
+        Route::post('/auth/select-plan', [AuthController::class, 'selectPlan']);
 
         // Abonnements — formule Gratuite (0 FCFA) / Pro (5 000 FCFA / mois)
         Route::get('/abonnements/formules', [AbonnementController::class, 'index']);
@@ -91,8 +93,8 @@ Route::prefix('v1')->group(function () {
         Route::post('/products/{product}/flash', [ProductController::class, 'startFlashSale']);
         Route::delete('/products/{product}/flash', [ProductController::class, 'stopFlashSale']);
 
-        // Boutiques pro — gestion
-        Route::post('/boutiques', [BoutiqueController::class, 'store']);
+        // Boutiques pro — gestion (rôle vendeur_pro + policy)
+        Route::post('/boutiques', [BoutiqueController::class, 'store'])->middleware('role:vendeur_pro');
         Route::put('/boutiques/{boutique}', [BoutiqueController::class, 'update']);
         Route::post('/boutiques/{boutique}/verify', [BoutiqueController::class, 'verify']);
 
@@ -122,3 +124,10 @@ Route::prefix('v1')->group(function () {
         Route::post('/messages/{message}/read', [MessageController::class, 'read']);
     });
 });
+
+/* ----------------------------------------------------------------
+ |  Alias de compatibilité demandé : POST /api/auth/select-plan
+ |  L'API versionnée reste la source de vérité (/api/v1/auth/select-plan).
+ * ---------------------------------------------------------------- */
+Route::post('/auth/select-plan', [AuthController::class, 'selectPlan'])
+    ->middleware(['auth:sanctum', 'throttle:api']);

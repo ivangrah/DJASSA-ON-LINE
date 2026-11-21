@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Message extends Model
 {
+    protected $connection = 'chat';
+
     use HasFactory, HasUuids;
 
     protected $fillable = [

@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Article",
+  "type": "object",
+  "required": [
+    "id",
+    "titre",
+    "etat",
+    "prix_fcfa"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "titre": {
+      "type": "string",
+      "minLength": 1
+    },
+    "etat": {
+      "enum": [
+        "used",
+        "new"
+      ]
+    },
+    "marche": {
+      "enum": [
+        "occasion",
+        "neuf"
+      ]
+    },
+    "prix_fcfa": {
+      "type": "number",
+      "minimum": 0,
+      "multipleOf": 0.01
+    },
+    "stock": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "boutique_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uuid"
+    },
+    "quartier": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  }
+}

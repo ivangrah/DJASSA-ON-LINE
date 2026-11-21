@@ -9,7 +9,7 @@ return new class extends Migration
 {
     /**
      * Djassa Online — table `boutiques` (MLD : `boutiques`)
-     * Vitrine B2C officielle, relation 1:1 avec users (rôle pro_seller).
+     * Vitrine B2C officielle, relation 1:1 avec users (rôle vendeur_pro).
      * URL publique : /boutique/:slug — badge "Vendeur Vérifié".
      */
     public function up(): void

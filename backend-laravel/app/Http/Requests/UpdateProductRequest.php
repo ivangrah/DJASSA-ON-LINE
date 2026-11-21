@@ -12,8 +12,18 @@ class UpdateProductRequest extends FormRequest
     {
         $article = $this->route('product');
 
-        return $article && $this->user()
+        $owns = $article && $this->user()
             && ($article->utilisateur_id === $this->user()->id || $this->user()->isAdmin());
+
+        if (! $owns) {
+            return false;
+        }
+
+        if ($this->input('condition') === Article::CONDITION_NEUF) {
+            return $this->user()->can('createNeuf', Article::class);
+        }
+
+        return true;
     }
 
     public function rules(): array

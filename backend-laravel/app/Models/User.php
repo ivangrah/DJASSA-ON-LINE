@@ -12,6 +12,8 @@ use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
+    protected $connection = 'auth';
+
     use HasApiTokens, HasFactory, HasUuids, Notifiable;
 
     protected $fillable = [
@@ -22,8 +24,8 @@ class User extends Authenticatable
         'google_id',
         'avatar',
         'role',
-        'plan',
-        'plan_expire_at',
+        'plan_abonnement',
+        'abonnement_actif_jusqu_au',
         'kyc_status',
         'ville',
         'quartier',
@@ -44,7 +46,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'solde_portefeuille' => 'decimal:2',
             'score_confiance' => 'integer',
-            'plan_expire_at' => 'datetime',
+            'abonnement_actif_jusqu_au' => 'datetime',
         ];
     }
 
@@ -52,28 +54,40 @@ class User extends Authenticatable
      |  Rôles & capacités
      * ------------------------------------------------------------------ */
 
-    public const PLAN_FREE = 'free';
+    public const PLAN_GRATUIT = 'gratuit';
     public const PLAN_PRO = 'pro';
 
-    public const ROLE_USER = 'user';
-    public const ROLE_PRO_SELLER = 'pro_seller';
+    public const ROLE_PARTICULIER = 'particulier';
+    public const ROLE_VENDEUR_PRO = 'vendeur_pro';
     public const ROLE_ADMIN = 'admin';
 
     public const KYC_NONE = 'none';
     public const KYC_PENDING = 'pending';
     public const KYC_VERIFIED = 'verified';
 
-    public function isProSeller(): bool
+    /** Compte particulier — accès au dashboard /dashboard uniquement. */
+    public function isParticulier(): bool
     {
-        return $this->role === self::ROLE_PRO_SELLER
-            && $this->plan === self::PLAN_PRO
-            && ($this->plan_expire_at === null || $this->plan_expire_at->isFuture());
+        return $this->role === self::ROLE_PARTICULIER;
     }
 
+    /** Compte vendeur pro — accès au dashboard /dashboard-pro et aux outils boutique. */
+    public function isProSeller(): bool
+    {
+        return $this->role === self::ROLE_VENDEUR_PRO;
+    }
+
+    /** L'utilisateur a complété l'écran obligatoire /choisir-offre. */
+    public function hasChosenPlan(): bool
+    {
+        return $this->plan_abonnement !== null;
+    }
+
+    /** Abonnement Pro encore valide (la date NULL est tolérée pour les comptes historiques). */
     public function hasActiveProPlan(): bool
     {
-        return $this->plan === self::PLAN_PRO
-            && ($this->plan_expire_at === null || $this->plan_expire_at->isFuture());
+        return $this->plan_abonnement === self::PLAN_PRO
+            && ($this->abonnement_actif_jusqu_au === null || $this->abonnement_actif_jusqu_au->isFuture());
     }
 
     public function isAdmin(): bool

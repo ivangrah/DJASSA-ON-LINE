@@ -97,6 +97,91 @@ return [
             'sslmode' => 'prefer',
         ],
 
+        // Domaine auth — base isolée djassa_auth_db.
+        // Repli sur DB_DATABASE pour garder le monolithe fonctionnel en dev ;
+        // définir DB_AUTH_DATABASE pour activer l'isolation réelle.
+        'auth' => [
+            'driver' => 'pgsql',
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '5432'),
+            'database' => env('DB_AUTH_DATABASE', env('DB_DATABASE', 'djassa_online')),
+            'username' => env('DB_USERNAME', 'postgres'),
+            'password' => env('DB_PASSWORD', ''),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'search_path' => 'public',
+            'sslmode' => 'prefer',
+        ],
+
+        // Domaine catalog — base isolée djassa_catalog_db.
+        // Repli sur DB_DATABASE pour garder le monolithe fonctionnel en dev ;
+        // définir DB_CATALOG_DATABASE pour activer l'isolation réelle.
+        'catalog' => [
+            'driver' => 'pgsql',
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '5432'),
+            'database' => env('DB_CATALOG_DATABASE', env('DB_DATABASE', 'djassa_online')),
+            'username' => env('DB_USERNAME', 'postgres'),
+            'password' => env('DB_PASSWORD', ''),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'search_path' => 'public',
+            'sslmode' => 'prefer',
+        ],
+
+        // Domaine troc — base isolée djassa_troc_db.
+        // Repli sur DB_DATABASE pour garder le monolithe fonctionnel en dev ;
+        // définir DB_TROC_DATABASE pour activer l'isolation réelle.
+        'troc' => [
+            'driver' => 'pgsql',
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '5432'),
+            'database' => env('DB_TROC_DATABASE', env('DB_DATABASE', 'djassa_online')),
+            'username' => env('DB_USERNAME', 'postgres'),
+            'password' => env('DB_PASSWORD', ''),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'search_path' => 'public',
+            'sslmode' => 'prefer',
+        ],
+
+        // Domaine escrow — base isolée djassa_escrow_db.
+        // Repli sur DB_DATABASE pour garder le monolithe fonctionnel en dev ;
+        // définir DB_ESCROW_DATABASE pour activer l'isolation réelle.
+        'escrow' => [
+            'driver' => 'pgsql',
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '5432'),
+            'database' => env('DB_ESCROW_DATABASE', env('DB_DATABASE', 'djassa_online')),
+            'username' => env('DB_USERNAME', 'postgres'),
+            'password' => env('DB_PASSWORD', ''),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'search_path' => 'public',
+            'sslmode' => 'prefer',
+        ],
+
+        // Domaine chat — base isolée djassa_chat_db.
+        // Repli sur DB_DATABASE pour garder le monolithe fonctionnel en dev ;
+        // définir DB_CHAT_DATABASE pour activer l'isolation réelle.
+        'chat' => [
+            'driver' => 'pgsql',
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '5432'),
+            'database' => env('DB_CHAT_DATABASE', env('DB_DATABASE', 'djassa_online')),
+            'username' => env('DB_USERNAME', 'postgres'),
+            'password' => env('DB_PASSWORD', ''),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'search_path' => 'public',
+            'sslmode' => 'prefer',
+        ],
+
         'sqlsrv' => [
             'driver' => 'sqlsrv',
             'url' => env('DB_URL'),

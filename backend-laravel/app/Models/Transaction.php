@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Transaction extends Model
 {
+    protected $connection = 'escrow';
+
     use HasFactory, HasUuids;
 
     protected $fillable = [

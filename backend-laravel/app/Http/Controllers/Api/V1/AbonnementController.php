@@ -28,11 +28,11 @@ class AbonnementController extends Controller
         return response()->json([
             'formules' => [
                 [
-                    'formule' => Abonnement::FORMULE_FREE,
+                    'formule' => Abonnement::FORMULE_GRATUIT,
                     'nom' => 'Gratuite',
                     'montant_fcfa' => '0.00',
                     'avantages' => [
-                        'Publier des annonces d\'occasion',
+                        'Publier des annonces d’occasion',
                         'Troc pur et mixte',
                         'Acheter sur le marché',
                         'Messagerie & Mur des souhaits',
@@ -54,20 +54,25 @@ class AbonnementController extends Controller
                 ],
             ],
             'abonnement' => $current ? AbonnementResource::make($current) : null,
-            'plan_actuel' => $user->plan,
+            'plan_actuel' => $user->plan_abonnement,
+            'abonnement_actif_jusqu_au' => $user->abonnement_actif_jusqu_au?->toIso8601String(),
             'is_pro' => $user->isProSeller(),
+            'needs_plan' => ! $user->hasChosenPlan(),
         ]);
     }
 
     /** Abonnement de l'utilisateur connecté. */
     public function me(Request $request): JsonResponse
     {
-        $abonnement = $request->user()->abonnement;
+        $user = $request->user();
+        $abonnement = $user->abonnement;
 
         return response()->json([
             'abonnement' => $abonnement ? AbonnementResource::make($abonnement) : null,
-            'plan' => $request->user()->plan,
-            'is_pro' => $request->user()->isProSeller(),
+            'plan' => $user->plan_abonnement,
+            'abonnement_actif_jusqu_au' => $user->abonnement_actif_jusqu_au?->toIso8601String(),
+            'is_pro' => $user->isProSeller(),
+            'needs_plan' => ! $user->hasChosenPlan(),
         ]);
     }
 
@@ -76,7 +81,7 @@ class AbonnementController extends Controller
     {
         $user = $request->user();
 
-        if ($user->isProSeller() && $user->abonnement?->statut === Abonnement::STATUT_ACTIVE) {
+        if ($user->isProSeller() && $user->hasActiveProPlan()) {
             return response()->json(['message' => 'Votre formule Pro est déjà active.'], 422);
         }
 
@@ -130,9 +135,9 @@ class AbonnementController extends Controller
                 $abonnement->update(['statut' => Abonnement::STATUT_CANCELLED]);
             }
             $user->update([
-                'plan' => User::PLAN_FREE,
-                'plan_expire_at' => null,
-                'role' => $user->isAdmin() ? User::ROLE_ADMIN : User::ROLE_USER,
+                'plan_abonnement' => User::PLAN_GRATUIT,
+                'abonnement_actif_jusqu_au' => null,
+                'role' => $user->isAdmin() ? User::ROLE_ADMIN : User::ROLE_PARTICULIER,
             ]);
         });
 
@@ -152,9 +157,9 @@ class AbonnementController extends Controller
             'fin_at' => $debut->copy()->addMonth(),
         ]);
         $abonnement->utilisateur->update([
-            'plan' => User::PLAN_PRO,
-            'role' => User::ROLE_PRO_SELLER,
-            'plan_expire_at' => $debut->copy()->addMonth(),
+            'plan_abonnement' => User::PLAN_PRO,
+            'role' => User::ROLE_VENDEUR_PRO,
+            'abonnement_actif_jusqu_au' => $debut->copy()->addMonth(),
         ]);
     }
 }

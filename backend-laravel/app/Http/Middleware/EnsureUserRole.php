@@ -7,7 +7,8 @@ use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Restriction d'accès par rôle — ex. `role:pro_seller` ou `role:pro_seller,admin`.
+ * Restriction d'accès par rôle — ex. `role:vendeur_pro` ou `role:vendeur_pro,admin`.
+ * L'administrateur conserve un accès transversal (supervision).
  */
 class EnsureUserRole
 {

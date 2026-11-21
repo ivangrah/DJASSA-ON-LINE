@@ -1,0 +1,92 @@
+{
+  "base_url": "http://127.0.0.1:8080",
+  "prefix": "/api/v1",
+  "routes": [
+    {
+      "path": "/auth/register",
+      "method": "POST",
+      "service": "auth-subscription-service",
+      "auth": false,
+      "throttle": "10/min"
+    },
+    {
+      "path": "/auth/login",
+      "method": "POST",
+      "service": "auth-subscription-service",
+      "auth": false,
+      "throttle": "10/min"
+    },
+    {
+      "path": "/auth/google",
+      "method": "POST",
+      "service": "auth-subscription-service",
+      "auth": false,
+      "throttle": "10/min"
+    },
+    {
+      "path": "/auth/me",
+      "method": "GET",
+      "service": "auth-subscription-service",
+      "auth": true
+    },
+    {
+      "path": "/auth/select-plan",
+      "method": "POST",
+      "service": "auth-subscription-service",
+      "auth": true,
+      "note": "Choix initial uniquement ; n'accorde pas d'entitlement Pro"
+    },
+    {
+      "path": "/catalog/articles",
+      "method": "GET",
+      "service": "catalog-boutique-service",
+      "auth": false
+    },
+    {
+      "path": "/catalog/articles",
+      "method": "POST",
+      "service": "catalog-boutique-service",
+      "auth": true,
+      "role": "vendeur_pro"
+    },
+    {
+      "path": "/catalog/boutiques",
+      "method": "POST",
+      "service": "catalog-boutique-service",
+      "auth": true,
+      "role": "vendeur_pro"
+    },
+    {
+      "path": "/catalog/boutiques/{slug}",
+      "method": "GET",
+      "service": "catalog-boutique-service",
+      "auth": false
+    },
+    {
+      "path": "/troc/offres",
+      "method": "POST",
+      "service": "troc-engine-service",
+      "auth": true,
+      "note": "Exige un plan choisi"
+    },
+    {
+      "path": "/escrow/checkout",
+      "method": "POST",
+      "service": "escrow-payment-service",
+      "auth": true
+    },
+    {
+      "path": "/escrow/webhooks/geniuspay",
+      "method": "POST",
+      "service": "escrow-payment-service",
+      "auth": false,
+      "signed": "hmac-sha256"
+    },
+    {
+      "path": "/messages/conversations",
+      "method": "GET",
+      "service": "notification-chat-service",
+      "auth": true
+    }
+  ]
+}

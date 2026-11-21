@@ -1,0 +1,32 @@
+[span] Djassa
+[span] Online
+[a] Connexion
+[h1] 404
+[p] Cette page n'existe pas (encore).
+[p] Le Djassa est grand, mais pas infini. Revenez au marché.
+[a] Retour au fil
+[p] La marketplace de revente et de troc en Afrique de l'Ouest. Achetez, vendez et troquez en confiance, en FCFA.
+[span] Escrow + PIN
+[span] Mobile Money
+[h3] Marketplace
+[a] Catalogue
+[a] Publier une annonce
+[a] Mur des souhaits
+[h3] Mon espace
+[a] Mon Djassa
+[a] Messages
+[a] Connexion
+[a] Inscription
+[h3] Paiements sécurisés
+[p] Transactions protégées par séquestre : le vendeur est payé après remise et validation par
+[span] code PIN
+[li] Orange Money
+[li] MTN Money
+[li] Moov Money
+[div] C2C, troc & Boutiques Pro — paiements en FCFA
+[span] Djassa Online
+[p] . Tous droits réservés.
+[p] Fait avec soin à Abidjan, Côte d’Ivoire.
+[span] Souhaits
+[span] Messages
+[span] Mon Djassa

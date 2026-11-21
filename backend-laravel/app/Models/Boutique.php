@@ -10,6 +10,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Boutique extends Model
 {
+    protected $connection = 'catalog';
+
     use HasFactory, HasUuids;
 
     protected $table = 'boutiques';
