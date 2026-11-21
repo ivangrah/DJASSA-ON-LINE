@@ -7,9 +7,12 @@ use App\Http\Requests\GoogleTokenRequest;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Requests\SelectPlanRequest;
+use App\Http\Resources\AbonnementResource;
 use App\Http\Resources\UserResource;
+use App\Models\Abonnement;
 use App\Models\Boutique;
 use App\Models\User;
+use App\Services\GeniusPayService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -139,44 +142,82 @@ class AuthController extends Controller
             ], 422);
         }
 
+        // Le choix d'offre est une étape unique : un plan déjà choisi ne peut pas être rejoué.
+        if ($user->hasChosenPlan()) {
+            return response()->json(['message' => 'Votre offre est déjà choisie.'], 422);
+        }
+
         $plan = $request->validated('plan');
 
-        $user = DB::transaction(function () use ($user, $plan): User {
-            /** @var User $locked */
-            $locked = User::query()->lockForUpdate()->findOrFail($user->id);
+        if ($plan === User::PLAN_PRO) {
+            // B1 : aucune élévation de rôle ici. Une intention de paiement est créée,
+            // l'activation Pro n'aura lieu qu'après un webhook GeniusPay HMAC valide.
+            $abonnement = Abonnement::query()
+                ->where('utilisateur_id', $user->id)
+                ->where('formule', Abonnement::FORMULE_PRO)
+                ->where('statut', Abonnement::STATUT_PENDING)
+                ->latest()->first();
 
-            if ($plan === User::PLAN_PRO) {
-                $proDejaActif = $locked->isProSeller()
-                    && $locked->plan_abonnement === User::PLAN_PRO
-                    && $locked->abonnement_actif_jusqu_au !== null
-                    && $locked->abonnement_actif_jusqu_au->isFuture();
-
-                $locked->forceFill([
-                    'role' => User::ROLE_VENDEUR_PRO,
-                    'plan_abonnement' => User::PLAN_PRO,
-                    'abonnement_actif_jusqu_au' => $proDejaActif
-                        ? $locked->abonnement_actif_jusqu_au
-                        : now()->addMonth(),
-                ])->save();
-            } else {
-                $locked->forceFill([
-                    'role' => User::ROLE_PARTICULIER,
-                    'plan_abonnement' => User::PLAN_GRATUIT,
-                    'abonnement_actif_jusqu_au' => null,
-                ])->save();
+            if (! $abonnement) {
+                $abonnement = Abonnement::create([
+                    'utilisateur_id' => $user->id,
+                    'formule' => Abonnement::FORMULE_PRO,
+                    'montant_fcfa' => Abonnement::PRIX_PRO,
+                    'statut' => Abonnement::STATUT_PENDING,
+                    'reference' => 'DJASSA-PRO-'.strtoupper(bin2hex(random_bytes(6))),
+                ]);
             }
 
-            return $locked;
-        });
+            try {
+                $session = app(GeniusPayService::class)->initiate(
+                    (float) Abonnement::PRIX_PRO,
+                    $abonnement->reference,
+                    [
+                        'description' => 'Formule Pro Djassa Online — 1 mois',
+                        'customer' => array_filter([
+                            'name' => $user->nom,
+                            'email' => $user->email,
+                            'phone' => $user->telephone,
+                        ]),
+                        'metadata' => ['type' => 'abonnement', 'abonnement_id' => $abonnement->id],
+                    ]
+                );
+            } catch (RuntimeException $e) {
+                $abonnement->update(['statut' => Abonnement::STATUT_FAILED]);
 
+                return response()->json(['message' => 'Paiement indisponible pour le moment.'], 502);
+            }
+
+            $abonnement->update(['geniuspay_ref' => $session['geniuspay_ref']]);
+
+            // L'offre formelle reste gratuite jusqu'au paiement confirmé.
+            $user->forceFill([
+                'role' => User::ROLE_PARTICULIER,
+                'plan_abonnement' => User::PLAN_GRATUIT,
+                'abonnement_actif_jusqu_au' => null,
+            ])->save();
+            $user->load(['boutique', 'abonnement']);
+
+            return response()->json([
+                'message' => 'Finalisez le paiement Pro pour activer vos outils vendeur.',
+                'user' => UserResource::make($user),
+                'abonnement' => AbonnementResource::make($abonnement->fresh()),
+                'payment_url' => $session['payment_url'],
+                'redirect_to' => '/dashboard',
+            ]);
+        }
+
+        $user->forceFill([
+            'role' => User::ROLE_PARTICULIER,
+            'plan_abonnement' => User::PLAN_GRATUIT,
+            'abonnement_actif_jusqu_au' => null,
+        ])->save();
         $user->load(['boutique', 'abonnement']);
 
         return response()->json([
-            'message' => $plan === User::PLAN_PRO
-                ? 'Votre offre Pro est active. Bienvenue dans votre espace vendeur.'
-                : 'Votre offre gratuite est active. Bienvenue sur Djassa Online.',
+            'message' => 'Votre offre gratuite est active. Bienvenue sur Djassa Online.',
             'user' => UserResource::make($user),
-            'redirect_to' => $plan === User::PLAN_PRO ? '/dashboard-pro' : '/dashboard',
+            'redirect_to' => '/dashboard',
         ]);
     }
 

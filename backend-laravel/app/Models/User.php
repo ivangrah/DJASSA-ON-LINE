@@ -86,8 +86,10 @@ class User extends Authenticatable
     /** Abonnement Pro encore valide (la date NULL est tolérée pour les comptes historiques). */
     public function hasActiveProPlan(): bool
     {
+        // W2 : une date d'expiration absente n'est PAS un abonnement actif.
         return $this->plan_abonnement === self::PLAN_PRO
-            && ($this->abonnement_actif_jusqu_au === null || $this->abonnement_actif_jusqu_au->isFuture());
+            && $this->abonnement_actif_jusqu_au !== null
+            && $this->abonnement_actif_jusqu_au->isFuture();
     }
 
     public function isAdmin(): bool

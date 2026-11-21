@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Services\GeniusPayService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -43,6 +44,35 @@ class GeniusPayWebhookTest extends TestCase
             ['CONTENT_TYPE' => 'application/json', 'HTTP_X_GENIUSPAY_SIGNATURE' => $signature],
             $body
         )->assertStatus(422);
+    }
+
+    public function test_mode_mock_est_interdit_en_production(): void
+    {
+        config([
+            'app.env' => 'production',
+            'services.geniuspay.api_key' => null,
+            'services.geniuspay.api_secret' => null,
+            'services.geniuspay.webhook_secret' => null,
+        ]);
+
+        $service = app(GeniusPayService::class);
+
+        $this->assertFalse($service->isMock());
+        $this->assertFalse($service->verifyWebhookSignature('{}', null));
+    }
+
+    public function test_signature_est_requise_en_production_meme_sans_secret(): void
+    {
+        config([
+            'app.env' => 'production',
+            'services.geniuspay.api_key' => 'prod-key',
+            'services.geniuspay.webhook_secret' => null,
+        ]);
+
+        $service = app(GeniusPayService::class);
+
+        $this->assertFalse($service->isMock());
+        $this->assertFalse($service->verifyWebhookSignature('{"reference":"X"}', null));
     }
 
     public function test_deux_webhooks_identiques_ne_creent_pas_deux_activations(): void

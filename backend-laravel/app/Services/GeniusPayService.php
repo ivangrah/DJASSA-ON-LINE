@@ -22,8 +22,16 @@ use RuntimeException;
  */
 class GeniusPayService
 {
+    /**
+     * B5 : le mode mock n'existe qu'en développement/test et jamais en production,
+     * même si les clés GeniusPay sont absentes de la configuration.
+     */
     public function isMock(): bool
     {
+        if (! in_array(config('app.env'), ['local', 'testing'], true)) {
+            return false;
+        }
+
         return empty(config('services.geniuspay.api_key'));
     }
 
@@ -102,8 +110,7 @@ class GeniusPayService
         $secret = config('services.geniuspay.webhook_secret');
 
         if (empty($secret)) {
-            // Sans secret configuré : accepté uniquement en mode MOCK (développement).
-            // Avec de vraies clés API mais pas de secret webhook → refus strict (fail-safe).
+            // B5 : toléré uniquement en mode MOCK local ; refus strict partout ailleurs.
             if ($this->isMock()) {
                 Log::warning('[GeniusPay] webhook_secret non configuré — mode MOCK, signature non vérifiée');
 

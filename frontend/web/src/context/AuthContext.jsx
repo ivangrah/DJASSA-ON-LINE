@@ -121,6 +121,7 @@ export function AuthProvider({ children }) {
     const isPro = role === 'vendeur_pro';
     const isParticulier = role === 'particulier';
     const isAdmin = role === 'admin';
+    const hasActiveProPlan = Boolean(user?.has_active_pro_plan);
 
     const needsPlan = Boolean(user) && plan === null;
 
@@ -138,6 +139,7 @@ export function AuthProvider({ children }) {
       isPro,
       isParticulier,
       isAdmin,
+      hasActiveProPlan,
       needsPlan,
       plan,
       dashboardPath,

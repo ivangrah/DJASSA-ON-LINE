@@ -21,7 +21,8 @@ class UserResource extends JsonResource
             'is_pro' => $this->isProSeller(),
             'is_particulier' => $this->isParticulier(),
             'has_active_pro_plan' => $this->hasActiveProPlan(),
-            'needs_plan' => ! $this->hasChosenPlan(),
+            // W1 : l'administrateur n'est jamais bloqué par l'onboarding « choix d'offre ».
+            'needs_plan' => ! $this->isAdmin() && ! $this->hasChosenPlan(),
             'abonnement' => AbonnementResource::make($this->whenLoaded('abonnement')),
             'kyc_status' => $this->kyc_status,
             'ville' => $this->ville,

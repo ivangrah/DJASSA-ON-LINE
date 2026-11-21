@@ -7,6 +7,7 @@ use App\Services\GeniusPayService;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
+use RuntimeException;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -25,6 +26,17 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // B5 : refuser de démarrer en production avec une configuration de paiement incomplète.
+        if (config('app.env') === 'production' && (
+            empty(config('services.geniuspay.api_key')) ||
+            empty(config('services.geniuspay.api_secret')) ||
+            empty(config('services.geniuspay.webhook_secret'))
+        )) {
+            throw new RuntimeException(
+                'GeniusPay : api_key, api_secret et webhook_secret sont obligatoires en production.'
+            );
+        }
+
         // TRD §6 — limitation de débit : 60 requêtes/minute par utilisateur (ou par IP si invité)
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?? $request->ip());

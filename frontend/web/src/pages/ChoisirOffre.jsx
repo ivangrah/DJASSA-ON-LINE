@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import {
   ArrowLeft, ArrowRight, ArrowLeftRight, BadgeCheck, Boxes, Check, Crown,
@@ -40,6 +40,7 @@ export default function ChoisirOffre() {
   const { user, isAdmin, selectPlan, loading, logout } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
+  const location = useLocation();
   const root = useRef(null);
   const [pending, setPending] = useState(null);
 
@@ -129,7 +130,14 @@ export default function ChoisirOffre() {
 
         {isAdmin && (
           <div className="mx-auto mt-6 max-w-2xl rounded-[5px] bg-amber-400/10 px-4 py-3 text-center text-[12px] font-semibold text-amber-200">
-            Compte administrateur : la sélection d’offre est désactivée. Accédez directement à la supervision depuis le tableau Pro.
+            Compte administrateur : la sélection d’offre est désactivée.{' '}
+            <Link to="/dashboard-pro" className="underline underline-offset-2">Accéder à la supervision</Link>.
+          </div>
+        )}
+
+        {location.state?.renew && (
+          <div className="mx-auto mt-6 max-w-2xl rounded-[5px] bg-djassa-red/10 px-4 py-3 text-center text-[12px] font-semibold text-djassa-red">
+            Votre abonnement Pro a expiré. Renouvelez-le pour retrouver vos outils vendeur.
           </div>
         )}
 

@@ -31,9 +31,10 @@ export function RequireAuth({ children }) {
 
 /** Onboarding obligatoire : aucune offre choisie → /choisir-offre. */
 export function OnboardingGuard({ children }) {
-  const { user } = useAuth();
+  const { user, needsPlan, isAdmin } = useAuth();
 
-  if (user && user.plan_abonnement === null) {
+  // W1 : l'administrateur n'est jamais astreint au choix d'offre.
+  if (user && !isAdmin && needsPlan) {
     return <Navigate to="/choisir-offre" replace />;
   }
 
@@ -45,14 +46,14 @@ export function OnboardingGuard({ children }) {
  * Un vendeur Pro qui tente /dashboard est renvoyé vers /dashboard-pro.
  */
 export function ParticulierRoute({ children }) {
-  const { isAuthenticated, user, needsPlan } = useAuth();
+  const { isAuthenticated, user, needsPlan, isAdmin } = useAuth();
   const location = useLocation();
 
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location.pathname + location.search }} replace />;
   }
   if (!user) return <AuthGateLoader />;
-  if (needsPlan) return <Navigate to="/choisir-offre" replace />;
+  if (needsPlan && !isAdmin) return <Navigate to="/choisir-offre" replace />;
   if (user.role === 'vendeur_pro') return <Navigate to="/dashboard-pro" replace />;
   if (user.role === 'admin') return <Navigate to="/dashboard-pro" replace />;
   if (user.role !== 'particulier') return <Navigate to="/" replace />;
@@ -66,14 +67,18 @@ export function ParticulierRoute({ children }) {
  * L'administrateur conserve un accès de supervision.
  */
 export function ProRoute({ children }) {
-  const { isAuthenticated, user, needsPlan } = useAuth();
+  const { isAuthenticated, user, needsPlan, isAdmin, hasActiveProPlan } = useAuth();
   const location = useLocation();
 
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location.pathname + location.search }} replace />;
   }
   if (!user) return <AuthGateLoader />;
-  if (needsPlan) return <Navigate to="/choisir-offre" replace />;
+  if (needsPlan && !isAdmin) return <Navigate to="/choisir-offre" replace />;
+  // W2 : un Pro expiré est renvoyé vers le renouvellement, pas vers le dashboard Pro.
+  if (user.role === 'vendeur_pro' && !hasActiveProPlan) {
+    return <Navigate to="/choisir-offre" state={{ renew: true }} replace />;
+  }
   if (user.role === 'particulier') return <Navigate to="/dashboard" replace />;
   if (user.role !== 'vendeur_pro' && user.role !== 'admin') return <Navigate to="/" replace />;
 
