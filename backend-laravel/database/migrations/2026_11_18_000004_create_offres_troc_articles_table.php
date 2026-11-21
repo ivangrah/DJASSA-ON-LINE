@@ -1,5 +1,7 @@
 <?php
 
+use App\Support\DomainSchema;
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -15,8 +17,14 @@ return new class extends Migration
     {
         Schema::create('offres_troc_articles', function (Blueprint $table) {
             $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'));
-            $table->foreignUuid('offre_troc_id')->constrained('offres_troc')->cascadeOnDelete();
-            $table->foreignUuid('article_offert_id')->constrained('articles')->cascadeOnDelete();
+            $table->foreignUuid('offre_troc_id');
+            if (! DomainSchema::isolated()) {
+                $table->foreign('offre_troc_id')->references('id')->on('offres_troc')->cascadeOnDelete();
+            }
+            $table->foreignUuid('article_offert_id');
+            if (! DomainSchema::isolated()) {
+                $table->foreign('article_offert_id')->references('id')->on('articles')->cascadeOnDelete();
+            }
             $table->timestampsTz();
         });
 

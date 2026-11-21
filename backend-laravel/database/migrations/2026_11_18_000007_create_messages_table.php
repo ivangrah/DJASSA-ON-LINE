@@ -1,5 +1,7 @@
 <?php
 
+use App\Support\DomainSchema;
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -17,10 +19,22 @@ return new class extends Migration
     {
         Schema::create('messages', function (Blueprint $table) {
             $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'));
-            $table->foreignUuid('expediteur_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignUuid('destinataire_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignUuid('article_id')->nullable()->constrained('articles')->nullOnDelete();
-            $table->foreignUuid('offre_troc_id')->nullable()->constrained('offres_troc')->nullOnDelete();
+            $table->foreignUuid('expediteur_id');
+            if (! DomainSchema::isolated()) {
+                $table->foreign('expediteur_id')->references('id')->on('users')->cascadeOnDelete();
+            }
+            $table->foreignUuid('destinataire_id');
+            if (! DomainSchema::isolated()) {
+                $table->foreign('destinataire_id')->references('id')->on('users')->cascadeOnDelete();
+            }
+            $table->foreignUuid('article_id')->nullable();
+            if (! DomainSchema::isolated()) {
+                $table->foreign('article_id')->references('id')->on('articles')->nullOnDelete();
+            }
+            $table->foreignUuid('offre_troc_id')->nullable();
+            if (! DomainSchema::isolated()) {
+                $table->foreign('offre_troc_id')->references('id')->on('offres_troc')->nullOnDelete();
+            }
             $table->string('type', 20)->default('texte'); // texte | offre_prix | carte_troc | systeme
             $table->text('contenu')->nullable();
             $table->jsonb('payload')->nullable(); // ex : {"montant_fcfa": 25000, "soulte_fcfa": 10000}

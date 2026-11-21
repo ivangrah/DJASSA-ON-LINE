@@ -38,7 +38,7 @@ La migration du monolithe vers les microservices est une décision séparée, et
 2. **Rôles étanches.** `particulier | vendeur_pro | admin`. Le gateway valide le JWT puis injecte `X-User-Id` / `X-User-Role` vérifiés — jamais ceux du client. Boutique et article **neuf** réservés à `vendeur_pro`.
 3. **Isolation financière.** Clés GeniusPay et PIN haché (bcrypt, 4 chiffres) confinés dans `escrow-payment-service` + `djassa_escrow_db`.
 4. **Contrats partagés.** Tout champ échangé est défini dans `models/schemas/` et déclaré dans `routes/api-gateway.routes.json`.
-5. **Backend actif = `backend-laravel/`.** 5 connexions nommées (`auth`, `catalog`, `troc`, `escrow`, `chat`) sont définies dans `config/database.php` et assignées à chaque modèle ; elles replient sur `DB_DATABASE` tant que l'isolation n'est pas activée. Les tests tournent sur `djassa_test`, jamais sur la base de dev.
+5. **Backend actif = `backend-laravel/`.** Isolation PostgreSQL **active (D2)** : `DB_AUTH_DATABASE`, `DB_CATALOG_DATABASE`, `DB_TROC_DATABASE`, `DB_ESCROW_DATABASE`, `DB_CHAT_DATABASE` pointent vers 5 bases distinctes ; chaque modèle utilise sa connexion. Les FK cross-domaines sont désactivées à la migration via `App\Support\DomainSchema` (intégrité portée par l'application). Les tests forcent toutes les connexions sur `djassa_test` via `phpunit.xml` et conservent les FK.
 6. **Pas de vibe-coding.** Voir `agent/system-rules.md`.
 
 ## Design system (cible)

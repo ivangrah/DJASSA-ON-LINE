@@ -33,7 +33,7 @@ Voir `decisions-architecture.md` : Strangler Fig, isolation DB immédiate, HTTP 
 ## À faire (dans l'ordre)
 
 - **En cours : B1, B5, W1/W2 avec tests** (D4) avant toute extraction.
-- Puis D2 : activer les 5 variables `DB_*_DATABASE`.
+- ~~Puis D2 : activer les 5 variables `DB_*_DATABASE`.~~ ✅ FAIT (5 bases migrées, 21 tests verts).
 - Puis M1–M3 (mobile) et Phase 1 du Strangler Fig.
 - Porter le modèle rôles/offres sur le mobile.
 - Décider de la migration monolithe → microservices.

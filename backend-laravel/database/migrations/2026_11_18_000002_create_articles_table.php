@@ -1,5 +1,7 @@
 <?php
 
+use App\Support\DomainSchema;
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -18,8 +20,14 @@ return new class extends Migration
     {
         Schema::create('articles', function (Blueprint $table) {
             $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'));
-            $table->foreignUuid('utilisateur_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignUuid('boutique_id')->nullable()->constrained('boutiques')->nullOnDelete(); // NULL = C2C particulier
+            $table->foreignUuid('utilisateur_id');
+            if (! DomainSchema::isolated()) {
+                $table->foreign('utilisateur_id')->references('id')->on('users')->cascadeOnDelete();
+            }
+            $table->foreignUuid('boutique_id')->nullable();
+            if (! DomainSchema::isolated()) {
+                $table->foreign('boutique_id')->references('id')->on('boutiques')->nullOnDelete();
+            } // NULL = C2C particulier
             $table->string('titre', 180);
             $table->text('description')->nullable();
             $table->decimal('prix', 12, 2); // FCFA — NUMERIC(12,2)

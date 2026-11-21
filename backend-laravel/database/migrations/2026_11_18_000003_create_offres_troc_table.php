@@ -1,5 +1,7 @@
 <?php
 
+use App\Support\DomainSchema;
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -17,9 +19,18 @@ return new class extends Migration
     {
         Schema::create('offres_troc', function (Blueprint $table) {
             $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'));
-            $table->foreignUuid('article_cible_id')->constrained('articles')->cascadeOnDelete();
-            $table->foreignUuid('acheteur_id')->constrained('users')->cascadeOnDelete(); // initiateur de la proposition
-            $table->foreignUuid('vendeur_id')->constrained('users')->cascadeOnDelete(); // propriétaire de l'article cible (dénormalisé)
+            $table->foreignUuid('article_cible_id');
+            if (! DomainSchema::isolated()) {
+                $table->foreign('article_cible_id')->references('id')->on('articles')->cascadeOnDelete();
+            }
+            $table->foreignUuid('acheteur_id');
+            if (! DomainSchema::isolated()) {
+                $table->foreign('acheteur_id')->references('id')->on('users')->cascadeOnDelete();
+            } // initiateur de la proposition
+            $table->foreignUuid('vendeur_id');
+            if (! DomainSchema::isolated()) {
+                $table->foreign('vendeur_id')->references('id')->on('users')->cascadeOnDelete();
+            } // propriétaire de l'article cible (dénormalisé)
             $table->decimal('montant_soulte_fcfa', 12, 2)->default(0); // soulte proposée par l'acheteur
             $table->decimal('montant_contre_offre_fcfa', 12, 2)->nullable(); // soulte ajustée par le vendeur (contre-offre)
             $table->text('message')->nullable();

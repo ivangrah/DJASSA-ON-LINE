@@ -1,5 +1,7 @@
 <?php
 
+use App\Support\DomainSchema;
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -16,7 +18,10 @@ return new class extends Migration
     {
         Schema::create('boutiques', function (Blueprint $table) {
             $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'));
-            $table->foreignUuid('utilisateur_id')->unique()->constrained('users')->cascadeOnDelete();
+            $table->foreignUuid('utilisateur_id')->unique();
+            if (! DomainSchema::isolated()) {
+                $table->foreign('utilisateur_id')->references('id')->on('users')->cascadeOnDelete();
+            }
             $table->string('nom_boutique', 150);
             $table->string('slug', 170)->unique(); // /boutique/quincaillerie-moderne
             $table->text('description')->nullable();

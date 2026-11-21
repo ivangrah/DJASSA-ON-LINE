@@ -1,5 +1,7 @@
 <?php
 
+use App\Support\DomainSchema;
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -17,11 +19,26 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'));
-            $table->foreignUuid('acheteur_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignUuid('vendeur_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignUuid('article_id')->constrained('articles')->restrictOnDelete();
-            $table->foreignUuid('offre_troc_id')->nullable()->constrained('offres_troc')->nullOnDelete(); // NULL = achat direct
-            $table->foreignUuid('boutique_id')->nullable()->constrained('boutiques')->nullOnDelete(); // B2C = facture PDF
+            $table->foreignUuid('acheteur_id');
+            if (! DomainSchema::isolated()) {
+                $table->foreign('acheteur_id')->references('id')->on('users')->cascadeOnDelete();
+            }
+            $table->foreignUuid('vendeur_id');
+            if (! DomainSchema::isolated()) {
+                $table->foreign('vendeur_id')->references('id')->on('users')->cascadeOnDelete();
+            }
+            $table->foreignUuid('article_id');
+            if (! DomainSchema::isolated()) {
+                $table->foreign('article_id')->references('id')->on('articles')->restrictOnDelete();
+            }
+            $table->foreignUuid('offre_troc_id')->nullable();
+            if (! DomainSchema::isolated()) {
+                $table->foreign('offre_troc_id')->references('id')->on('offres_troc')->nullOnDelete();
+            } // NULL = achat direct
+            $table->foreignUuid('boutique_id')->nullable();
+            if (! DomainSchema::isolated()) {
+                $table->foreign('boutique_id')->references('id')->on('boutiques')->nullOnDelete();
+            } // B2C = facture PDF
             $table->string('type', 12)->default('achat'); // achat | troc_mixte (soulte GeniusPay)
             $table->decimal('montant', 12, 2); // FCFA bloqués en escrow
             $table->decimal('frais_escrow', 12, 2)->default(0); // frais de sécurisation Djassa

@@ -1,5 +1,7 @@
 <?php
 
+use App\Support\DomainSchema;
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -11,7 +13,10 @@ return new class extends Migration
     {
         Schema::create('abonnements', function (Blueprint $table) {
             $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'));
-            $table->foreignUuid('utilisateur_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignUuid('utilisateur_id');
+            if (! DomainSchema::isolated()) {
+                $table->foreign('utilisateur_id')->references('id')->on('users')->cascadeOnDelete();
+            }
             $table->string('formule', 16)->default('pro');
             $table->decimal('montant_fcfa', 12, 2)->default(5000);
             $table->string('statut', 16)->default('pending');

@@ -304,7 +304,7 @@ Blocage documenté dans `video/capture/` non résolu. À traiter ou à archiver.
 | ID | Décision |
 |---|---|
 | D1 | Strangler Fig : `backend-laravel/` orchestrateur de transition, retiré en Phase 4 au profit de `backend/gateway` + 5 microservices. |
-| D2 | Isolation PostgreSQL activée **immédiatement** via `DB_*_DATABASE` ; aucun JOIN cross-domaine dès la Phase 1. |
+| D2 | ✅ **Activée** : 5 bases migrées (17 migrations, 19 tables chacune), FK cross-domaines désactivées via `DomainSchema`, 21 tests verts. |
 | D3 | HTTP interne sécurisé (Docker privé + header signé) en synchrone, Redis Streams en asynchrone ; ni gRPC ni mTLS. |
 | D4 | Correction de **B1, B5, W1/W2 avec tests PHPUnit** avant toute extraction de service. |
 | D5 | Maintien de `/api/v1` jusqu'à un breaking change réel sur `models/schemas/` ; `/api/v2` alors seulement. |

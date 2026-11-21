@@ -1,5 +1,7 @@
 <?php
 
+use App\Support\DomainSchema;
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
@@ -16,7 +18,10 @@ return new class extends Migration
     {
         Schema::create('souhaits', function (Blueprint $table) {
             $table->uuid('id')->primary()->default(DB::raw('gen_random_uuid()'));
-            $table->foreignUuid('utilisateur_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignUuid('utilisateur_id');
+            if (! DomainSchema::isolated()) {
+                $table->foreign('utilisateur_id')->references('id')->on('users')->cascadeOnDelete();
+            }
             $table->string('titre', 200); // ex : "Recherche groupe électrogène d'occasion"
             $table->text('description')->nullable();
             $table->decimal('budget_max', 12, 2)->nullable(); // FCFA
