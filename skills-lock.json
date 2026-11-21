@@ -1,0 +1,1325 @@
+{
+  "version": 2,
+  "skills": {
+    "accessibility-engineering": {
+      "source": "addyosmani/agent-skills",
+      "commit": "8c99fa36d90068c82d547f7c12a9d67a3e95f4ee",
+      "sourceType": "github",
+      "skillPath": "skills/accessibility-engineering/SKILL.md",
+      "computedHash": "de5908a027e301f24ad81489207853d9889ccd5ff58140f5ddcd3d4afeecfc27",
+      "installMode": "copy"
+    },
+    "animated-infographic": {
+      "source": "iart-ai/data-animation-skills",
+      "commit": "6570c0c4fbc9daa8d7ac1f1163a890352344206b",
+      "sourceType": "github",
+      "skillPath": "skills/animated-infographic/SKILL.md",
+      "computedHash": "8581dfd7d12292d16baab6194b70dedab98099222f24e679ce63590de2a7ba75",
+      "installMode": "copy"
+    },
+    "api-and-interface-design": {
+      "source": "addyosmani/agent-skills",
+      "commit": "8c99fa36d90068c82d547f7c12a9d67a3e95f4ee",
+      "sourceType": "github",
+      "skillPath": "skills/api-and-interface-design/SKILL.md",
+      "computedHash": "f8cb4ee59fe787bf94bfe40086ca4652d3cb738e16805d10acca2da3b80a001e",
+      "installMode": "copy"
+    },
+    "archify": {
+      "source": "tt-a1i/archify",
+      "commit": "44781293f38728baf04dbad33ce1a0cef8c39cca",
+      "sourceType": "github",
+      "skillPath": "archify/SKILL.md",
+      "computedHash": "dcc4821a0dd36701d56e571910de4e20ca99a036810a3ba4d4261b0f078ad7a1",
+      "installMode": "copy"
+    },
+    "artifacts-builder": {
+      "source": "ComposioHQ/awesome-claude-skills",
+      "commit": "be2a406907dbc61b73e6827ded415c96139d13a2",
+      "sourceType": "github",
+      "skillPath": "artifacts-builder/SKILL.md",
+      "computedHash": "33dc60616d22a55ad31aebc78585617eca6277c6702fdd2a876460f3e52259ab",
+      "installMode": "copy"
+    },
+    "banner-design": {
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "commit": "2de1134dc4d1cfe112934611ae5803ae17a1bd7e",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/banner-design/SKILL.md",
+      "computedHash": "4b22f6f48afc6fcd72e6f3ae106a4dca11b33b88221efded1f5c62d8f9afb50d",
+      "installMode": "copy"
+    },
+    "brand": {
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "commit": "2de1134dc4d1cfe112934611ae5803ae17a1bd7e",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/brand/SKILL.md",
+      "computedHash": "d5619310b76bd204efd2f8b3832f72b5a2899712be0ab94d1b4b671271419c54",
+      "installMode": "copy"
+    },
+    "brand-guidelines": {
+      "source": "ComposioHQ/awesome-claude-skills",
+      "commit": "be2a406907dbc61b73e6827ded415c96139d13a2",
+      "sourceType": "github",
+      "skillPath": "brand-guidelines/SKILL.md",
+      "computedHash": "147109adc7e8fe6690b29598ec8162329e025274ca1c7e285b4f64d84df62528",
+      "installMode": "copy"
+    },
+    "browser-testing-with-devtools": {
+      "source": "addyosmani/agent-skills",
+      "commit": "8c99fa36d90068c82d547f7c12a9d67a3e95f4ee",
+      "sourceType": "github",
+      "skillPath": "skills/browser-testing-with-devtools/SKILL.md",
+      "computedHash": "4e76269b455e079e76f29e11fdd80c61a7dd6ef0ab12e26432ea1b782c0a245e",
+      "installMode": "copy"
+    },
+    "canvas-design": {
+      "source": "ComposioHQ/awesome-claude-skills",
+      "commit": "be2a406907dbc61b73e6827ded415c96139d13a2",
+      "sourceType": "github",
+      "skillPath": "canvas-design/SKILL.md",
+      "computedHash": "1c3f17b885db2db32e922904516156e07e18c75d63a85789de36176922035e11",
+      "installMode": "copy"
+    },
+    "cavecrew": {
+      "source": "JuliusBrussee/caveman",
+      "commit": "a192894723a8f47e7f504c7b5041967ff1f18e55",
+      "sourceType": "github",
+      "skillPath": "skills/cavecrew/SKILL.md",
+      "computedHash": "e851caf8480d3ddf5de7fe490cbb2cda8840df760b3851510a24d605147d29e2",
+      "installMode": "copy"
+    },
+    "caveman": {
+      "source": "JuliusBrussee/caveman",
+      "commit": "a192894723a8f47e7f504c7b5041967ff1f18e55",
+      "sourceType": "github",
+      "skillPath": "skills/caveman/SKILL.md",
+      "computedHash": "b51af74aacdadbc3c2d6bb79f05db58dc521854b87f7ffabd48faf286a81ed31",
+      "installMode": "copy"
+    },
+    "caveman-commit": {
+      "source": "JuliusBrussee/caveman",
+      "commit": "a192894723a8f47e7f504c7b5041967ff1f18e55",
+      "sourceType": "github",
+      "skillPath": "skills/caveman-commit/SKILL.md",
+      "computedHash": "2c1472fb59eedd3cfba0b6512dc470a00287343ade421db55c21a6fb52afbe86",
+      "installMode": "copy"
+    },
+    "caveman-compress": {
+      "source": "JuliusBrussee/caveman",
+      "commit": "a192894723a8f47e7f504c7b5041967ff1f18e55",
+      "sourceType": "github",
+      "skillPath": "skills/caveman-compress/SKILL.md",
+      "computedHash": "1f627a3ac239baa859918cf64a5e89619c162e1e9787c6d97ad41c5a1cc2fdb9",
+      "installMode": "copy"
+    },
+    "caveman-discover": {
+      "source": "JuliusBrussee/caveman",
+      "commit": "a192894723a8f47e7f504c7b5041967ff1f18e55",
+      "sourceType": "github",
+      "skillPath": "skills/caveman-discover/SKILL.md",
+      "computedHash": "6f0f9bc37b6c5c8c7944a57f6e671ff3b6e58a9ca7ef1557a93b19645a5f1191",
+      "installMode": "copy"
+    },
+    "caveman-evidence-review": {
+      "source": "JuliusBrussee/caveman",
+      "commit": "a192894723a8f47e7f504c7b5041967ff1f18e55",
+      "sourceType": "github",
+      "skillPath": "skills/caveman-evidence-review/SKILL.md",
+      "computedHash": "cd258392c713b9cf77d2dd92f1a407a7dccaa54ced28c92192e67d76a0cfe9c6",
+      "installMode": "copy"
+    },
+    "caveman-explore": {
+      "source": "JuliusBrussee/caveman",
+      "commit": "a192894723a8f47e7f504c7b5041967ff1f18e55",
+      "sourceType": "github",
+      "skillPath": "skills/caveman-explore/SKILL.md",
+      "computedHash": "b508768e6afc649bf828ea3d68df66740fa238c869f8bb87083081b9ead18b85",
+      "installMode": "copy"
+    },
+    "caveman-help": {
+      "source": "JuliusBrussee/caveman",
+      "commit": "a192894723a8f47e7f504c7b5041967ff1f18e55",
+      "sourceType": "github",
+      "skillPath": "skills/caveman-help/SKILL.md",
+      "computedHash": "6a3e3d37fa03b4aa0622a6aec14446a243619c1539ad419e065dc8b1cd70aacd",
+      "installMode": "copy"
+    },
+    "caveman-learn": {
+      "source": "JuliusBrussee/caveman",
+      "commit": "a192894723a8f47e7f504c7b5041967ff1f18e55",
+      "sourceType": "github",
+      "skillPath": "skills/caveman-learn/SKILL.md",
+      "computedHash": "77e417b4715bd0763897b70ea529d4363845cff02a222a44aa2a3b5ed19d08bb",
+      "installMode": "copy"
+    },
+    "caveman-manage": {
+      "source": "JuliusBrussee/caveman",
+      "commit": "a192894723a8f47e7f504c7b5041967ff1f18e55",
+      "sourceType": "github",
+      "skillPath": "skills/caveman-manage/SKILL.md",
+      "computedHash": "2dd0ef43e4a5412913967513a494c2db2219fa34630378730409205f3a0b883a",
+      "installMode": "copy"
+    },
+    "caveman-optimize": {
+      "source": "JuliusBrussee/caveman",
+      "commit": "a192894723a8f47e7f504c7b5041967ff1f18e55",
+      "sourceType": "github",
+      "skillPath": "skills/caveman-optimize/SKILL.md",
+      "computedHash": "dc5eb46a2918c7250a069b1bcda3c5f385715801d42c317c251ba5208ccd685e",
+      "installMode": "copy"
+    },
+    "caveman-review": {
+      "source": "JuliusBrussee/caveman",
+      "commit": "a192894723a8f47e7f504c7b5041967ff1f18e55",
+      "sourceType": "github",
+      "skillPath": "skills/caveman-review/SKILL.md",
+      "computedHash": "c55908f8ee0dca0e59690e939dfd4a877bd9361897ae5fced096274a77509154",
+      "installMode": "copy"
+    },
+    "caveman-setup": {
+      "source": "JuliusBrussee/caveman",
+      "commit": "a192894723a8f47e7f504c7b5041967ff1f18e55",
+      "sourceType": "github",
+      "skillPath": "skills/caveman-setup/SKILL.md",
+      "computedHash": "e0fe84073dee9da687de4b1fc27a5bd06601c2bfb9bcb71121e60e55f32ac7e4",
+      "installMode": "copy"
+    },
+    "caveman-stats": {
+      "source": "JuliusBrussee/caveman",
+      "commit": "a192894723a8f47e7f504c7b5041967ff1f18e55",
+      "sourceType": "github",
+      "skillPath": "skills/caveman-stats/SKILL.md",
+      "computedHash": "d47db80af9353f411b5840fa207ac10c883f04576cd280b135e3a44a0ff86285",
+      "installMode": "copy"
+    },
+    "changelog-generator": {
+      "source": "ComposioHQ/awesome-claude-skills",
+      "commit": "be2a406907dbc61b73e6827ded415c96139d13a2",
+      "sourceType": "github",
+      "skillPath": "changelog-generator/SKILL.md",
+      "computedHash": "5434338dd0ea8f61988d1e9ab2a224a5b461c7ea2e7b7f33db56eab6fb6a4db1",
+      "installMode": "copy"
+    },
+    "chart-animation": {
+      "source": "iart-ai/data-animation-skills",
+      "commit": "6570c0c4fbc9daa8d7ac1f1163a890352344206b",
+      "sourceType": "github",
+      "skillPath": "skills/chart-animation/SKILL.md",
+      "computedHash": "32b27babec7201892b2c4dfb620c98c707db5f1a47fdcb0426088b53c5da2a70",
+      "installMode": "copy"
+    },
+    "chekhov-dramaturgy": {
+      "source": "jtydhr88/screenwriting-skills",
+      "commit": "51115f18d160aa8b2ac5813e4432b6f0b425358f",
+      "sourceType": "github",
+      "skillPath": "plugins/screenwriting/skills/chekhov-dramaturgy/SKILL.md",
+      "computedHash": "ed1fe0ef16704ea90ad5f701ff84d2da3fb332811512ff45dab20d63193449e4",
+      "installMode": "copy"
+    },
+    "chengfeng-check-updates": {
+      "source": "Agentchengfeng/chengfeng-videocut-skills",
+      "commit": "a33b43e08c34fa8beeb5e78498e852f4e80975a5",
+      "sourceType": "github",
+      "skillPath": "plugins/chengfeng-videocut/skills/chengfeng-check-updates/SKILL.md",
+      "computedHash": "977b003bf121a99e2165655d171c61efc12fde0595f5a9c314ec2905a0a03895",
+      "installMode": "copy"
+    },
+    "chengfeng-cut": {
+      "source": "Agentchengfeng/chengfeng-videocut-skills",
+      "commit": "a33b43e08c34fa8beeb5e78498e852f4e80975a5",
+      "sourceType": "github",
+      "skillPath": "plugins/chengfeng-videocut/skills/chengfeng-cut/SKILL.md",
+      "computedHash": "a1ad957ffb741475fff7644718a4893e516a2800fed82b00026e6417b36b9165",
+      "installMode": "copy"
+    },
+    "chengfeng-export": {
+      "source": "Agentchengfeng/chengfeng-videocut-skills",
+      "commit": "a33b43e08c34fa8beeb5e78498e852f4e80975a5",
+      "sourceType": "github",
+      "skillPath": "plugins/chengfeng-videocut/skills/chengfeng-export/SKILL.md",
+      "computedHash": "249abf0edadc4b73e6bfda457c97a825c863dfbabb0b6b9aa6e02cc5989c0678",
+      "installMode": "copy"
+    },
+    "chengfeng-report-bug": {
+      "source": "Agentchengfeng/chengfeng-videocut-skills",
+      "commit": "a33b43e08c34fa8beeb5e78498e852f4e80975a5",
+      "sourceType": "github",
+      "skillPath": "plugins/chengfeng-videocut/skills/chengfeng-report-bug/SKILL.md",
+      "computedHash": "580ad513682c01425d58b0a32a7d5059b5962ac0608cce78946973d91fb3f005",
+      "installMode": "copy"
+    },
+    "chengfeng-subtitle": {
+      "source": "Agentchengfeng/chengfeng-videocut-skills",
+      "commit": "a33b43e08c34fa8beeb5e78498e852f4e80975a5",
+      "sourceType": "github",
+      "skillPath": "plugins/chengfeng-videocut/skills/chengfeng-subtitle/SKILL.md",
+      "computedHash": "2ebc3238b9e22de2900f9e52d6e825eacd9d2ae9ef4944fc3689d9e20b544670",
+      "installMode": "copy"
+    },
+    "chengfeng-videocut-workbench": {
+      "source": "Agentchengfeng/chengfeng-videocut-skills",
+      "commit": "a33b43e08c34fa8beeb5e78498e852f4e80975a5",
+      "sourceType": "github",
+      "skillPath": "plugins/chengfeng-videocut/skills/chengfeng-videocut-workbench/SKILL.md",
+      "computedHash": "e564bdfef58c63308552b80d458976ab15128539309e19e39daafb5c87fe1f8b",
+      "installMode": "copy"
+    },
+    "chengfeng-visual": {
+      "source": "Agentchengfeng/chengfeng-videocut-skills",
+      "commit": "a33b43e08c34fa8beeb5e78498e852f4e80975a5",
+      "sourceType": "github",
+      "skillPath": "plugins/chengfeng-videocut/skills/chengfeng-visual/SKILL.md",
+      "computedHash": "7600746566a55b56924ec36bedc706777f9ed001a752558d2274bc6711d0587c",
+      "installMode": "copy"
+    },
+    "ci-cd-and-automation": {
+      "source": "addyosmani/agent-skills",
+      "commit": "8c99fa36d90068c82d547f7c12a9d67a3e95f4ee",
+      "sourceType": "github",
+      "skillPath": "skills/ci-cd-and-automation/SKILL.md",
+      "computedHash": "7be96fc2a6cc3d8d769d5769b9024d41a4b40f502372b34bf4438b7056e5b2b9",
+      "installMode": "copy"
+    },
+    "code-review-and-quality": {
+      "source": "addyosmani/agent-skills",
+      "commit": "8c99fa36d90068c82d547f7c12a9d67a3e95f4ee",
+      "sourceType": "github",
+      "skillPath": "skills/code-review-and-quality/SKILL.md",
+      "computedHash": "a63e1874fa8f1ee04194868f9b8ba18133aa20464586369f3eedb8df6000a0cc",
+      "installMode": "copy"
+    },
+    "code-simplification": {
+      "source": "addyosmani/agent-skills",
+      "commit": "8c99fa36d90068c82d547f7c12a9d67a3e95f4ee",
+      "sourceType": "github",
+      "skillPath": "skills/code-simplification/SKILL.md",
+      "computedHash": "48e59225ea45232623e47d35d4ac6028fb2f37a9fbbc0563313d67bab448f664",
+      "installMode": "copy"
+    },
+    "competitive-ads-extractor": {
+      "source": "ComposioHQ/awesome-claude-skills",
+      "commit": "be2a406907dbc61b73e6827ded415c96139d13a2",
+      "sourceType": "github",
+      "skillPath": "competitive-ads-extractor/SKILL.md",
+      "computedHash": "6529d6420855e7c2ffc977518e3045491e2ea5a0091a7a087c40f5594a942a6f",
+      "installMode": "copy"
+    },
+    "connect": {
+      "source": "ComposioHQ/awesome-claude-skills",
+      "commit": "be2a406907dbc61b73e6827ded415c96139d13a2",
+      "sourceType": "github",
+      "skillPath": "connect/SKILL.md",
+      "computedHash": "e34ddcd2ffaf5ecf7731f50f64b28d42ede3bf1c70d102fa6d07e18600e2464f",
+      "installMode": "copy"
+    },
+    "connect-apps": {
+      "source": "ComposioHQ/awesome-claude-skills",
+      "commit": "be2a406907dbc61b73e6827ded415c96139d13a2",
+      "sourceType": "github",
+      "skillPath": "connect-apps/SKILL.md",
+      "computedHash": "690b1e0498dc774be659346854d2c29809129239f7e2ccc9ec5ddccaeb1897c6",
+      "installMode": "copy"
+    },
+    "constraint-driven-development": {
+      "source": "addyosmani/agent-skills",
+      "commit": "8c99fa36d90068c82d547f7c12a9d67a3e95f4ee",
+      "sourceType": "github",
+      "skillPath": "skills/constraint-driven-development/SKILL.md",
+      "computedHash": "f8175e0c95e406c04bd0ffd6303d8495ff95a5aee0a46eb3cf5674ace87a6298",
+      "installMode": "copy"
+    },
+    "content-research-writer": {
+      "source": "ComposioHQ/awesome-claude-skills",
+      "commit": "be2a406907dbc61b73e6827ded415c96139d13a2",
+      "sourceType": "github",
+      "skillPath": "content-research-writer/SKILL.md",
+      "computedHash": "8a2dc5dd62822a23284d1ec3196ac04ec85ac3d59a4934394856b54f19e67282",
+      "installMode": "copy"
+    },
+    "context-engineering": {
+      "source": "addyosmani/agent-skills",
+      "commit": "8c99fa36d90068c82d547f7c12a9d67a3e95f4ee",
+      "sourceType": "github",
+      "skillPath": "skills/context-engineering/SKILL.md",
+      "computedHash": "0b9e3d177ec4e42d9b39c76ef8ee751f88cce40e3879c785a1a8c6eeabc6119d",
+      "installMode": "copy"
+    },
+    "cut-video": {
+      "source": "louisedesadeleer/cut-video",
+      "commit": "a5a87a64f381c62b8972a92132fb48015b0e50ff",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "6ce4900f7804b9328372e2b6f348c0f4ee86780e2b697c66269a07ebdf76c5aa",
+      "installMode": "copy"
+    },
+    "debugging-and-error-recovery": {
+      "source": "addyosmani/agent-skills",
+      "commit": "8c99fa36d90068c82d547f7c12a9d67a3e95f4ee",
+      "sourceType": "github",
+      "skillPath": "skills/debugging-and-error-recovery/SKILL.md",
+      "computedHash": "aa26ffd65f2e2759c66806c4a3111c6fbaad612c5f39799bd3bc6cd942abd0fc",
+      "installMode": "copy"
+    },
+    "deprecation-and-migration": {
+      "source": "addyosmani/agent-skills",
+      "commit": "8c99fa36d90068c82d547f7c12a9d67a3e95f4ee",
+      "sourceType": "github",
+      "skillPath": "skills/deprecation-and-migration/SKILL.md",
+      "computedHash": "0f86b1fd18c377eb69fd1991046d49f0a848bd32f7318d1399020b79a6391cec",
+      "installMode": "copy"
+    },
+    "design": {
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "commit": "2de1134dc4d1cfe112934611ae5803ae17a1bd7e",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/design/SKILL.md",
+      "computedHash": "b0500382bb6aa23e200d20f4aa7e8ffc4bc0831b56615e174ab0a54b3f3d3e46",
+      "installMode": "copy"
+    },
+    "design-system": {
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "commit": "2de1134dc4d1cfe112934611ae5803ae17a1bd7e",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/design-system/SKILL.md",
+      "computedHash": "9efdc106c73d8d298b5a90d55c56995840a37f754fb9d498d14e6562bdaadc23",
+      "installMode": "copy"
+    },
+    "design-taste-frontend": {
+      "source": "Leonxlnx/taste-skill",
+      "commit": "f6b76575f949707b4e3c37cd86cb44b0b98643e8",
+      "sourceType": "github",
+      "skillPath": "skills/taste-skill/SKILL.md",
+      "computedHash": "b10eab0a9684cd09cf34c31ef04a3bf530a5f4404422f9c520d42372d670c7fc",
+      "installMode": "copy"
+    },
+    "developer-growth-analysis": {
+      "source": "ComposioHQ/awesome-claude-skills",
+      "commit": "be2a406907dbc61b73e6827ded415c96139d13a2",
+      "sourceType": "github",
+      "skillPath": "developer-growth-analysis/SKILL.md",
+      "computedHash": "b8af2034b0cc7529baa9efb6a25b864205267f20c35b631fe2a8dc34396c2054",
+      "installMode": "copy"
+    },
+    "documentation-and-adrs": {
+      "source": "addyosmani/agent-skills",
+      "commit": "8c99fa36d90068c82d547f7c12a9d67a3e95f4ee",
+      "sourceType": "github",
+      "skillPath": "skills/documentation-and-adrs/SKILL.md",
+      "computedHash": "deb39d7c8157563bc14a48f0d22003c82f4d8370b69c96efde476fe12318d188",
+      "installMode": "copy"
+    },
+    "domain-name-brainstormer": {
+      "source": "ComposioHQ/awesome-claude-skills",
+      "commit": "be2a406907dbc61b73e6827ded415c96139d13a2",
+      "sourceType": "github",
+      "skillPath": "domain-name-brainstormer/SKILL.md",
+      "computedHash": "42c29a31b9e102d7589b8b90d8a248eb4b7f0c5adf5bbcc0fab20d4875ca5d00",
+      "installMode": "copy"
+    },
+    "doubt-driven-development": {
+      "source": "addyosmani/agent-skills",
+      "commit": "8c99fa36d90068c82d547f7c12a9d67a3e95f4ee",
+      "sourceType": "github",
+      "skillPath": "skills/doubt-driven-development/SKILL.md",
+      "computedHash": "bc1bb71936eb44e88bdae4699abe02756747eb8f36c2d38135721fa7f3d25085",
+      "installMode": "copy"
+    },
+    "emil-design-eng": {
+      "source": "emilkowalski/skills",
+      "commit": "64eb3deb9a5fbfa041faf783e0bc3fd635872e9c",
+      "sourceType": "github",
+      "skillPath": "skills/emil-design-eng/SKILL.md",
+      "computedHash": "e1b377ccde1d32743d1d3f7d8626629deb8055c9114d180c184697928cc66cc6",
+      "installMode": "copy"
+    },
+    "file-organizer": {
+      "source": "ComposioHQ/awesome-claude-skills",
+      "commit": "be2a406907dbc61b73e6827ded415c96139d13a2",
+      "sourceType": "github",
+      "skillPath": "file-organizer/SKILL.md",
+      "computedHash": "0fa1b8d807fcab9fec55632ea35dc213e869eb96bf3d41e38b93f2a47afaa13f",
+      "installMode": "copy"
+    },
+    "find-skills": {
+      "source": "vercel-labs/skills",
+      "commit": "57217cf86ba38148a57af9e90d14a4c049558330",
+      "sourceType": "github",
+      "skillPath": "skills/find-skills/SKILL.md",
+      "computedHash": "7bc223e2aafbdbf6e50ea243ba6ef67fe432bb069ab439fea0390795dac0bf7f",
+      "installMode": "copy"
+    },
+    "frontend-ui-engineering": {
+      "source": "addyosmani/agent-skills",
+      "commit": "8c99fa36d90068c82d547f7c12a9d67a3e95f4ee",
+      "sourceType": "github",
+      "skillPath": "skills/frontend-ui-engineering/SKILL.md",
+      "computedHash": "1bea3daa371bfb466445f5a33ee063f2aadf27469b2308a340e803398bcb4251",
+      "installMode": "copy"
+    },
+    "git-workflow-and-versioning": {
+      "source": "addyosmani/agent-skills",
+      "commit": "8c99fa36d90068c82d547f7c12a9d67a3e95f4ee",
+      "sourceType": "github",
+      "skillPath": "skills/git-workflow-and-versioning/SKILL.md",
+      "computedHash": "860b88bf82d823eaed15b9b9fa9ce4273f94c7bdcf3aeaa3e6649eb578763d4b",
+      "installMode": "copy"
+    },
+    "guizang-product-video-skill": {
+      "source": "op7418/guizang-product-video-skill",
+      "commit": "18842e0f49a9eb2b8c00cc065ec37b314e235aaa",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "9954272637239b8c6e8de6885edcfd00ba86a6cd85cdec394cc7e5da48f7ad01",
+      "installMode": "copy"
+    },
+    "heygen-avatar": {
+      "source": "heygen-com/skills",
+      "commit": "1bd5e4d33a028dfed3abf504c5e3dd644fb9ea8a",
+      "sourceType": "github",
+      "skillPath": "heygen-avatar/SKILL.md",
+      "computedHash": "8cee5d7b2e2533600c5777efd9e5d6462311fd2ce3173d624510195e49ba5bff",
+      "installMode": "copy"
+    },
+    "heygen-translate": {
+      "source": "heygen-com/skills",
+      "commit": "1bd5e4d33a028dfed3abf504c5e3dd644fb9ea8a",
+      "sourceType": "github",
+      "skillPath": "heygen-translate/SKILL.md",
+      "computedHash": "be09963d29c2cf3b5c3703521ab3e9b9bf23040bf9724f8e86f1a116a20ab57c",
+      "installMode": "copy"
+    },
+    "heygen-video": {
+      "source": "heygen-com/skills",
+      "commit": "1bd5e4d33a028dfed3abf504c5e3dd644fb9ea8a",
+      "sourceType": "github",
+      "skillPath": "heygen-video/SKILL.md",
+      "computedHash": "f5b17f95b70e90585938d114de37b57966a1db50dcbe37e326f297ed0df79c4c",
+      "installMode": "copy"
+    },
+    "idea-refine": {
+      "source": "addyosmani/agent-skills",
+      "commit": "8c99fa36d90068c82d547f7c12a9d67a3e95f4ee",
+      "sourceType": "github",
+      "skillPath": "skills/idea-refine/SKILL.md",
+      "computedHash": "f93acea3b4a197e2fda976bc9b7aa1aafedfd819fe190c7b33e70eaf745820fb",
+      "installMode": "copy"
+    },
+    "image-enhancer": {
+      "source": "ComposioHQ/awesome-claude-skills",
+      "commit": "be2a406907dbc61b73e6827ded415c96139d13a2",
+      "sourceType": "github",
+      "skillPath": "image-enhancer/SKILL.md",
+      "computedHash": "e9b9a4135c41b1d5925245710308e8a6b58312e0f21b18c3bf650cf5c69852da",
+      "installMode": "copy"
+    },
+    "impeccable": {
+      "source": "pbakaus/impeccable",
+      "commit": "b49177d32788f2dc585c42831d845dacf1ebed2c",
+      "sourceType": "github",
+      "skillPath": ".agents/skills/impeccable/SKILL.md",
+      "computedHash": "08bd5bf141cb507f46bd8347890cd985865606f15adf88295ed3a73bc9ad5d96",
+      "installMode": "copy"
+    },
+    "incremental-implementation": {
+      "source": "addyosmani/agent-skills",
+      "commit": "8c99fa36d90068c82d547f7c12a9d67a3e95f4ee",
+      "sourceType": "github",
+      "skillPath": "skills/incremental-implementation/SKILL.md",
+      "computedHash": "62ef93c6389f110af49ed4fad1fe2c27d3d9dd2d8fe0d0f6db089489c3d4aac3",
+      "installMode": "copy"
+    },
+    "internal-comms": {
+      "source": "ComposioHQ/awesome-claude-skills",
+      "commit": "be2a406907dbc61b73e6827ded415c96139d13a2",
+      "sourceType": "github",
+      "skillPath": "internal-comms/SKILL.md",
+      "computedHash": "8fb1b0a7e35267d2ee13204dddc235dd55ae10829fba422e84af774fcd6f3add",
+      "installMode": "copy"
+    },
+    "interview-me": {
+      "source": "addyosmani/agent-skills",
+      "commit": "8c99fa36d90068c82d547f7c12a9d67a3e95f4ee",
+      "sourceType": "github",
+      "skillPath": "skills/interview-me/SKILL.md",
+      "computedHash": "68615337944c1d56cd9db6b934e247ff1d67600dd9db3d41cc9bf7236b9d986c",
+      "installMode": "copy"
+    },
+    "investigate-first": {
+      "source": "JuliusBrussee/caveman",
+      "commit": "a192894723a8f47e7f504c7b5041967ff1f18e55",
+      "sourceType": "github",
+      "skillPath": "skills/investigate-first/SKILL.md",
+      "computedHash": "129b1eba6d106c1d095baefd30578c6303b93119fcd21bd5583ebd34592f3acc",
+      "installMode": "copy"
+    },
+    "invoice-organizer": {
+      "source": "ComposioHQ/awesome-claude-skills",
+      "commit": "be2a406907dbc61b73e6827ded415c96139d13a2",
+      "sourceType": "github",
+      "skillPath": "invoice-organizer/SKILL.md",
+      "computedHash": "8b5681b2df69f61992a395b7337b3b1a031ef142242aaaaa49f25bde521389d4",
+      "installMode": "copy"
+    },
+    "langsmith-fetch": {
+      "source": "ComposioHQ/awesome-claude-skills",
+      "commit": "be2a406907dbc61b73e6827ded415c96139d13a2",
+      "sourceType": "github",
+      "skillPath": "langsmith-fetch/SKILL.md",
+      "computedHash": "845c69ed8fd356d22e01a3b043be8e7d128020b29b8d9d20669d7874e51fa29d",
+      "installMode": "copy"
+    },
+    "lanshu-create-ai-presenter-video": {
+      "source": "cclank/lanshu-create-ai-presenter-video",
+      "commit": "762d3ee42623b75a4ec63ad6aa61ace69d78ce6e",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "7c16f2d684ed1ceee05e1b59fe6bdf5c9c0fc1f818d1543a0b283683c3a5292d",
+      "installMode": "copy"
+    },
+    "lead-research-assistant": {
+      "source": "ComposioHQ/awesome-claude-skills",
+      "commit": "be2a406907dbc61b73e6827ded415c96139d13a2",
+      "sourceType": "github",
+      "skillPath": "lead-research-assistant/SKILL.md",
+      "computedHash": "ce8a26a2e8cfa51c5ecbaffe96ee05127c48643e6810311989239d389d43f8ea",
+      "installMode": "copy"
+    },
+    "lean-build": {
+      "source": "JuliusBrussee/caveman",
+      "commit": "a192894723a8f47e7f504c7b5041967ff1f18e55",
+      "sourceType": "github",
+      "skillPath": "skills/lean-build/SKILL.md",
+      "computedHash": "aee8fbb86c5e1e5066089293423f71dd6a87ab37486c360cd4488ef2fe96c7a7",
+      "installMode": "copy"
+    },
+    "make-ai-short": {
+      "source": "hassancs91/claude-faceless-shorts-creator",
+      "commit": "773054bebbe460de0f31dcfda5315970b1c8b4f2",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/make-ai-short/SKILL.md",
+      "computedHash": "18491c7c5606e39bc7b4f3baefb01c861cff237c197c3ae9ea4465cd765cc04a",
+      "installMode": "copy"
+    },
+    "make-short": {
+      "source": "hassancs91/claude-faceless-shorts-creator",
+      "commit": "773054bebbe460de0f31dcfda5315970b1c8b4f2",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/make-short/SKILL.md",
+      "computedHash": "f6f1eb704aeccc05ac406a8ee05fb3ce49db56dac52873a2c8436fd0a5f1fc4c",
+      "installMode": "copy"
+    },
+    "make-vox": {
+      "source": "hassancs91/claude-faceless-shorts-creator",
+      "commit": "773054bebbe460de0f31dcfda5315970b1c8b4f2",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/make-vox/SKILL.md",
+      "computedHash": "bd4b8696032b73bb157fc3606323a6f476cebf8dfb4a123b3d32458704e1849b",
+      "installMode": "copy"
+    },
+    "manage-storyboard-projects": {
+      "source": "Yuuhann1999/agent-storyboard",
+      "commit": "c7cfc543916c738448cb0461e378192477b4daa6",
+      "sourceType": "github",
+      "skillPath": "plugins/agent-storyboard/skills/manage-storyboard-projects/SKILL.md",
+      "computedHash": "a35a668ca85e4535f0847e736f2a79cfd57c6063f50dad79a44b9ba5f93ede4a",
+      "installMode": "copy"
+    },
+    "mcp-builder": {
+      "source": "ComposioHQ/awesome-claude-skills",
+      "commit": "be2a406907dbc61b73e6827ded415c96139d13a2",
+      "sourceType": "github",
+      "skillPath": "mcp-builder/SKILL.md",
+      "computedHash": "85ef8efd6e04dbd3a73c4af6ef8d1a549d263653de59cab7fa451ce01ac68e6c",
+      "installMode": "copy"
+    },
+    "meeting-insights-analyzer": {
+      "source": "ComposioHQ/awesome-claude-skills",
+      "commit": "be2a406907dbc61b73e6827ded415c96139d13a2",
+      "sourceType": "github",
+      "skillPath": "meeting-insights-analyzer/SKILL.md",
+      "computedHash": "07290d48e9e3da97b145fbe85516ca32435c1141c8863e152da2b7d7543bb00a",
+      "installMode": "copy"
+    },
+    "megacave": {
+      "source": "JuliusBrussee/caveman",
+      "commit": "a192894723a8f47e7f504c7b5041967ff1f18e55",
+      "sourceType": "github",
+      "skillPath": "skills/megacave/SKILL.md",
+      "computedHash": "d38301dd11ffdbf9c876cb5a15ff245a31fe7806a29f7800e7fbe44fc306fd62",
+      "installMode": "copy"
+    },
+    "migration": {
+      "source": "JuliusBrussee/caveman",
+      "commit": "a192894723a8f47e7f504c7b5041967ff1f18e55",
+      "sourceType": "github",
+      "skillPath": "skills/migration/SKILL.md",
+      "computedHash": "e7c6efc84ff8f85d0242e7f29f51c09fd333c294cc3123ef8ee4b2aca2a93192",
+      "installMode": "copy"
+    },
+    "observability-and-instrumentation": {
+      "source": "addyosmani/agent-skills",
+      "commit": "8c99fa36d90068c82d547f7c12a9d67a3e95f4ee",
+      "sourceType": "github",
+      "skillPath": "skills/observability-and-instrumentation/SKILL.md",
+      "computedHash": "71661b8e1558d7eed8cdf93bfb731da1c3afed9b895b049ecf92792af0d8a364",
+      "installMode": "copy"
+    },
+    "ozu-screenplay-style": {
+      "source": "jtydhr88/screenwriting-skills",
+      "commit": "51115f18d160aa8b2ac5813e4432b6f0b425358f",
+      "sourceType": "github",
+      "skillPath": "plugins/screenwriting/skills/ozu-screenplay-style/SKILL.md",
+      "computedHash": "a7a3f963540cb4b05ba39c3776b8daa729464c1fa5f5658b405d1d153160e5d8",
+      "installMode": "copy"
+    },
+    "paper-cut": {
+      "source": "aijiduonadegou/Paper-Cut",
+      "commit": "4b77204bcd609156cd10037bf82d615ccc100abd",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "4ea62412e8f33627d86780d0f2bdc7f30d452fe170fb71bcbc2580a7b3a5955b",
+      "installMode": "copy"
+    },
+    "performance-optimization": {
+      "source": "addyosmani/agent-skills",
+      "commit": "8c99fa36d90068c82d547f7c12a9d67a3e95f4ee",
+      "sourceType": "github",
+      "skillPath": "skills/performance-optimization/SKILL.md",
+      "computedHash": "cfa0c39804554198a33e3beb2b0f920a1b468bb2e066822e1d08f4abeda3db33",
+      "installMode": "copy"
+    },
+    "pixel2motion": {
+      "source": "nolangz/pixel2motion",
+      "commit": "e9faedb28930df0da2acf17da00c80730a78cfe8",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "dee78a8c3ee186880eda1e47234b268c5fbbd3ed98e139d1fde43063adc3ae52",
+      "installMode": "copy"
+    },
+    "planning-and-task-breakdown": {
+      "source": "addyosmani/agent-skills",
+      "commit": "8c99fa36d90068c82d547f7c12a9d67a3e95f4ee",
+      "sourceType": "github",
+      "skillPath": "skills/planning-and-task-breakdown/SKILL.md",
+      "computedHash": "e4ef8d478d672103693af0cab5a97a1914f776099ef0756c2a093d9ae061f024",
+      "installMode": "copy"
+    },
+    "ponytail": {
+      "source": "DietrichGebert/ponytail",
+      "commit": "96608e078b2d5ea607c5c3b8b5a54d1c1fba6846",
+      "sourceType": "github",
+      "skillPath": "skills/ponytail/SKILL.md",
+      "computedHash": "56d72677aca02689ac89bd48734e8c19b40ab86716d1257eaf5f1238b43cda6b",
+      "installMode": "copy"
+    },
+    "ponytail-audit": {
+      "source": "DietrichGebert/ponytail",
+      "commit": "96608e078b2d5ea607c5c3b8b5a54d1c1fba6846",
+      "sourceType": "github",
+      "skillPath": "skills/ponytail-audit/SKILL.md",
+      "computedHash": "20dca08a5d047285c61702d496317eb84f501bbd573a45f3c8f93fdb3cecde4c",
+      "installMode": "copy"
+    },
+    "ponytail-debt": {
+      "source": "DietrichGebert/ponytail",
+      "commit": "96608e078b2d5ea607c5c3b8b5a54d1c1fba6846",
+      "sourceType": "github",
+      "skillPath": "skills/ponytail-debt/SKILL.md",
+      "computedHash": "6bcafbbd5d7ab3c09fbe1b040c2c8f3d0aae3c7e6e24339be253af354ab5cacd",
+      "installMode": "copy"
+    },
+    "ponytail-gain": {
+      "source": "DietrichGebert/ponytail",
+      "commit": "96608e078b2d5ea607c5c3b8b5a54d1c1fba6846",
+      "sourceType": "github",
+      "skillPath": "skills/ponytail-gain/SKILL.md",
+      "computedHash": "8dc7d5a5314e0720ff2e2b740486314b4607765181ede820f6b7e86a3d5fd814",
+      "installMode": "copy"
+    },
+    "ponytail-help": {
+      "source": "DietrichGebert/ponytail",
+      "commit": "96608e078b2d5ea607c5c3b8b5a54d1c1fba6846",
+      "sourceType": "github",
+      "skillPath": "skills/ponytail-help/SKILL.md",
+      "computedHash": "decfe28950443ddc04cf06badab1ebe325d149bc7dccdd3ce43ff8be27d92103",
+      "installMode": "copy"
+    },
+    "ponytail-review": {
+      "source": "DietrichGebert/ponytail",
+      "commit": "96608e078b2d5ea607c5c3b8b5a54d1c1fba6846",
+      "sourceType": "github",
+      "skillPath": "skills/ponytail-review/SKILL.md",
+      "computedHash": "fe7b781db99ce79d931cdc798b3fbccd84b82538de4a3fc5f6d9d466946d1458",
+      "installMode": "copy"
+    },
+    "presentation-video": {
+      "source": "iart-ai/data-animation-skills",
+      "commit": "6570c0c4fbc9daa8d7ac1f1163a890352344206b",
+      "sourceType": "github",
+      "skillPath": "skills/presentation-video/SKILL.md",
+      "computedHash": "52eec9811ecea03a77026da27d1ec873ee702a4e54116d845cac26d473a1fbb4",
+      "installMode": "copy"
+    },
+    "process-storyboard-tasks": {
+      "source": "Yuuhann1999/agent-storyboard",
+      "commit": "c7cfc543916c738448cb0461e378192477b4daa6",
+      "sourceType": "github",
+      "skillPath": "plugins/agent-storyboard/skills/process-storyboard-tasks/SKILL.md",
+      "computedHash": "1fbcf29a4df17570da64e069c90c77e58a49238288519079599e8bfa38efed44",
+      "installMode": "copy"
+    },
+    "raffle-winner-picker": {
+      "source": "ComposioHQ/awesome-claude-skills",
+      "commit": "be2a406907dbc61b73e6827ded415c96139d13a2",
+      "sourceType": "github",
+      "skillPath": "raffle-winner-picker/SKILL.md",
+      "computedHash": "f805f68727e3f67361906cfd0f7bf2c1364d571519671c4590d476b99daf6b5e",
+      "installMode": "copy"
+    },
+    "react-bits": {
+      "source": "Philotheephilix/reactbits.dev-skill",
+      "commit": "d02e4b346b9297c411235cb564b3b6179bff44b6",
+      "sourceType": "github",
+      "skillPath": "react-bits/SKILL.md",
+      "computedHash": "5f175665b574117d6402cd973368ef7f293ec5d0a63efc799123c68f78d37c76",
+      "installMode": "copy"
+    },
+    "safe-refactor": {
+      "source": "JuliusBrussee/caveman",
+      "commit": "a192894723a8f47e7f504c7b5041967ff1f18e55",
+      "sourceType": "github",
+      "skillPath": "skills/safe-refactor/SKILL.md",
+      "computedHash": "709db1dfde3fe3baa362ecdb3f1f3c0be27587358242737dfa4ca82a23744269",
+      "installMode": "copy"
+    },
+    "security-and-hardening": {
+      "source": "addyosmani/agent-skills",
+      "commit": "8c99fa36d90068c82d547f7c12a9d67a3e95f4ee",
+      "sourceType": "github",
+      "skillPath": "skills/security-and-hardening/SKILL.md",
+      "computedHash": "9bfc78e1ee2e23f3d226f610d8ed8e0cf6fb4f7e90a44db0a41b636735a24767",
+      "installMode": "copy"
+    },
+    "seecut": {
+      "source": "YeJe-cpu/SeeCut",
+      "commit": "b05d7ed27404a064060e0d370402f562b0c0c02e",
+      "sourceType": "github",
+      "skillPath": "skill/seecut/SKILL.md",
+      "computedHash": "a8d734eb36a0e5ed985217bb4cc6a30c112366cfbe41c06df7717622fe9873bb",
+      "installMode": "copy"
+    },
+    "shipping-and-launch": {
+      "source": "addyosmani/agent-skills",
+      "commit": "8c99fa36d90068c82d547f7c12a9d67a3e95f4ee",
+      "sourceType": "github",
+      "skillPath": "skills/shipping-and-launch/SKILL.md",
+      "computedHash": "ae9b095cfb74edd0d2b63c24aaca99e5a2f95b50527a7508841b501eabd3820a",
+      "installMode": "copy"
+    },
+    "skill-creator": {
+      "source": "ComposioHQ/awesome-claude-skills",
+      "commit": "be2a406907dbc61b73e6827ded415c96139d13a2",
+      "sourceType": "github",
+      "skillPath": "skill-creator/SKILL.md",
+      "computedHash": "3715fdeaadef5076d1036902bdd1b56811f01833a96d3dd90c8c720dcf6a7d63",
+      "installMode": "copy"
+    },
+    "skill-share": {
+      "source": "ComposioHQ/awesome-claude-skills",
+      "commit": "be2a406907dbc61b73e6827ded415c96139d13a2",
+      "sourceType": "github",
+      "skillPath": "skill-share/SKILL.md",
+      "computedHash": "2f72cb76a78090b1a0d508fdd210577f408ea8b2e8f62e9aef47f98e9c6280a0",
+      "installMode": "copy"
+    },
+    "slack-gif-creator": {
+      "source": "ComposioHQ/awesome-claude-skills",
+      "commit": "be2a406907dbc61b73e6827ded415c96139d13a2",
+      "sourceType": "github",
+      "skillPath": "slack-gif-creator/SKILL.md",
+      "computedHash": "d2d9f18797df481887dd71159045f9bfe52b6b3d05e49e20223b60a05cdd39f5",
+      "installMode": "copy"
+    },
+    "slides": {
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "commit": "2de1134dc4d1cfe112934611ae5803ae17a1bd7e",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/slides/SKILL.md",
+      "computedHash": "059825b15a508a5f1533ab646f968ffcbcdbb8eadd76c2d122151bfbcf19d287",
+      "installMode": "copy"
+    },
+    "source-driven-development": {
+      "source": "addyosmani/agent-skills",
+      "commit": "8c99fa36d90068c82d547f7c12a9d67a3e95f4ee",
+      "sourceType": "github",
+      "skillPath": "skills/source-driven-development/SKILL.md",
+      "computedHash": "60cff6e7bfaeebf37929399786730b260ea0441b23e1a05fdb4d7244eac3fae4",
+      "installMode": "copy"
+    },
+    "spec-driven-development": {
+      "source": "addyosmani/agent-skills",
+      "commit": "8c99fa36d90068c82d547f7c12a9d67a3e95f4ee",
+      "sourceType": "github",
+      "skillPath": "skills/spec-driven-development/SKILL.md",
+      "computedHash": "e560111a2823150a1be6d5a264cd3449dbdb9c67de011eea29204b4dee438e58",
+      "installMode": "copy"
+    },
+    "story-to-handdrawn-video": {
+      "source": "gnipbao/story-to-handdrawn-video",
+      "commit": "198aefa9b298af3a20d3bd757c93433623d38ccd",
+      "sourceType": "github",
+      "skillPath": "skill-package/story-to-handdrawn-video/SKILL.md",
+      "computedHash": "daf8e0907bfd25d9412e4a9ee43b778412bf44e83d411368b4ca55e52ecb0077",
+      "installMode": "copy"
+    },
+    "succession-series-writing": {
+      "source": "jtydhr88/screenwriting-skills",
+      "commit": "51115f18d160aa8b2ac5813e4432b6f0b425358f",
+      "sourceType": "github",
+      "skillPath": "plugins/screenwriting/skills/succession-series-writing/SKILL.md",
+      "computedHash": "2a5315287f8cd8dd78e792ab121a64300fd6e91bc90606559d96745827241a99",
+      "installMode": "copy"
+    },
+    "suggest-sfx": {
+      "source": "hassancs91/claude-faceless-shorts-creator",
+      "commit": "773054bebbe460de0f31dcfda5315970b1c8b4f2",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/suggest-sfx/SKILL.md",
+      "computedHash": "0c43128ae85bee33900af6dbcde6991520f139db41ba2f904a6d43e910f81f79",
+      "installMode": "copy"
+    },
+    "surgical-patch": {
+      "source": "JuliusBrussee/caveman",
+      "commit": "a192894723a8f47e7f504c7b5041967ff1f18e55",
+      "sourceType": "github",
+      "skillPath": "skills/surgical-patch/SKILL.md",
+      "computedHash": "5fa48d8d44e476bd633b0dc856b8342a715b5d5416b01778df5d6245b360c9df",
+      "installMode": "copy"
+    },
+    "sw-american-case-studies": {
+      "source": "jtydhr88/screenwriting-skills",
+      "commit": "51115f18d160aa8b2ac5813e4432b6f0b425358f",
+      "sourceType": "github",
+      "skillPath": "plugins/screenwriting/skills/sw-american-case-studies/SKILL.md",
+      "computedHash": "6c3da3d76bf4cdbe0d751d2deb3bde449f0ba93af682394f0e4ed30aab3c2343",
+      "installMode": "copy"
+    },
+    "sw-character-conflict": {
+      "source": "jtydhr88/screenwriting-skills",
+      "commit": "51115f18d160aa8b2ac5813e4432b6f0b425358f",
+      "sourceType": "github",
+      "skillPath": "plugins/screenwriting/skills/sw-character-conflict/SKILL.md",
+      "computedHash": "8d8af42dc2ead91920c0a5440f6cbcf869fabceaca213433bc062f5a27f0ad4a",
+      "installMode": "copy"
+    },
+    "sw-chinese-opera-banqiang": {
+      "source": "jtydhr88/screenwriting-skills",
+      "commit": "51115f18d160aa8b2ac5813e4432b6f0b425358f",
+      "sourceType": "github",
+      "skillPath": "plugins/screenwriting/skills/sw-chinese-opera-banqiang/SKILL.md",
+      "computedHash": "5a194f33d556d0276a27173cf0db77d385fc142f03a251c03fff626cea9250fa",
+      "installMode": "copy"
+    },
+    "sw-chinese-opera-banqiang-cases": {
+      "source": "jtydhr88/screenwriting-skills",
+      "commit": "51115f18d160aa8b2ac5813e4432b6f0b425358f",
+      "sourceType": "github",
+      "skillPath": "plugins/screenwriting/skills/sw-chinese-opera-banqiang-cases/SKILL.md",
+      "computedHash": "fd69532eb509ac870eb0b5ac9503d3efd6cc6de574a2230e9df465fd058a85d2",
+      "installMode": "copy"
+    },
+    "sw-chinese-opera-qupai": {
+      "source": "jtydhr88/screenwriting-skills",
+      "commit": "51115f18d160aa8b2ac5813e4432b6f0b425358f",
+      "sourceType": "github",
+      "skillPath": "plugins/screenwriting/skills/sw-chinese-opera-qupai/SKILL.md",
+      "computedHash": "f82cbdea92f58ec4deb6e0bb024a54bcab33ae22a46bc71d0869a082c0cf1b50",
+      "installMode": "copy"
+    },
+    "sw-chinese-opera-qupai-cases": {
+      "source": "jtydhr88/screenwriting-skills",
+      "commit": "51115f18d160aa8b2ac5813e4432b6f0b425358f",
+      "sourceType": "github",
+      "skillPath": "plugins/screenwriting/skills/sw-chinese-opera-qupai-cases/SKILL.md",
+      "computedHash": "1a83a6159aac300f0640b94aeb213d25e3a7437ea87b95c08442aba38de5ab07",
+      "installMode": "copy"
+    },
+    "sw-chinese-series-practice": {
+      "source": "jtydhr88/screenwriting-skills",
+      "commit": "51115f18d160aa8b2ac5813e4432b6f0b425358f",
+      "sourceType": "github",
+      "skillPath": "plugins/screenwriting/skills/sw-chinese-series-practice/SKILL.md",
+      "computedHash": "edc895357f364b40e7226b0c456b5fc36c6ed042fe12b6a792a32d599ad82255",
+      "installMode": "copy"
+    },
+    "sw-dialogue": {
+      "source": "jtydhr88/screenwriting-skills",
+      "commit": "51115f18d160aa8b2ac5813e4432b6f0b425358f",
+      "sourceType": "github",
+      "skillPath": "plugins/screenwriting/skills/sw-dialogue/SKILL.md",
+      "computedHash": "7feeca92c02531f2a5d62cf0494941c0864a9651ec3fde17ce144d95db5cbf69",
+      "installMode": "copy"
+    },
+    "sw-format-adaptation": {
+      "source": "jtydhr88/screenwriting-skills",
+      "commit": "51115f18d160aa8b2ac5813e4432b6f0b425358f",
+      "sourceType": "github",
+      "skillPath": "plugins/screenwriting/skills/sw-format-adaptation/SKILL.md",
+      "computedHash": "b5df7ac61e2b003be2fc3ff1a1d5886c618d22f2a30f1d1931cb996cbfb11bb7",
+      "installMode": "copy"
+    },
+    "sw-genre-anatomy": {
+      "source": "jtydhr88/screenwriting-skills",
+      "commit": "51115f18d160aa8b2ac5813e4432b6f0b425358f",
+      "sourceType": "github",
+      "skillPath": "plugins/screenwriting/skills/sw-genre-anatomy/SKILL.md",
+      "computedHash": "15d729b7800c164376de6ce4a8bed9b141d901fc8c2c90803696497249092823",
+      "installMode": "copy"
+    },
+    "sw-industry-business": {
+      "source": "jtydhr88/screenwriting-skills",
+      "commit": "51115f18d160aa8b2ac5813e4432b6f0b425358f",
+      "sourceType": "github",
+      "skillPath": "plugins/screenwriting/skills/sw-industry-business/SKILL.md",
+      "computedHash": "fa3576164c2728eb566abb7081fccd9146cd0a3f7f460193b93fad52fe2d1a77",
+      "installMode": "copy"
+    },
+    "sw-japanese-screenwriting": {
+      "source": "jtydhr88/screenwriting-skills",
+      "commit": "51115f18d160aa8b2ac5813e4432b6f0b425358f",
+      "sourceType": "github",
+      "skillPath": "plugins/screenwriting/skills/sw-japanese-screenwriting/SKILL.md",
+      "computedHash": "af4d7ab571be445bf45936df1a2ff553c6999503085dac720ca2652930f95fa1",
+      "installMode": "copy"
+    },
+    "sw-korean-french-screenwriting": {
+      "source": "jtydhr88/screenwriting-skills",
+      "commit": "51115f18d160aa8b2ac5813e4432b6f0b425358f",
+      "sourceType": "github",
+      "skillPath": "plugins/screenwriting/skills/sw-korean-french-screenwriting/SKILL.md",
+      "computedHash": "de09379d3cbc9ad332ae4f3f6160c56203c28ef919773747fffc10ad96536bb4",
+      "installMode": "copy"
+    },
+    "sw-premise-theme": {
+      "source": "jtydhr88/screenwriting-skills",
+      "commit": "51115f18d160aa8b2ac5813e4432b6f0b425358f",
+      "sourceType": "github",
+      "skillPath": "plugins/screenwriting/skills/sw-premise-theme/SKILL.md",
+      "computedHash": "e7d987e010da33dc5f003eaab9a865a5a23310082bdc4c4256009a2453444c4b",
+      "installMode": "copy"
+    },
+    "sw-scene-craft": {
+      "source": "jtydhr88/screenwriting-skills",
+      "commit": "51115f18d160aa8b2ac5813e4432b6f0b425358f",
+      "sourceType": "github",
+      "skillPath": "plugins/screenwriting/skills/sw-scene-craft/SKILL.md",
+      "computedHash": "dc6fe9badc88e48c252c989c2e342a837abcd9d2049df48664c166ddc643f38e",
+      "installMode": "copy"
+    },
+    "sw-series-case-studies": {
+      "source": "jtydhr88/screenwriting-skills",
+      "commit": "51115f18d160aa8b2ac5813e4432b6f0b425358f",
+      "sourceType": "github",
+      "skillPath": "plugins/screenwriting/skills/sw-series-case-studies/SKILL.md",
+      "computedHash": "f24c0a61c58d5b9b9559e0d7e01e96e0b6079a9bb2f313f12a6eb353ec0ebc9d",
+      "installMode": "copy"
+    },
+    "sw-series-engine-bible": {
+      "source": "jtydhr88/screenwriting-skills",
+      "commit": "51115f18d160aa8b2ac5813e4432b6f0b425358f",
+      "sourceType": "github",
+      "skillPath": "plugins/screenwriting/skills/sw-series-engine-bible/SKILL.md",
+      "computedHash": "ae1daf2eb897100f35a05ecdda4a32f2141770a92e6e0fa858164411b7160092",
+      "installMode": "copy"
+    },
+    "sw-series-structure": {
+      "source": "jtydhr88/screenwriting-skills",
+      "commit": "51115f18d160aa8b2ac5813e4432b6f0b425358f",
+      "sourceType": "github",
+      "skillPath": "plugins/screenwriting/skills/sw-series-structure/SKILL.md",
+      "computedHash": "56d2511247665b4492261b76d0c7eced61984a86aa00a72fe899a22ef32db144",
+      "installMode": "copy"
+    },
+    "sw-sitcom-comedy": {
+      "source": "jtydhr88/screenwriting-skills",
+      "commit": "51115f18d160aa8b2ac5813e4432b6f0b425358f",
+      "sourceType": "github",
+      "skillPath": "plugins/screenwriting/skills/sw-sitcom-comedy/SKILL.md",
+      "computedHash": "eece35b8bf653da7a9dba61f46c5d8bf9e0a05510b0d85791f53dcfa756b2c65",
+      "installMode": "copy"
+    },
+    "sw-story-structure": {
+      "source": "jtydhr88/screenwriting-skills",
+      "commit": "51115f18d160aa8b2ac5813e4432b6f0b425358f",
+      "sourceType": "github",
+      "skillPath": "plugins/screenwriting/skills/sw-story-structure/SKILL.md",
+      "computedHash": "eac8cf05ebb83983f3b39b063020fb374f050c5702d4c2552c0d5aa9aa0d6e38",
+      "installMode": "copy"
+    },
+    "sw-truby-anatomy": {
+      "source": "jtydhr88/screenwriting-skills",
+      "commit": "51115f18d160aa8b2ac5813e4432b6f0b425358f",
+      "sourceType": "github",
+      "skillPath": "plugins/screenwriting/skills/sw-truby-anatomy/SKILL.md",
+      "computedHash": "9d14201a2c219a2d12205a59b7b64ec13b61d600a4bd694260c1068eee079377",
+      "installMode": "copy"
+    },
+    "sw-workflow": {
+      "source": "jtydhr88/screenwriting-skills",
+      "commit": "51115f18d160aa8b2ac5813e4432b6f0b425358f",
+      "sourceType": "github",
+      "skillPath": "plugins/screenwriting/skills/sw-workflow/SKILL.md",
+      "computedHash": "496406b83ef472b29ffc281d2f241e30946f81a91bb59daea8dd0c8ca4f708ea",
+      "installMode": "copy"
+    },
+    "sw-writers-room": {
+      "source": "jtydhr88/screenwriting-skills",
+      "commit": "51115f18d160aa8b2ac5813e4432b6f0b425358f",
+      "sourceType": "github",
+      "skillPath": "plugins/screenwriting/skills/sw-writers-room/SKILL.md",
+      "computedHash": "7fc93135d0af13d51befb3fef5a1b302c1ce6d4b9a23b64a94559d34c1af53e8",
+      "installMode": "copy"
+    },
+    "tailored-resume-generator": {
+      "source": "ComposioHQ/awesome-claude-skills",
+      "commit": "be2a406907dbc61b73e6827ded415c96139d13a2",
+      "sourceType": "github",
+      "skillPath": "tailored-resume-generator/SKILL.md",
+      "computedHash": "b1cd2d92827158d5759cdf31eed7e87314de1c6fec247c20a5c312f712e0f284",
+      "installMode": "copy"
+    },
+    "template-skill": {
+      "source": "ComposioHQ/awesome-claude-skills",
+      "commit": "be2a406907dbc61b73e6827ded415c96139d13a2",
+      "sourceType": "github",
+      "skillPath": "template-skill/SKILL.md",
+      "computedHash": "143ecbef94ad1b41d05d13ed6a1f52a80aef7ae7114d9cfa88a3fdf2f2049754",
+      "installMode": "copy"
+    },
+    "test-driven-development": {
+      "source": "addyosmani/agent-skills",
+      "commit": "8c99fa36d90068c82d547f7c12a9d67a3e95f4ee",
+      "sourceType": "github",
+      "skillPath": "skills/test-driven-development/SKILL.md",
+      "computedHash": "37cc05dea2a455d5d3ff252f14a7323ef378536603cce8cd2c758dc8fac790e6",
+      "installMode": "copy"
+    },
+    "text-to-lottie": {
+      "source": "diffusionstudio/lottie",
+      "commit": "3c72912fad543897f90045ed4d355813837927fc",
+      "sourceType": "github",
+      "skillPath": "skills/text-to-lottie/SKILL.md",
+      "computedHash": "49a3dc9d0590d8a4b51cb6fef9da6b3cd124445291d8d50beedde61532cbbde4",
+      "installMode": "copy"
+    },
+    "theme-factory": {
+      "source": "ComposioHQ/awesome-claude-skills",
+      "commit": "be2a406907dbc61b73e6827ded415c96139d13a2",
+      "sourceType": "github",
+      "skillPath": "theme-factory/SKILL.md",
+      "computedHash": "41bee6f800f551daab9ee9f3a05f49d85301ceab499a5c830512757408171abb",
+      "installMode": "copy"
+    },
+    "twitter-algorithm-optimizer": {
+      "source": "ComposioHQ/awesome-claude-skills",
+      "commit": "be2a406907dbc61b73e6827ded415c96139d13a2",
+      "sourceType": "github",
+      "skillPath": "twitter-algorithm-optimizer/SKILL.md",
+      "computedHash": "7a5bc12ccfc7185ec0899690e11013d665fd0ed88bdc8b070bd8ab61f7ab5f65",
+      "installMode": "copy"
+    },
+    "ui-styling": {
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "commit": "2de1134dc4d1cfe112934611ae5803ae17a1bd7e",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/ui-styling/SKILL.md",
+      "computedHash": "a598d8ad69832a394d4040e4c94e4b9c7b8daf2b1fdca050929058f7b70bc816",
+      "installMode": "copy"
+    },
+    "ui-ux-pro-max": {
+      "source": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "commit": "2de1134dc4d1cfe112934611ae5803ae17a1bd7e",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/ui-ux-pro-max/SKILL.md",
+      "computedHash": "605686282fb6812d8e3f4b1a06c9fb8ba7be4d7395090f41f221a9ba5a3dbe6b",
+      "installMode": "copy"
+    },
+    "ultracave": {
+      "source": "JuliusBrussee/caveman",
+      "commit": "a192894723a8f47e7f504c7b5041967ff1f18e55",
+      "sourceType": "github",
+      "skillPath": "skills/ultracave/SKILL.md",
+      "computedHash": "b9814ef35fbc9f4359f682c7f2e4944b30428f8c8d79463efa070f99fffaa453",
+      "installMode": "copy"
+    },
+    "understand": {
+      "source": "Egonex-AI/Understand-Anything",
+      "commit": "bb70fdb0489f8839ce55bf99dae0125ea067f712",
+      "sourceType": "github",
+      "skillPath": "understand-anything-plugin/skills/understand/SKILL.md",
+      "computedHash": "a210c54eb25b85bbd0112a83ee7ed2791e047822c8060f7981d82b4f7c430aa1",
+      "installMode": "copy"
+    },
+    "understand-chat": {
+      "source": "Egonex-AI/Understand-Anything",
+      "commit": "bb70fdb0489f8839ce55bf99dae0125ea067f712",
+      "sourceType": "github",
+      "skillPath": "understand-anything-plugin/skills/understand-chat/SKILL.md",
+      "computedHash": "0030d42b1f17c5a51e5fe7cc0b9fe1aac4001904530ef4d6ff3831397a3a0dbc",
+      "installMode": "copy"
+    },
+    "understand-dashboard": {
+      "source": "Egonex-AI/Understand-Anything",
+      "commit": "bb70fdb0489f8839ce55bf99dae0125ea067f712",
+      "sourceType": "github",
+      "skillPath": "understand-anything-plugin/skills/understand-dashboard/SKILL.md",
+      "computedHash": "4f3f466cfdfc2a3109d009da2d5a1b83533328bed1ea23093136cfa79b9352d7",
+      "installMode": "copy"
+    },
+    "understand-diff": {
+      "source": "Egonex-AI/Understand-Anything",
+      "commit": "bb70fdb0489f8839ce55bf99dae0125ea067f712",
+      "sourceType": "github",
+      "skillPath": "understand-anything-plugin/skills/understand-diff/SKILL.md",
+      "computedHash": "3ba7218630ab68453ccb2b8a5a89e1f92a92953c43b8f48df30e5c31d6ab9369",
+      "installMode": "copy"
+    },
+    "understand-domain": {
+      "source": "Egonex-AI/Understand-Anything",
+      "commit": "bb70fdb0489f8839ce55bf99dae0125ea067f712",
+      "sourceType": "github",
+      "skillPath": "understand-anything-plugin/skills/understand-domain/SKILL.md",
+      "computedHash": "7c975030f749b408b7ce6c9d2691c47c36d5551a514881ac9b5111b9af0e65b3",
+      "installMode": "copy"
+    },
+    "understand-explain": {
+      "source": "Egonex-AI/Understand-Anything",
+      "commit": "bb70fdb0489f8839ce55bf99dae0125ea067f712",
+      "sourceType": "github",
+      "skillPath": "understand-anything-plugin/skills/understand-explain/SKILL.md",
+      "computedHash": "285306b9c1ae5fb72b2a271034f0060b7c1cbe35d338ee5cfe980931edcd321e",
+      "installMode": "copy"
+    },
+    "understand-figma": {
+      "source": "Egonex-AI/Understand-Anything",
+      "commit": "bb70fdb0489f8839ce55bf99dae0125ea067f712",
+      "sourceType": "github",
+      "skillPath": "understand-anything-plugin/skills/understand-figma/SKILL.md",
+      "computedHash": "b61896999eaba5359e3039bd73f37a3a42573c6025a5febe0512de45cd06a551",
+      "installMode": "copy"
+    },
+    "understand-knowledge": {
+      "source": "Egonex-AI/Understand-Anything",
+      "commit": "bb70fdb0489f8839ce55bf99dae0125ea067f712",
+      "sourceType": "github",
+      "skillPath": "understand-anything-plugin/skills/understand-knowledge/SKILL.md",
+      "computedHash": "9cc14d19e1a05ba70367f25d97cfcfde8d6fe1431a791bc4cb8f1cfaafeb7e77",
+      "installMode": "copy"
+    },
+    "understand-onboard": {
+      "source": "Egonex-AI/Understand-Anything",
+      "commit": "bb70fdb0489f8839ce55bf99dae0125ea067f712",
+      "sourceType": "github",
+      "skillPath": "understand-anything-plugin/skills/understand-onboard/SKILL.md",
+      "computedHash": "9cd7ce488777a24a4164bf57785156bf286f5e23bb3491e9bf9d006941f4c22b",
+      "installMode": "copy"
+    },
+    "unslop": {
+      "source": "heydamir/unslop",
+      "commit": "620163eedb3529d9cd23a3994ed8d287d06f760d",
+      "sourceType": "github",
+      "skillPath": "skills/unslop/SKILL.md",
+      "computedHash": "34b16270083f9892424a0b41dec4d5f25a73709c9cffa7702e57c723000e6df5",
+      "installMode": "copy"
+    },
+    "using-agent-skills": {
+      "source": "addyosmani/agent-skills",
+      "commit": "8c99fa36d90068c82d547f7c12a9d67a3e95f4ee",
+      "sourceType": "github",
+      "skillPath": "skills/using-agent-skills/SKILL.md",
+      "computedHash": "026ffd73c9e433c0a70d0a06f5530840c5a9aefd11e77be92a262ff26a0ca140",
+      "installMode": "copy"
+    },
+    "verify-and-stop": {
+      "source": "JuliusBrussee/caveman",
+      "commit": "a192894723a8f47e7f504c7b5041967ff1f18e55",
+      "sourceType": "github",
+      "skillPath": "skills/verify-and-stop/SKILL.md",
+      "computedHash": "130048a85c3d028f9e8bb9fa923143b11b55511c9c43ab3f155b6c8022e48f56",
+      "installMode": "copy"
+    },
+    "video-scrub": {
+      "source": "eternityspring/reelbench-skills",
+      "commit": "8d8444894524c9beedbf8815dab517afb3ce3cbe",
+      "sourceType": "github",
+      "skillPath": "skills/video-scrub/SKILL.md",
+      "computedHash": "a6cb9e079f419cbdb6d1fcd7a006c51fb78d32e6f38f07a5722c142c10671c11",
+      "installMode": "copy"
+    },
+    "video-shotcraft": {
+      "source": "Vincentwei1021/video-shotcraft",
+      "commit": "075b548c2405a07b77129eb448b0b504fc60dea3",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "acc1f7772ed846e444f6ed902b5f9c01ffdacf46c641156fa55f6c1f570c065f",
+      "installMode": "copy"
+    },
+    "video-shots": {
+      "source": "eternityspring/reelbench-skills",
+      "commit": "8d8444894524c9beedbf8815dab517afb3ce3cbe",
+      "sourceType": "github",
+      "skillPath": "skills/video-shots/SKILL.md",
+      "computedHash": "8101eccb368d22946b930217f2c04cef987a566fbdf23fafd937c9da33fb98a5",
+      "installMode": "copy"
+    },
+    "video-sync": {
+      "source": "eternityspring/reelbench-skills",
+      "commit": "8d8444894524c9beedbf8815dab517afb3ce3cbe",
+      "sourceType": "github",
+      "skillPath": "skills/video-sync/SKILL.md",
+      "computedHash": "2b7d6a3a77b3d50f0429d86f59bfcc6114339c03e6ec15398c1421378e1aeb01",
+      "installMode": "copy"
+    },
+    "video-talkcraft": {
+      "source": "Vincentwei1021/video-talkcraft",
+      "commit": "75e266f6a9f2bfd3387f836962cfcd48efde317f",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "ed32ec52ea3fc171ce36a4e510e162fb3f0b4c33e2ea0a07ba33b5865113bd16",
+      "installMode": "copy"
+    },
+    "vidtsx-2d-generator": {
+      "source": "hassancs91/claude-faceless-shorts-creator",
+      "commit": "773054bebbe460de0f31dcfda5315970b1c8b4f2",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/vidtsx-2d-generator/SKILL.md",
+      "computedHash": "4b4547370143b5ec743e5e8814fc83f28daeffeb23e1ef39b5eddf43679189f1",
+      "installMode": "copy"
+    },
+    "vox-director": {
+      "source": "Alisa0808/vox-director",
+      "commit": "6a85a7c341610442a6a5b1885e6e0217ab82a11f",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "5fa03a2b8837d753dcbdba0ea707369d2de107ac1f53a894c53fa3c7b8fbbbea",
+      "installMode": "copy"
+    },
+    "webapp-testing": {
+      "source": "ComposioHQ/awesome-claude-skills",
+      "commit": "be2a406907dbc61b73e6827ded415c96139d13a2",
+      "sourceType": "github",
+      "skillPath": "webapp-testing/SKILL.md",
+      "computedHash": "6e8aefb199699a28f1437c3d16d57e8b7ef100b360f2de65e6b2c89f1d75de60",
+      "installMode": "copy"
+    },
+    "youtube-downloader": {
+      "source": "ComposioHQ/awesome-claude-skills",
+      "commit": "be2a406907dbc61b73e6827ded415c96139d13a2",
+      "sourceType": "github",
+      "skillPath": "video-downloader/SKILL.md",
+      "computedHash": "e8cf80fa6e26381eee5757792bb68baa1c154266432a47b48805a3dd15f0aeb6",
+      "installMode": "copy"
+    }
+  }
+}
