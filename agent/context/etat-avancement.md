@@ -26,8 +26,14 @@
 - 4 tests Feature créés : `RoleIsolationTest`, `AntiAutoTrocTest`, `GeniusPayWebhookTest`, `PinValidationBruteForceTest` → 12 passent, 2 `incomplete` documentés (B1, idempotence webhook).
 - Base de test dédiée `djassa_test` dans phpunit.xml ; la base de dev n'est jamais touchée.
 
-## À faire
+## Décisions D1–D5 validées
 
-- Bloquants : B1, B5, M1–M3, W1–W2 (voir `AUDIT_APPLICATION.md`).
+Voir `decisions-architecture.md` : Strangler Fig, isolation DB immédiate, HTTP signé + Redis Streams, bloquants d'abord, `/api/v1` jusqu'à breaking change.
+
+## À faire (dans l'ordre)
+
+- **En cours : B1, B5, W1/W2 avec tests** (D4) avant toute extraction.
+- Puis D2 : activer les 5 variables `DB_*_DATABASE`.
+- Puis M1–M3 (mobile) et Phase 1 du Strangler Fig.
 - Porter le modèle rôles/offres sur le mobile.
 - Décider de la migration monolithe → microservices.

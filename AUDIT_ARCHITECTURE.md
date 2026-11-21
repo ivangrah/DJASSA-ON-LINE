@@ -298,3 +298,15 @@ Blocage documenté dans `video/capture/` non résolu. À traiter ou à archiver.
 3. **A6 + A5** — tests exécutables et validation des contrats.
 4. **B1/B5/M1–M3/W1–W2** (`AUDIT_APPLICATION.md`) — avant toute production.
 5. **A4, A7, A8** — policies, LFS, documentation.
+
+## Décisions validées (D1–D5) — 2026-11-21
+
+| ID | Décision |
+|---|---|
+| D1 | Strangler Fig : `backend-laravel/` orchestrateur de transition, retiré en Phase 4 au profit de `backend/gateway` + 5 microservices. |
+| D2 | Isolation PostgreSQL activée **immédiatement** via `DB_*_DATABASE` ; aucun JOIN cross-domaine dès la Phase 1. |
+| D3 | HTTP interne sécurisé (Docker privé + header signé) en synchrone, Redis Streams en asynchrone ; ni gRPC ni mTLS. |
+| D4 | Correction de **B1, B5, W1/W2 avec tests PHPUnit** avant toute extraction de service. |
+| D5 | Maintien de `/api/v1` jusqu'à un breaking change réel sur `models/schemas/` ; `/api/v2` alors seulement. |
+
+Conséquence sur le finding **A1** : la double topologie est désormais **planifiée et cadrée** (stratégie Strangler Fig), plus ambiguë. Les findings A5, A7–A10 restent ouverts.

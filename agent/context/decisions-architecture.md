@@ -10,3 +10,26 @@
 | Design system cible `#780000` | Nouvelle direction validée dans `skills/react-ui-djassa/`. |
 
 Les décisions antérieures sont dans `DESIGN_SYSTEM_SUMMARY.md` et `docs/` (désormais `documents/`).
+
+
+## Décisions validées (2026-11-21) — D1 à D5
+
+| ID | Décision | Conséquence |
+|---|---|---|
+| **D1** | **Strangler Fig.** `backend-laravel/` est l'orchestrateur de transition et disparaît en Phase 4 au profit de `backend/gateway` + 5 microservices autonomes. | Aucun nouveau code métier dans le monolithe après la Phase 1 ; chaque extraction passe par une façade + shadow traffic. |
+| **D2** | **Isolation PostgreSQL active immédiatement.** Positionner `DB_AUTH_DATABASE`, `DB_CATALOG_DATABASE`, `DB_TROC_DATABASE`, `DB_ESCROW_DATABASE`, `DB_CHAT_DATABASE` vers les 5 bases de `database/schemas/`. | Interdiction des JOIN cross-domaines dès la Phase 1 ; les UUID logiques sont les seules références inter-services. |
+| **D3** | **HTTP interne sécurisé** (réseau Docker privé + header signé) pour le synchrone ; **Redis Streams** pour l'asynchrone. Pas de gRPC, pas de mTLS. | Appels `/internal/*` avec token signé ; les headers `X-User-*` ne sont acceptés que s'ils viennent du gateway. Événements idempotents `(reference, payload_hash)`. |
+| **D4** | **Bloquants d'abord.** Corriger B1, B5, W1/W2 **avec tests PHPUnit** avant d'extraire le premier service. | Ne pas extraire une faille. Les tests `incomplete` deviennent des assertions réelles. |
+| **D5** | **Rester en `/api/v1`** tant qu'il n'y a pas de breaking change sur les contrats JSON de `models/schemas/`. | Le versionnage `/api/v2` est déclenché par un changement de contrat, pas par une date. |
+
+### Séquence d'extraction (Strangler Fig)
+
+```
+Phase 0 (fait)   connexions nommées + modèle $connection, repli DB_DATABASE
+Phase 0.5        D2 activé + B1/B5/W1/W2 corrigés et testés
+Phase 1          contrats extraits vers models/ ; monolithe = orchestrateur
+Phase 2          escrow-payment-service (premier extrait, façade + shadow traffic)
+Phase 3          auth-subscription → catalog-boutique → troc-engine → notification-chat
+Phase 4          retrait de backend-laravel ; backend/gateway seul point d'entrée
+```
+
