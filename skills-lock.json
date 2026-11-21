@@ -785,6 +785,14 @@
       "computedHash": "5f175665b574117d6402cd973368ef7f293ec5d0a63efc799123c68f78d37c76",
       "installMode": "copy"
     },
+    "remotion-motion-graphics": {
+      "source": "haidrrrry/claude-remotion-skill",
+      "commit": "1dcbe5e3fc6cf970bd10d3cc05f0a8a5d19d0383",
+      "sourceType": "github",
+      "skillPath": "remotion-motion-graphics/SKILL.md",
+      "computedHash": "c7799765a90eb5cb3e75b6568e8692863ef2b601625cd13058c901d04a694b4e",
+      "installMode": "copy"
+    },
     "safe-refactor": {
       "source": "JuliusBrussee/caveman",
       "commit": "a192894723a8f47e7f504c7b5041967ff1f18e55",
