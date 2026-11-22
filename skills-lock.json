@@ -881,6 +881,14 @@
       "computedHash": "daf8e0907bfd25d9412e4a9ee43b778412bf44e83d411368b4ca55e52ecb0077",
       "installMode": "copy"
     },
+    "strix-pentest": {
+      "source": "tghastings/strix-claude-code",
+      "commit": "181d043aed435f260d3c6b6ad29341b1f27cc932",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "750dc8c495391ccb338607386a484d1a6735d6de679de20cb6447abcb8c6a84f",
+      "installMode": "copy"
+    },
     "succession-series-writing": {
       "source": "jtydhr88/screenwriting-skills",
       "commit": "51115f18d160aa8b2ac5813e4432b6f0b425358f",
