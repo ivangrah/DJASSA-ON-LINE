@@ -18,9 +18,11 @@ function AuthGateLoader() {
 
 /** Authentification de base — jeton Sanctum requis. */
 export function RequireAuth({ children }) {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, authResolved } = useAuth();
   const location = useLocation();
 
+  // Attendre la résolution avant toute décision (évite redirections et requêtes prématurées).
+  if (!authResolved) return <AuthGateLoader />;
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location.pathname + location.search }} replace />;
   }
@@ -46,9 +48,10 @@ export function OnboardingGuard({ children }) {
  * Un vendeur Pro qui tente /dashboard est renvoyé vers /dashboard-pro.
  */
 export function ParticulierRoute({ children }) {
-  const { isAuthenticated, user, needsPlan, isAdmin } = useAuth();
+  const { isAuthenticated, user, needsPlan, isAdmin, authResolved } = useAuth();
   const location = useLocation();
 
+  if (!authResolved) return <AuthGateLoader />;
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location.pathname + location.search }} replace />;
   }
@@ -67,9 +70,10 @@ export function ParticulierRoute({ children }) {
  * L'administrateur conserve un accès de supervision.
  */
 export function ProRoute({ children }) {
-  const { isAuthenticated, user, needsPlan, isAdmin, hasActiveProPlan } = useAuth();
+  const { isAuthenticated, user, needsPlan, isAdmin, hasActiveProPlan, authResolved } = useAuth();
   const location = useLocation();
 
+  if (!authResolved) return <AuthGateLoader />;
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location.pathname + location.search }} replace />;
   }
@@ -90,9 +94,10 @@ export function ProRoute({ children }) {
  * Espace Administration — hermétique, réservé au rôle admin.
  */
 export function AdminRoute({ children }) {
-  const { isAuthenticated, user } = useAuth();
+  const { isAuthenticated, user, authResolved } = useAuth();
   const location = useLocation();
 
+  if (!authResolved) return <AuthGateLoader />;
   if (!isAuthenticated) {
     return <Navigate to="/login" state={{ from: location.pathname + location.search }} replace />;
   }

@@ -160,7 +160,7 @@ function SidebarContent({ onNavigate, counts }) {
 }
 
 export default function ProLayout() {
-  const { user } = useAuth();
+  const { user, authResolved } = useAuth();
   const isAdmin = user?.role === 'admin';
   const nav = isAdmin ? ADMIN_NAV : NAV;
   const location = useLocation();
@@ -174,11 +174,13 @@ export default function ProLayout() {
   const { data: txData } = useQuery({
     queryKey: ['transactions', 'pro', 'sidebar'],
     queryFn: async () => (await api.get('/transactions')).data,
+    enabled: Boolean(user && authResolved),
     staleTime: 30_000,
   });
   const { data: trocData } = useQuery({
     queryKey: ['barter-offers', 'sidebar'],
     queryFn: async () => (await api.get('/barter-offers')).data,
+    enabled: Boolean(user && authResolved),
     staleTime: 30_000,
   });
 

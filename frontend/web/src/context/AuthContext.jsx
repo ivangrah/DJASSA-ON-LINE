@@ -26,13 +26,10 @@ function normalizeUser(raw) {
 }
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(() => {
-    try {
-      return normalizeUser(JSON.parse(localStorage.getItem('djassa_user') ?? 'null'));
-    } catch {
-      return null;
-    }
-  });
+  // La source de vérité est le cookie HttpOnly validé par /auth/me — pas le localStorage.
+  // On démarre donc non authentifié jusqu'à la résolution, pour éviter les 401 au chargement.
+  const [user, setUser] = useState(null);
+  const [authResolved, setAuthResolved] = useState(false);
   // Jeton conservé uniquement en mémoire — l'authentification web passe par le cookie HttpOnly.
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -41,8 +38,15 @@ export function AuthProvider({ children }) {
     const normalized = normalizeUser(nextUser);
     setUser(normalized);
     setToken(nextToken ?? null);
-    if (normalized) localStorage.setItem('djassa_user', JSON.stringify(normalized));
-    else localStorage.removeItem('djassa_user');
+    setAuthResolved(true);
+    if (normalized) {
+      localStorage.setItem('djassa_user', JSON.stringify(normalized));
+      // Simple indicateur (aucun secret) : dit qu'une session existe côté cookie HttpOnly.
+      localStorage.setItem('djassa_session_hint', '1');
+    } else {
+      localStorage.removeItem('djassa_user');
+      localStorage.removeItem('djassa_session_hint');
+    }
     // Ne plus jamais stocker le jeton dans localStorage (mitigation XSS) — le serveur le pose en cookie HttpOnly.
     localStorage.removeItem('djassa_token');
   }, []);
@@ -103,17 +107,27 @@ export function AuthProvider({ children }) {
   const refreshMe = useCallback(async () => {
     try {
       const { data } = await api.get('/auth/me');
-      if (data?.user) persist(data.user, null);
-      return data?.user ?? null;
+      if (data?.user) {
+        persist(data.user, null);
+        return data.user;
+      }
+      setAuthResolved(true);
+      return null;
     } catch {
-      // Ne pas effacer une session fraîchement connectée sur une erreur transitoire (503 maintenance/réseau).
+      // Pas de session valide (401) ou erreur transitoire : on résout comme non connecté, sans requête en quarantaine.
+      setAuthResolved(true);
       return null;
     }
   }, [persist]);
 
-  // Au démarrage, on resynchronise le profil via le cookie HttpOnly (pas de jeton en localStorage).
+  // Au démarrage : uniquement resynchroniser si une session est suspectée (côté cookie HttpOnly).
+  // Sinon, on marque immédiatement comme non connecté SANS appeler /auth/me (évite 401 + Request aborted).
   useEffect(() => {
-    refreshMe();
+    if (localStorage.getItem('djassa_session_hint') === '1') {
+      refreshMe();
+    } else {
+      setAuthResolved(true);
+    }
   }, [refreshMe]);
 
   const value = useMemo(() => {
@@ -137,6 +151,7 @@ export function AuthProvider({ children }) {
       user,
       token,
       loading,
+      authResolved,
       isAuthenticated: Boolean(user),
       isPro,
       isParticulier,
@@ -153,7 +168,7 @@ export function AuthProvider({ children }) {
       logout,
       refreshMe,
     };
-  }, [user, token, loading, login, register, loginWithGoogle, selectPlan, logout, refreshMe]);
+  }, [user, token, loading, authResolved, login, register, loginWithGoogle, selectPlan, logout, refreshMe]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
