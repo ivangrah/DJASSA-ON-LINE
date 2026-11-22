@@ -161,6 +161,8 @@ function SidebarContent({ onNavigate, counts }) {
 
 export default function ProLayout() {
   const { user } = useAuth();
+  const isAdmin = user?.role === 'admin';
+  const nav = isAdmin ? ADMIN_NAV : NAV;
   const location = useLocation();
   const [drawer, setDrawer] = useState(false);
 
