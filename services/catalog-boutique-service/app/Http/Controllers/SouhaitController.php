@@ -8,7 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 class SouhaitController extends Controller
 {
-    public function __construct(private readonly RedisCache $cache) {}
+    public function __construct(private readonly RedisCache $cache, private readonly \App\Services\RedisStreamPublisher $events) {}
 
     public function index(Request $request): JsonResponse
     {
@@ -33,8 +33,13 @@ class SouhaitController extends Controller
             'categorie' => ['nullable','string','max:100'],
             'ville' => ['nullable','string','max:100'],
         ]);
-        $souhait = Souhait::create($data + ['utilisateur_id' => (string) $request->header('X-User-Id'), 'statut' => Souhait::STATUT_ACTIVE]);
+        $userId = (string) $request->header('X-User-Id');
+        $souhait = Souhait::create($data + ['utilisateur_id' => $userId, 'statut' => Souhait::STATUT_ACTIVE]);
         $this->cache->forget('souhaits:');
+        $this->events->publish('souhait.created', [
+            'user_id' => $userId, 'reference' => $souhait->id,
+            'titre' => $souhait->titre, 'categorie' => $souhait->categorie,
+        ]);
         return SouhaitResource::make($souhait)->response()->setStatusCode(201);
     }
 

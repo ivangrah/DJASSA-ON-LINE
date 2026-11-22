@@ -1,5 +1,5 @@
 # Djassa Online — orchestration locale de la cible microservices.
-# NOTE : le monolithe backend-laravel tourne encore sur :8899 (voir README.md).
+# Stack microservices — gateway :8080, PostgreSQL :5433, Redis :6380.
 # Cette stack cible utilise des ports distincts (5433, 6380, 8080) : aucun conflit.
 #   docker compose up -d        # tous les services (infra + gateway + 5 microservices)
 
@@ -38,31 +38,8 @@ services:
       - "8081"
     volumes:
       - ./backend/gateway/nginx.conf:/etc/nginx/conf.d/default.conf:ro
-    depends_on: [orchestrator, auth-subscription-service, catalog-boutique-service, troc-engine-service, escrow-payment-service, notification-chat-service]
+    depends_on: [auth-subscription-service, catalog-boutique-service, troc-engine-service, escrow-payment-service, notification-chat-service]
 
-
-  orchestrator:
-    image: djassa-php:8.4
-    working_dir: /repo/backend-laravel
-    volumes:
-      - .:/repo
-      - ./backend-laravel/.env.docker:/repo/backend-laravel/.env:ro
-    command: php artisan serve --host=0.0.0.0 --port=8080
-    environment:
-      APP_ENV: local
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_DATABASE: djassa_online
-      DB_USERNAME: postgres
-      DB_PASSWORD: ${POSTGRES_PASSWORD:-djassa_dev}
-      DB_AUTH_DATABASE: djassa_auth_db
-      DB_CATALOG_DATABASE: djassa_catalog_db
-      DB_TROC_DATABASE: djassa_troc_db
-      DB_ESCROW_DATABASE: djassa_escrow_db
-      DB_CHAT_DATABASE: djassa_chat_db
-      REDIS_HOST: redis
-      DJASSA_INTERNAL_SIGNING_KEY: ${DJASSA_INTERNAL_SIGNING_KEY:-dev-signing-key}
-    depends_on: { postgres: { condition: service_healthy }, redis: { condition: service_started } }
 
   auth-subscription-service:
     image: djassa-php:8.4
@@ -151,7 +128,7 @@ services:
       GENIUSPAY_WEBHOOK_SECRET: ${GENIUSPAY_WEBHOOK_SECRET:-}
       DJASSA_INTERNAL_API_URL: http://api-gateway:8081/internal
       DJASSA_INTERNAL_SIGNING_KEY: ${DJASSA_INTERNAL_SIGNING_KEY:-dev-signing-key}
-    depends_on: { postgres: { condition: service_healthy }, redis: { condition: service_started }, orchestrator: { condition: service_started } }
+    depends_on: { postgres: { condition: service_healthy }, redis: { condition: service_started } }
 
   notification-chat-service:
     image: djassa-php:8.4

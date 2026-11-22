@@ -53,6 +53,9 @@ class EscrowService
             'transaction_id' => $transaction->id,
             'reference' => $transaction->geniuspay_ref,
             'montant' => (string) $transaction->montant,
+            'user_id' => $transaction->acheteur_id,
+            'acheteur_id' => $transaction->acheteur_id,
+            'vendeur_id' => $transaction->vendeur_id,
         ]);
 
         return $pin;
@@ -103,6 +106,9 @@ class EscrowService
                 'montant' => (string) $tx->montant,
                 'article_id' => $tx->article_id,
                 'offre_troc_id' => $tx->offre_troc_id,
+                'user_id' => $tx->vendeur_id,
+                'acheteur_id' => $tx->acheteur_id,
+                'vendeur_id' => $tx->vendeur_id,
             ]);
 
             return $tx->refresh();
@@ -115,6 +121,9 @@ class EscrowService
         $this->events->publish('payment.failed', [
             'transaction_id' => $transaction->id,
             'reference' => $transaction->geniuspay_ref,
+            'user_id' => $transaction->acheteur_id,
+            'acheteur_id' => $transaction->acheteur_id,
+            'vendeur_id' => $transaction->vendeur_id,
         ]);
 
         return $transaction->refresh();

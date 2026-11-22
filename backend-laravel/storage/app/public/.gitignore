@@ -1,5 +1,0 @@
-*
-!products
-products/*
-!products/seed
-!products/seed/*.jpg

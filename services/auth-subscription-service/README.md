@@ -1,6 +1,6 @@
 # Auth Service (`auth-subscription-service`)
 
-> **Scaffold architectural.** Le code métier réside encore dans `backend-laravel/` (monolithe). Ce dossier définit le contrat cible ; voir `AGENTS.md` et `AUDIT_APPLICATION.md`.
+> Microservice autonome (Phase 4). Base dédiée, `vendor/` propre, aucun appel direct à un autre domaine (API interne signée + événements Redis).
 
 ## Responsabilité
 

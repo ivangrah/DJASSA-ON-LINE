@@ -16,7 +16,7 @@ Les décisions antérieures sont dans `DESIGN_SYSTEM_SUMMARY.md` et `docs/` (dé
 
 | ID | Décision | Conséquence |
 |---|---|---|
-| **D1** | **Strangler Fig.** `backend-laravel/` est l'orchestrateur de transition et disparaît en Phase 4 au profit de `backend/gateway` + 5 microservices autonomes. | Aucun nouveau code métier dans le monolithe après la Phase 1 ; chaque extraction passe par une façade + shadow traffic. |
+| **D1** | ✅ **RÉALISÉ (Phase 4).** **Strangler Fig.** `backend-laravel/` est l'orchestrateur de transition et disparaît en Phase 4 au profit de `backend/gateway` + 5 microservices autonomes. | Aucun nouveau code métier dans le monolithe après la Phase 1 ; chaque extraction passe par une façade + shadow traffic. |
 | **D2** | ✅ **ACTIVE (2026-11-21) — Isolation PostgreSQL immédiate.** Positionner `DB_AUTH_DATABASE`, `DB_CATALOG_DATABASE`, `DB_TROC_DATABASE`, `DB_ESCROW_DATABASE`, `DB_CHAT_DATABASE` vers les 5 bases de `database/schemas/`. | Interdiction des JOIN cross-domaines dès la Phase 1 ; les UUID logiques sont les seules références inter-services. |
 | **D3** | **HTTP interne sécurisé** (réseau Docker privé + header signé) pour le synchrone ; **Redis Streams** pour l'asynchrone. Pas de gRPC, pas de mTLS. | Appels `/internal/*` avec token signé ; les headers `X-User-*` ne sont acceptés que s'ils viennent du gateway. Événements idempotents `(reference, payload_hash)`. |
 | **D4** | **Bloquants d'abord.** Corriger B1, B5, W1/W2 **avec tests PHPUnit** avant d'extraire le premier service. | Ne pas extraire une faille. Les tests `incomplete` deviennent des assertions réelles. |
@@ -30,7 +30,7 @@ Phase 0.5        D2 activé + B1/B5/W1/W2 corrigés et testés
 Phase 1          contrats extraits vers models/ ; monolithe = orchestrateur
 Phase 2          escrow-payment-service (premier extrait, façade + shadow traffic)
 Phase 3          auth-subscription → catalog-boutique → troc-engine → notification-chat
-Phase 4          retrait de backend-laravel ; backend/gateway seul point d'entrée
+Phase 4 ✅       backend-laravel retiré ; backend/gateway seul point d'entrée
 ```
 
 ### État D2 (vérifié)

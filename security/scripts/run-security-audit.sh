@@ -1,16 +1,22 @@
 #!/usr/bin/env bash
-# Audit global Djassa : dépendances, SAST, tests et build.
+# Audit global Djassa : dépendances, SAST, lint PHP, tests des 5 services et build frontend.
 # Usage : ./security/scripts/run-security-audit.sh
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$ROOT"
 
+SERVICES=(auth-subscription-service catalog-boutique-service escrow-payment-service notification-chat-service troc-engine-service)
+
 log() { printf '\n\033[1;36m==> %s\033[0m\n' "$1"; }
 warn() { printf '\033[1;33m[skip] %s\033[0m\n' "$1"; }
 
-log "1/6 Audit des dépendances PHP"
-if [ -f backend-laravel/composer.json ] && command -v composer >/dev/null; then
-  (cd backend-laravel && composer audit || true)
+log "1/6 Audit des dépendances PHP (5 services)"
+if command -v composer >/dev/null; then
+  for svc in "${SERVICES[@]}"; do
+    if [ -f "services/$svc/composer.json" ]; then
+      (cd "services/$svc" && composer audit || true)
+    fi
+  done
 else warn "composer indisponible"; fi
 
 log "2/6 Audit des dépendances JS"
@@ -26,16 +32,17 @@ if command -v semgrep >/dev/null; then
     --exclude 'vendor' --exclude 'node_modules' --error .
 else warn "semgrep indisponible — installer: pip install semgrep"; fi
 
-log "4/6 Lint PHP"
-if command -v php >/dev/null && [ -d backend-laravel/app ]; then
-  find backend-laravel/app backend-laravel/database backend-laravel/routes \
-    -name '*.php' -print0 | xargs -0 -n1 php -l >/dev/null && echo "PHP OK"
+log "4/6 Lint PHP des services"
+if command -v php >/dev/null; then
+  for svc in "${SERVICES[@]}"; do
+    find "services/$svc/app" "services/$svc/database" "services/$svc/routes" \
+      -name '*.php' -print0 2>/dev/null | xargs -0 -n1 php -l >/dev/null
+  done
+  echo "PHP OK"
 else warn "php indisponible"; fi
 
-log "5/6 Tests backend"
-if [ -f backend-laravel/artisan ]; then
-  (cd backend-laravel && php artisan test --parallel || true)
-else warn "artisan indisponible"; fi
+log "5/6 Tests des 5 microservices (voir test/run-all.sh)"
+warn "lancés séparément par ./test/run-all.sh pour éviter une récursion"
 
 log "6/6 Build + lint frontend"
 if [ -f frontend/web/package.json ]; then

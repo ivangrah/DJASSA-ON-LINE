@@ -1,16 +1,21 @@
 <?php
 namespace Tests;
 use App\Services\RedisCache;
+use App\Services\RedisStreamPublisher;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 use Tests\Support\FakeRedisCache;
+use Tests\Support\FakeRedisStreamPublisher;
 abstract class TestCase extends BaseTestCase
 {
     protected FakeRedisCache $cache;
+    protected FakeRedisStreamPublisher $events;
     protected function setUp(): void
     {
         parent::setUp();
         $this->cache = new FakeRedisCache();
         $this->app->instance(RedisCache::class, $this->cache);
+        $this->events = new FakeRedisStreamPublisher();
+        $this->app->instance(RedisStreamPublisher::class, $this->events);
         config(['services.internal.signing_key' => 'test-internal-key']);
     }
     protected function signed(string $method, string $path, array $payload = []): array

@@ -107,6 +107,9 @@ class TrocController extends Controller
             'reference' => $offre->reference,
             'type' => $soulte > 0 ? 'mixte' : 'pur',
             'montant_soulte_fcfa' => $soulte,
+            'user_id' => $acheteurId,
+            'acheteur_id' => $acheteurId,
+            'vendeur_id' => $offre->vendeur_id,
         ]);
 
         return OffreTrocResource::make($offre->load('articlesOfferts'))
@@ -127,7 +130,7 @@ class TrocController extends Controller
             $updates['montant_contre_offre_fcfa'] = $data['montant_contre_offre_fcfa'];
         }
         $offre->update($updates);
-        $this->events->publish('troc.'.$data['action'], ['offre_id'=>$offre->id, 'reference'=>$offre->reference]);
+        $this->events->publish('troc.'.$data['action'], ['offre_id'=>$offre->id, 'reference'=>$offre->reference, 'user_id'=>$offre->vendeur_id, 'acheteur_id'=>$offre->acheteur_id, 'vendeur_id'=>$offre->vendeur_id]);
 
         return OffreTrocResource::make($offre->refresh());
     }

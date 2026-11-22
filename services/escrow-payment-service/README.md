@@ -25,7 +25,7 @@ Les anciens chemins `/payments/geniuspay/init` et `/transactions/*` restent des 
 
 ## Développement
 
-En développement, le service réutilise `backend-laravel/vendor` via un symlink (`vendor -> ../../backend-laravel/vendor`) et un chargeur prépend pour `App\`/`Tests\`. En production, chaque service possède son propre `vendor/` (voir `composer.json`).
+Le service possède son propre `vendor/` et son `composer.lock` (`composer install`). Aucune dépendance au monolithe.
 
 ```bash
 php artisan migrate --force

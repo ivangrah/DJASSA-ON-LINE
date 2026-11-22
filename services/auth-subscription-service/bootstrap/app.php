@@ -4,9 +4,9 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 
-// Le service réutilise le vendor/ du monolithe en développement (voir README).
+// Le service possède son propre vendor/ (composer.json + composer.lock).
 // Ce chargeur prépend garantit que App\ et Tests\ désignent LES FICHIERS DU SERVICE,
-// jamais ceux de backend-laravel/app.
+// jamais ceux d'un autre service.
 spl_autoload_register(function (string $class): void {
     foreach (['App\\' => __DIR__.'/../app/', 'Tests\\' => __DIR__.'/../tests/'] as $prefix => $base) {
         if (str_starts_with($class, $prefix)) {

@@ -4,12 +4,11 @@
 
 ## État réel du dépôt
 
-Deux topologies coexistent. **Ne rien supprimer.**
+Architecture **100 % microservices** (Phase 4 terminée). Le monolithe `backend-laravel/` a été retiré.
 
-1. **Actif** : `backend-laravel/` (Laravel 11, API sur `:8899`) · `frontend/web/` (React/Vite sur `:5199`, ex-`frontend-web/`) · `frontend/mobile/` (Expo 58, ex-`mobile-app/`, non migré vers le nouveau modèle de rôles).
-2. **Cible (scaffold)** : `backend/core-api/`, `services/`, `database/`, `models/`, `routes/`, `security/`. Structures et contrats créés, code métier non implémenté.
-
-La migration du monolithe vers les microservices est une décision séparée, et doit être précédée des correctifs de `AUDIT_APPLICATION.md`.
+- **`backend/gateway/`** : point d'entrée unique (nginx, JWT `auth_request`, rate limiting, Gzip).
+- **`services/`** : 5 microservices Laravel autonomes, chacun avec son `vendor/`, son `composer.lock` et sa base PostgreSQL dédiée.
+- **`frontend/web/`** : React/Vite. **`frontend/mobile/`** : Expo (client actif, à migrer vers le nouveau modèle de rôles).
 
 ## Les dossiers racines
 
@@ -38,7 +37,7 @@ La migration du monolithe vers les microservices est une décision séparée, et
 2. **Rôles étanches.** `particulier | vendeur_pro | admin`. Le gateway valide le JWT puis injecte `X-User-Id` / `X-User-Role` vérifiés — jamais ceux du client. Boutique et article **neuf** réservés à `vendeur_pro`.
 3. **Isolation financière.** Clés GeniusPay et PIN haché (bcrypt, 4 chiffres) confinés dans `escrow-payment-service` + `djassa_escrow_db`.
 4. **Contrats partagés.** Tout champ échangé est défini dans `models/schemas/` et déclaré dans `routes/api-gateway.routes.json`.
-5. **Backend actif = `backend-laravel/`.** Isolation PostgreSQL **active (D2)** : `DB_AUTH_DATABASE`, `DB_CATALOG_DATABASE`, `DB_TROC_DATABASE`, `DB_ESCROW_DATABASE`, `DB_CHAT_DATABASE` pointent vers 5 bases distinctes ; chaque modèle utilise sa connexion. Les FK cross-domaines sont désactivées à la migration via `App\Support\DomainSchema` (intégrité portée par l'application). Les tests forcent toutes les connexions sur `djassa_test` via `phpunit.xml` et conservent les FK.
+5. **Isolation PostgreSQL active (D2).** Chaque service possède sa base (`djassa_auth_db`, `djassa_catalog_db`, `djassa_troc_db`, `djassa_escrow_db`, `djassa_chat_db`) et aucun modèle n'a de relation cross-base. Intégrité inter-domaines par API interne signée (`X-Djassa-Signature`) et événements Redis Streams.
 6. **Pas de vibe-coding.** Voir `agent/system-rules.md`.
 
 ## Design system (cible)
@@ -95,18 +94,17 @@ Référentiel officiel, applicable à chaque développement. Détail par domaine
 ## Commandes
 
 ```bash
-# Application active
-cd backend-laravel && docker run --rm -d --name djassa-api --network host -v "$PWD":/app -w /app djassa-php:8.4
-cd frontend/web && npm install && npm run dev     # :5199
-
-# Stack cible (scaffold)
+# Stack microservices (gateway :8080, bases :5433, Redis :6380)
 docker compose config
 docker compose up -d
+
+# Frontend
+cd frontend/web && npm install && npm run dev     # :5199
 
 # Vérification / audit
 cd frontend/web && npm run build
 ./security/scripts/run-security-audit.sh
-./test/run-all.sh   # 4 tests Feature : rôles, anti-auto-troc, webhook HMAC, PIN
+./test/run-all.sh   # 5 suites : 51 tests / 168 assertions
 ```
 
 ## Références

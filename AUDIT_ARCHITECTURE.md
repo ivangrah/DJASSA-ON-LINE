@@ -1,5 +1,9 @@
 # Audit d'architecture & inventaire des dossiers — Djassa Online
 
+
+> **PHASE 4 TERMINÉE (2026-11-22)** : `backend-laravel/` a été supprimé et le conteneur `orchestrator` retiré du compose. Les 5 services sont autonomes (vendor + composer.lock propres), les événements Redis incluent les identifiants cibles, et la gateway ne route plus vers le monolithe. 51 tests / 168 assertions verts + E2E complet. Ce document est conservé comme **instantané historique** de l'audit initial ; les sections « Actif/Scaffold » et les findings A1–A6 décrivent l'état d'avant migration.
+
+
 > Audit en lecture seule de l'arborescence courante. Date : 2026-11-21.
 > Complément de `AUDIT_APPLICATION.md` (failles fonctionnelles/sécurité) : celui-ci porte sur **l'organisation du dépôt et le contenu exact de chaque dossier**.
 

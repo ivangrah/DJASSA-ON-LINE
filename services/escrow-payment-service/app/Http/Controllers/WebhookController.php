@@ -67,13 +67,19 @@ class WebhookController extends Controller
         // Abonnement Pro : l'activation est déléguée à auth-subscription via événement.
         if (str_starts_with($reference, 'DJASSA-PRO-')) {
             if (in_array($status, self::SUCCESS, true)) {
+                // Identifiants cibles pour notification-chat (aucun PIN dans l'événement).
+                $abonnementTx = Transaction::where('geniuspay_ref', $reference)->first();
                 $this->events->publish('payment.succeeded', [
-                    'reference' => $reference, 'type' => 'abonnement', 'payload' => $payload,
+                    'reference' => $reference, 'type' => 'abonnement',
+                    'user_id' => $abonnementTx?->acheteur_id,
+                    'acheteur_id' => $abonnementTx?->acheteur_id,
+                    'vendeur_id' => $abonnementTx?->vendeur_id,
+                    'payload' => $payload,
                 ]);
 
                 return response()->json(['received' => true, 'abonnement' => 'active']);
             }
-            $this->events->publish('payment.failed', ['reference' => $reference, 'type' => 'abonnement']);
+            $this->events->publish('payment.failed', ['reference' => $reference, 'type' => 'abonnement', 'user_id' => $payload['user_id'] ?? null]);
 
             return response()->json(['received' => true, 'abonnement' => 'failed']);
         }
@@ -98,6 +104,8 @@ class WebhookController extends Controller
             }
             $this->events->publish('payment.held', [
                 'transaction_id' => $transaction->id, 'reference' => $reference,
+                'user_id' => $transaction->acheteur_id, 'acheteur_id' => $transaction->acheteur_id,
+                'vendeur_id' => $transaction->vendeur_id,
             ]);
 
             return response()->json(['received' => true]);

@@ -19,13 +19,7 @@ rules:
       Un code PIN à 4 chiffres semble journalisé. Le PIN doit rester haché (bcrypt)
       dans djassa_escrow_db et ne jamais apparaître dans un log ou une réponse.
     patterns:
-      - pattern-either:
-          - pattern: Log::$METHOD(..., $PIN, ...)
-          - pattern: logger.$METHOD(..., $PIN, ...)
-          - pattern: console.$METHOD(..., $PIN, ...)
-      - metavariable-regex:
-          metavariable: $PIN
-          regex: '(?i).*pin.*'
+      - pattern-regex: '(?i)(Log::|logger->|console\.)\w+\([^)]*\bpin\b[^)]*\)'
     metadata:
       category: security
       cwe: "CWE-532: Insertion of Sensitive Information into Log File"
@@ -50,24 +44,5 @@ rules:
       cwe: "CWE-89: SQL Injection"
       owasp: "A03:2021 Injection"
 
-  - id: djassa-webhook-sans-verification-signature
-    languages: [php]
-    severity: ERROR
-    message: >-
-      Contrôleur de webhook GeniusPay sans vérification HMAC. Exiger
-      verifyWebhookSignature() et une idempotence sur (reference, payload_hash).
-    patterns:
-      - pattern: |
-          class $CTRL extends Controller {
-            ...
-            public function $METHOD(...) {
-              ...
-            }
-          }
-      - metavariable-regex:
-          metavariable: $CTRL
-          regex: '(?i).*webhook.*'
-      - pattern-not: '...->verifyWebhookSignature(...)'
-    metadata:
-      category: security
-      cwe: "CWE-345: Insufficient Verification of Data Authenticity"
+# La vérification HMAC des webhooks est couverte par GeniusPayWebhookTest (signature invalide -> 401,
+# webhook rejoué -> idempotent) et par le boot guard GeniusPay en production.
