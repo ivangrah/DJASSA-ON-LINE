@@ -1,42 +1,23 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Transaction",
+  "title": "Transaction (escrow-payment-service)",
   "type": "object",
-  "required": [
-    "reference",
-    "montant_fcfa",
-    "statut"
-  ],
+  "required": ["id", "montant_fcfa", "statut", "pin_visible", "acheteur_id", "vendeur_id"],
   "properties": {
-    "reference": {
-      "type": "string",
-      "minLength": 1
-    },
-    "montant_fcfa": {
-      "type": "number",
-      "exclusiveMinimum": 0,
-      "multipleOf": 0.01
-    },
-    "statut": {
-      "enum": [
-        "pending",
-        "held",
-        "released",
-        "refunded",
-        "failed"
-      ]
-    },
-    "acheteur_id": {
-      "type": "string",
-      "format": "uuid"
-    },
-    "vendeur_id": {
-      "type": "string",
-      "format": "uuid"
-    },
-    "pin_visible": {
-      "const": false
-    }
-  },
-  "description": "Le PIN et son hash ne doivent jamais apparaître dans ce contrat."
+    "id": {"type": "string", "format": "uuid"},
+    "type": {"enum": ["achat", "troc_mixte"]},
+    "montant_fcfa": {"type": "string", "pattern": "^[0-9]+(\\.[0-9]{1,2})?$"},
+    "statut": {"enum": ["initiated", "held", "released", "refunded", "failed"]},
+    "escrow_status": {"enum": ["initiated", "held", "released", "refunded", "failed"]},
+    "geniuspay_ref": {"type": ["string", "null"]},
+    "pin_attempts": {"type": "integer", "minimum": 0, "maximum": 5},
+    "pin_visible": {"const": false},
+    "article_id": {"type": ["string", "null"], "format": "uuid"},
+    "offre_troc_id": {"type": ["string", "null"], "format": "uuid"},
+    "acheteur_id": {"type": "string", "format": "uuid"},
+    "vendeur_id": {"type": "string", "format": "uuid"},
+    "held_at": {"type": ["string", "null"], "format": "date-time"},
+    "released_at": {"type": ["string", "null"], "format": "date-time"},
+    "created_at": {"type": ["string", "null"], "format": "date-time"}
+  }
 }

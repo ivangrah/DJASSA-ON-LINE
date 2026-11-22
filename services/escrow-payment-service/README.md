@@ -1,46 +1,35 @@
-# Escrow & Payment Service (`escrow-payment-service`)
+# escrow-payment-service
 
-> **Scaffold architectural.** Le code métier réside encore dans `backend-laravel/` (monolithe). Ce dossier définit le contrat cible ; voir `AGENTS.md` et `AUDIT_APPLICATION.md`.
+Microservice autonome du domaine **séquestre & paiement** (Phase 2 — Strangler Fig).
 
-## Responsabilité
+## Propriété exclusive
 
-Paiements GeniusPay (Wave, Orange Money, MTN, Moov), séquestre des fonds (held → released) et code PIN à 4 chiffres haché.
-
-## Base de données
-
-Propriétaire exclusif : **`djassa_escrow_db`**. Aucun accès SQL direct à une autre base (règle « Database-per-Service »).
+- Base : **`djassa_escrow_db`** (`transactions`, `webhooks_logs`).
+- Aucun modèle Eloquent cross-domaine : `User`, `Article`, `OffreTroc`, `Message`, `Abonnement` ne sont **jamais** accédés directement.
+- Les effets cross-domaines passent par `InternalApiClient` (HTTP signé `X-Djassa-Signature`) et `RedisStreamPublisher` (Redis Streams `payment.*`, `escrow.released`).
+- Le code PIN 4 chiffres est généré, haché (bcrypt) et vérifié **uniquement ici** ; il n'est jamais publié ni sérialisé (`pin_visible: false`).
 
 ## Endpoints
 
-- `POST /api/v1/escrow/checkout — création de session de paiement`
-- `POST /api/v1/escrow/webhooks/geniuspay — webhook signé HMAC-SHA256`
-- `POST /api/v1/escrow/transactions/{ref}/pin — remise des fonds (PIN bcrypt)`
-- `GET  /api/v1/escrow/transactions/{ref} — statut`
+| Chemin | Rôle |
+|---|---|
+| `POST /api/v1/escrow/checkout` | Initier un paiement |
+| `GET /api/v1/escrow/transactions` | Liste |
+| `GET /api/v1/escrow/transactions/{id}` | Détail |
+| `POST /api/v1/escrow/transactions/{id}/verify-pin` | Libération des fonds |
+| `GET /api/v1/escrow/transactions/{id}/receipt` | Reçu PDF |
+| `POST /api/v1/escrow/webhooks/geniuspay` | Webhook HMAC + idempotence |
+| `/internal/escrow/*` | Appels internes signés (Docker privé) |
 
-## Événements
+Les anciens chemins `/payments/geniuspay/init` et `/transactions/*` restent des **alias de transition**.
 
-Publiés :
-- `payment.pending`
-- `payment.succeeded`
-- `payment.failed`
-- `escrow.released`
+## Développement
 
-Consommés :
-- `troc.accepted (soulte)`
-- `plan.chosen (activation Pro)`
+En développement, le service réutilise `backend-laravel/vendor` via un symlink (`vendor -> ../../backend-laravel/vendor`) et un chargeur prépend pour `App\`/`Tests\`. En production, chaque service possède son propre `vendor/` (voir `composer.json`).
 
-## Contrat d'API
+```bash
+php artisan migrate --force
+php artisan test
+```
 
-Statuts : pending → held → released (ou refunded/failed). Référence unique. Idempotence via webhooks_logs(reference, payload_hash). PIN : 4 chiffres, bcrypt, 5 tentatives max, jamais sérialisé dans une réponse.
-
-## Sécurité
-
-Aucune simulation de paiement accessible hors environnement local/testing. La vérification HMAC est OBLIGATOIRE dès que webhook_secret est configuré ; le mode mock doit exiger app()->environment(['local','testing']). Findings B1, B5, W3, M4.
-
-## Tests Feature attendus
-
-- [ ] Signature HMAC invalide rejetée
-- [ ] Webhook rejoué ignoré (idempotence)
-- [ ] PIN erroné verrouillé après 5 essais
-- [ ] PIN jamais exposé dans les Resources
-- [ ] Activation Pro impossible sans webhook valide
+Variables d'environnement : voir `.env.example`. En production, le boot échoue si une clé GeniusPay ou `DJASSA_INTERNAL_SIGNING_KEY` manque (B5).
