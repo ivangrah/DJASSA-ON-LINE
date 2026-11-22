@@ -29,11 +29,20 @@ class AuthController extends Controller
 
     private function respond(User $user, string $token): JsonResponse
     {
+        // Cookie HttpOnly : le jeton n'est plus lisible par le JavaScript (mitigation XSS).
+        // Le jeton reste aussi renvoyé en JSON pour les clients mobiles (Bearer).
+        $cookie = cookie(
+            'djassa_token', $token,
+            60 * 24 * 7, '/', null,
+            app()->environment('production'),
+            true, false, 'Lax'
+        );
+
         return response()->json([
             'user' => UserResource::make($this->withBoutique($user)),
             'token' => $token,
             'token_type' => 'Bearer',
-        ]);
+        ])->withCookie($cookie);
     }
 
     /** Enrichit la ressource sans relation Eloquent cross-base (API interne signée). */
@@ -165,6 +174,7 @@ class AuthController extends Controller
     {
         $request->user()->currentAccessToken()?->delete();
 
-        return response()->json(['message' => 'Déconnecté.']);
+        return response()->json(['message' => 'Déconnecté.'])
+            ->withoutCookie('djassa_token');
     }
 }

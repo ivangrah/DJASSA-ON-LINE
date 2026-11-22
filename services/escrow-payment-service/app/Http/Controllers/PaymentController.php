@@ -23,6 +23,23 @@ class PaymentController extends Controller
         $userId = (string) $request->header('X-User-Id');
         abort_unless($userId !== '', 401, 'Identité manquante.');
 
+        // Idempotence : un double-clic (ou un retry) ne doit pas créer deux transactions.
+        $idempotencyKey = (string) $request->header('Idempotency-Key', '');
+        if ($idempotencyKey === '') {
+            $idempotencyKey = (string) \Illuminate\Support\Str::uuid();
+        }
+        $existing = Transaction::where('idempotency_key', $idempotencyKey)->first();
+        if ($existing) {
+            return response()->json([
+                'payment_url' => null,
+                'montant' => (string) $existing->montant,
+                'mock' => false,
+                'geniuspay_ref' => $existing->geniuspay_ref,
+                'transaction_id' => $existing->id,
+                'idempotent' => true,
+            ]);
+        }
+
         if ($type === Transaction::TYPE_ACHAT) {
             $article = $this->internal->getArticle((string) $request->validated('article_id'));
             if (($article['statut'] ?? 'published') !== 'published') {
@@ -55,6 +72,7 @@ class PaymentController extends Controller
             'montant' => $montant,
             'frais_escrow' => $this->geniusPay->fraisEscrow($montant),
             'escrow_status' => Transaction::ESCROW_INITIATED,
+            'idempotency_key' => $idempotencyKey,
         ]);
 
         $reference = 'DJASSA-'.strtoupper($type).'-'.$transaction->id;

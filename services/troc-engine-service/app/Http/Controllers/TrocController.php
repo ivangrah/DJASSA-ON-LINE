@@ -30,9 +30,13 @@ class TrocController extends Controller
         ]);
     }
 
-    public function show(string $id): OffreTrocResource
+    public function show(Request $request, string $offre): OffreTrocResource
     {
-        return OffreTrocResource::make(OffreTroc::with('articlesOfferts')->findOrFail($id));
+        $offre = OffreTroc::with('articlesOfferts')->findOrFail($offre);
+        $userId = (string) $request->header('X-User-Id');
+        abort_unless($userId !== '' && in_array($userId, [$offre->acheteur_id, $offre->vendeur_id], true), 403,
+            'Accès refusé à cette offre de troc.');
+        return OffreTrocResource::make($offre);
     }
 
     public function store(Request $request): JsonResponse

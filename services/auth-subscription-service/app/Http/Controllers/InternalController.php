@@ -41,7 +41,8 @@ class InternalController extends Controller
     {
         $this->verify($request);
 
-        $token = $request->bearerToken();
+        // Token depuis l'en-tête Bearer (mobile/legacy) OU depuis le cookie HttpOnly (web).
+        $token = $request->bearerToken() ?: $request->cookie('djassa_token');
         if (! $token) {
             return response()->json(['message' => 'Token manquant.'], 401);
         }

@@ -14,6 +14,7 @@ class Transaction extends Model
         'acheteur_id', 'vendeur_id', 'article_id', 'offre_troc_id', 'boutique_id',
         'type', 'montant', 'frais_escrow', 'geniuspay_ref', 'escrow_status',
         'pin_hash', 'pin_attempts', 'held_at', 'released_at', 'refunded_at',
+        'idempotency_key',
     ];
 
     protected $hidden = ['pin_hash'];

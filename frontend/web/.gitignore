@@ -1,3 +1,8 @@
+# Environnement (ne jamais commiter de secrets)
+.env
+.env.*
+!.env.example
+
 # Logs
 logs
 *.log

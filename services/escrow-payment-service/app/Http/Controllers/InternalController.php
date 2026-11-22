@@ -34,11 +34,22 @@ class InternalController extends Controller
             'montant' => ['required','numeric','min:0'],
         ]);
 
+        // Idempotence : la référence déterministe (ex. DJASSA-SOULTE-{offre}) sert de clé.
+        $existing = Transaction::where('idempotency_key', $data['reference'])->first();
+        if ($existing) {
+            return response()->json([
+                'payment_url' => null, 'mock' => false,
+                'geniuspay_ref' => $existing->geniuspay_ref,
+                'transaction_id' => $existing->id, 'idempotent' => true,
+            ]);
+        }
+
         $transaction = Transaction::create([
             'acheteur_id' => $data['user_id'],
             'vendeur_id' => '00000000-0000-4000-8000-000000000000',
             'type' => Transaction::TYPE_ACHAT, 'montant' => $data['montant'],
             'frais_escrow' => 0, 'escrow_status' => Transaction::ESCROW_INITIATED,
+            'idempotency_key' => $data['reference'],
         ]);
         $session = $geniusPay->initiate((float) $data['montant'], $data['reference'], [
             'description' => 'Abonnement Pro Djassa Online',

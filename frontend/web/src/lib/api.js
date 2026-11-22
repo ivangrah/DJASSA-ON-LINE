@@ -5,6 +5,8 @@ export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL ?? '/api/v1',
   headers: { Accept: 'application/json' },
   timeout: 20000,
+  // Cookie HttpOnly envoyé automatiquement (authentification web).
+  withCredentials: true,
 });
 
 /** Déduplication des GET identiques en vol (règle 4). */
@@ -28,8 +30,10 @@ api.interceptors.request.use((config) => {
     config._resolveDedupe = resolveRequest;
     config._rejectDedupe = rejectRequest;
   }
-  const token = localStorage.getItem('djassa_token');
-  if (token) config.headers.Authorization = `Bearer ${token}`;
+  // Compatibilité descendante : anciennes sessions stockées dans localStorage.
+  // Les nouvelles sessions s'authentifient via le cookie HttpOnly (withCredentials).
+  const legacyToken = localStorage.getItem('djassa_token');
+  if (legacyToken) config.headers.Authorization = `Bearer ${legacyToken}`;
   return config;
 });
 

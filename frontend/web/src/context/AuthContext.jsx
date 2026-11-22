@@ -33,17 +33,18 @@ export function AuthProvider({ children }) {
       return null;
     }
   });
-  const [token, setToken] = useState(() => localStorage.getItem('djassa_token'));
+  // Jeton conservé uniquement en mémoire — l'authentification web passe par le cookie HttpOnly.
+  const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const persist = useCallback((nextUser, nextToken) => {
     const normalized = normalizeUser(nextUser);
     setUser(normalized);
-    setToken(nextToken);
+    setToken(nextToken ?? null);
     if (normalized) localStorage.setItem('djassa_user', JSON.stringify(normalized));
     else localStorage.removeItem('djassa_user');
-    if (nextToken) localStorage.setItem('djassa_token', nextToken);
-    else localStorage.removeItem('djassa_token');
+    // Ne plus jamais stocker le jeton dans localStorage (mitigation XSS) — le serveur le pose en cookie HttpOnly.
+    localStorage.removeItem('djassa_token');
   }, []);
 
   const login = useCallback(async (email, password) => {
@@ -83,7 +84,7 @@ export function AuthProvider({ children }) {
     setLoading(true);
     try {
       const { data } = await api.post('/auth/select-plan', { plan });
-      persist(data.user, localStorage.getItem('djassa_token'));
+      persist(data.user, null);
       return data;
     } finally {
       setLoading(false);
@@ -102,7 +103,7 @@ export function AuthProvider({ children }) {
   const refreshMe = useCallback(async () => {
     try {
       const { data } = await api.get('/auth/me');
-      persist(data.user, localStorage.getItem('djassa_token'));
+      persist(data.user, null);
       return data.user;
     } catch {
       persist(null, null);
@@ -110,10 +111,10 @@ export function AuthProvider({ children }) {
     }
   }, [persist]);
 
-  // Au démarrage, on resynchronise le profil (rôles/plans renommés côté API).
+  // Au démarrage, on resynchronise le profil via le cookie HttpOnly (pas de jeton en localStorage).
   useEffect(() => {
-    if (token) refreshMe();
-  }, [token, refreshMe]);
+    refreshMe();
+  }, [refreshMe]);
 
   const value = useMemo(() => {
     const role = user?.role ?? null;
@@ -135,7 +136,7 @@ export function AuthProvider({ children }) {
       user,
       token,
       loading,
-      isAuthenticated: Boolean(token),
+      isAuthenticated: Boolean(user),
       isPro,
       isParticulier,
       isAdmin,
