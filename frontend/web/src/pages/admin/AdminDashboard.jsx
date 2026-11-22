@@ -50,7 +50,7 @@ function ToggleSwitch({ checked, onChange, label, compact = false }) {
   );
 }
 
-function AnimatedNumber({ value, prefix = '', suffix = '' }) {
+function AnimatedNumber({ value, prefix = '', suffix = '', prefixClassName = '', numberClassName = '' }) {
   const el = useRef(null);
   const prev = useRef(null);
   useEffect(() => {
@@ -60,13 +60,19 @@ function AnimatedNumber({ value, prefix = '', suffix = '' }) {
     const obj = { v: from };
     const tween = gsap.to(obj, {
       v: next, duration: prev.current == null ? 0 : 0.9, ease: 'power2.out',
-      onUpdate: () => { if (el.current) el.current.textContent = prefix + Math.round(obj.v).toLocaleString('fr-FR') + suffix; },
+      onUpdate: () => { if (el.current) el.current.textContent = Math.round(obj.v).toLocaleString('fr-FR'); },
     });
     prev.current = next;
     return () => tween.kill();
-  }, [value, prefix, suffix]);
+  }, [value]);
   const initial = Number(value) || 0;
-  return <span ref={el} className="tabular-nums">{prefix}{initial.toLocaleString('fr-FR')}{suffix}</span>;
+  return (
+    <span className="tabular-nums">
+      {prefix ? <span className={prefixClassName}>{prefix}</span> : null}
+      <span ref={el} className={numberClassName}>{initial.toLocaleString('fr-FR')}</span>
+      {suffix ? <span>{suffix}</span> : null}
+    </span>
+  );
 }
 
 /** Super Dashboard Admin — 6 onglets, charte Djassa. */
@@ -372,7 +378,7 @@ export default function AdminDashboard() {
       <div className="flex flex-wrap gap-1.5 rounded-[5px] bg-white p-1.5 shadow-card md:hidden" role="tablist">
         {TABS.map(({ id, label, icon: Icon }) => (
           <button key={id} type="button" role="tab" aria-selected={tab === id} onClick={() => setTab(id)}
-            className={`inline-flex items-center gap-1.5 rounded-[5px] min-h-[2.875rem] px-4 py-2.5 font-spacegrotesk text-[10.5px] font-extrabold transition ${tab === id ? 'bg-djassa-red text-white shadow-pop' : 'text-djassa-black/60 hover:bg-djassa-cloud'}`}>
+            className={`inline-flex items-center gap-1.5 rounded-[5px] min-h-[2.875rem] px-4 py-2.5 font-sans text-[10.5px] font-extrabold transition ${tab === id ? 'bg-djassa-red text-white shadow-pop' : 'text-djassa-black/60 hover:bg-djassa-cloud'}`}>
             <Icon size={15} /> <span className="hidden sm:inline">{label}</span><span className="sm:hidden">{label.split(' ')[0]}</span>
           </button>
         ))}
@@ -385,7 +391,7 @@ export default function AdminDashboard() {
             <div data-reveal><StatCard icon={Users} label="Utilisateurs" value={<AnimatedNumber value={usersTotal} />} tone="red" /></div>
             <div data-reveal><StatCard icon={Activity} label="Comptes actifs" value={<AnimatedNumber value={activeUsers} />} tone="ink" /></div>
             <div data-reveal><StatCard icon={Store} label="Boutiques Pro" value={<AnimatedNumber value={boutiquesTotal} />} tone="ink" /></div>
-            <div data-reveal><StatCard icon={Wallet} label="CA séquestre" value={<AnimatedNumber value={totalCA} prefix="FCFA " />} tone="amber" /></div>
+            <div data-reveal><StatCard icon={Wallet} label="CA séquestre" value={<AnimatedNumber value={totalCA} prefix="FCFA " prefixClassName="mr-1.5 text-lg font-bold text-neutral-500" />} tone="amber" /></div>
           </div>
 
           <div className="grid gap-4 lg:grid-cols-2">
@@ -393,7 +399,7 @@ export default function AdminDashboard() {
               <div className="mb-2 flex gap-1.5">
                 {['7j', '30j', '12m'].map((p) => (
                   <button key={p} type="button" onClick={() => setPeriod(p)}
-                    className={`rounded-[5px] px-2 py-1 font-spacegrotesk text-[0.8125rem] font-bold ${period === p ? 'bg-djassa-red text-white' : 'bg-djassa-cloud text-djassa-black/60'}`}>{p}</button>
+                    className={`rounded-[5px] px-2 py-1 font-sans text-[0.8125rem] font-bold ${period === p ? 'bg-djassa-red text-white' : 'bg-djassa-cloud text-djassa-black/60'}`}>{p}</button>
                 ))}
               </div>
               <Suspense fallback={<div className="skeleton h-[230px]" />}><EvolutionChart period={period} /></Suspense>
@@ -449,27 +455,27 @@ export default function AdminDashboard() {
         <div className="space-y-5">
           <Panel title="Créer un utilisateur" subtitle="Compte admin / onboarding plateforme">
             <form onSubmit={createUser} className="grid gap-3 sm:grid-cols-2">
-              <label className="block text-[0.8125rem] font-bold text-djassa-black/60">Nom
-                <input required value={newUser.nom} onChange={(e) => setNewUser({ ...newUser, nom: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-[0.95rem]" placeholder="Nom complet" />
+              <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Nom
+                <input required value={newUser.nom} onChange={(e) => setNewUser({ ...newUser, nom: e.target.value })} className="mt-1.5 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-sm font-sans" placeholder="Nom complet" />
               </label>
-              <label className="block text-[0.8125rem] font-bold text-djassa-black/60">Email
-                <input required type="email" value={newUser.email} onChange={(e) => setNewUser({ ...newUser, email: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-[0.95rem]" placeholder="user@djassa.ci" />
+              <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Email
+                <input required type="email" value={newUser.email} onChange={(e) => setNewUser({ ...newUser, email: e.target.value })} className="mt-1.5 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-sm font-sans" placeholder="user@djassa.ci" />
               </label>
-              <label className="block text-[0.8125rem] font-bold text-djassa-black/60">Téléphone
-                <input value={newUser.telephone} onChange={(e) => setNewUser({ ...newUser, telephone: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-[0.95rem]" placeholder="+225 07 00 00 00 00" />
+              <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Téléphone
+                <input value={newUser.telephone} onChange={(e) => setNewUser({ ...newUser, telephone: e.target.value })} className="mt-1.5 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-sm font-sans" placeholder="+225 07 00 00 00 00" />
               </label>
-              <label className="block text-[0.8125rem] font-bold text-djassa-black/60">Rôle
-                <select value={newUser.role} onChange={(e) => setNewUser({ ...newUser, role: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-[0.95rem]">
+              <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Rôle
+                <select value={newUser.role} onChange={(e) => setNewUser({ ...newUser, role: e.target.value })} className="mt-1.5 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-sm font-sans">
                   <option value="particulier">particulier</option>
                   <option value="vendeur_pro">vendeur_pro</option>
                   <option value="admin">admin</option>
                 </select>
               </label>
-              <label className="block text-[0.8125rem] font-bold text-djassa-black/60">Mot de passe
-                <input required type="text" value={newUser.password} onChange={(e) => setNewUser({ ...newUser, password: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-[0.95rem]" placeholder="Min. 8 caractères" />
+              <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Mot de passe
+                <input required type="text" value={newUser.password} onChange={(e) => setNewUser({ ...newUser, password: e.target.value })} className="mt-1.5 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-sm font-sans" placeholder="Min. 8 caractères" />
               </label>
               <div className="sm:col-span-2">
-                <button type="submit" className="inline-flex items-center gap-2 rounded-[5px] bg-djassa-red min-h-[2.875rem] px-4 py-2.5 font-spacegrotesk text-[0.9375rem] font-extrabold text-white active:scale-95">
+                <button type="submit" className="inline-flex items-center gap-2 rounded-[5px] bg-djassa-red min-h-[2.875rem] px-4 py-2.5 font-sans text-[0.9375rem] font-extrabold text-white active:scale-95">
                   <Plus size={15} /> Créer l'utilisateur
                 </button>
               </div>
@@ -512,25 +518,25 @@ export default function AdminDashboard() {
       {tab === 'boutiques' && (
         <div className="space-y-5">
           <div className="grid gap-3 sm:grid-cols-3">
-            <StatCard icon={Wallet} label="CA total" value={<AnimatedNumber value={totalCA} prefix="FCFA " />} tone="red" />
-            <StatCard icon={Lock} label="Fonds bloqués" value={<AnimatedNumber value={financesTotals?.fonds_held ?? 0} prefix="FCFA " />} tone="ink" />
-            <StatCard icon={Unlock} label="Fonds libérés" value={<AnimatedNumber value={financesTotals?.fonds_released ?? 0} prefix="FCFA " />} tone="ink" />
+            <StatCard icon={Wallet} label="CA total" value={<AnimatedNumber value={totalCA} prefix="FCFA " prefixClassName="mr-1.5 text-lg font-bold text-neutral-500" />} tone="red" />
+            <StatCard icon={Lock} label="Fonds bloqués" value={<AnimatedNumber value={financesTotals?.fonds_held ?? 0} prefix="FCFA " prefixClassName="mr-1.5 text-lg font-bold text-neutral-500" />} tone="ink" />
+            <StatCard icon={Unlock} label="Fonds libérés" value={<AnimatedNumber value={financesTotals?.fonds_released ?? 0} prefix="FCFA " prefixClassName="mr-1.5 text-lg font-bold text-neutral-500" />} tone="ink" />
           </div>
           <Panel title="Créer une boutique" subtitle="CRUD admin catalogue">
             <form onSubmit={createBoutique} className="grid gap-3 sm:grid-cols-2">
-              <label className="block text-[0.8125rem] font-bold text-djassa-black/60">ID utilisateur vendeur (UUID)
-                <input required value={newBoutique.utilisateur_id} onChange={(e) => setNewBoutique({ ...newBoutique, utilisateur_id: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-[0.95rem]" placeholder="uuid vendeur_pro" />
+              <label className="block text-xs font-semibold text-neutral-700 mb-1.5">ID utilisateur vendeur (UUID)
+                <input required value={newBoutique.utilisateur_id} onChange={(e) => setNewBoutique({ ...newBoutique, utilisateur_id: e.target.value })} className="mt-1.5 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-sm font-sans placeholder:font-mono placeholder:text-xs placeholder:text-[#bcb8b1]" placeholder="uuid vendeur_pro" />
               </label>
-              <label className="block text-[0.8125rem] font-bold text-djassa-black/60">Nom boutique
-                <input required value={newBoutique.nom_boutique} onChange={(e) => setNewBoutique({ ...newBoutique, nom_boutique: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-[0.95rem]" />
+              <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Nom boutique
+                <input required value={newBoutique.nom_boutique} onChange={(e) => setNewBoutique({ ...newBoutique, nom_boutique: e.target.value })} className="mt-1.5 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-sm font-sans" />
               </label>
-              <label className="block text-[0.8125rem] font-bold text-djassa-black/60">Téléphone
-                <input required value={newBoutique.telephone} onChange={(e) => setNewBoutique({ ...newBoutique, telephone: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-[0.95rem]" />
+              <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Téléphone
+                <input required value={newBoutique.telephone} onChange={(e) => setNewBoutique({ ...newBoutique, telephone: e.target.value })} className="mt-1.5 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-sm font-sans" />
               </label>
-              <label className="block text-[0.8125rem] font-bold text-djassa-black/60">Ville
-                <input value={newBoutique.ville} onChange={(e) => setNewBoutique({ ...newBoutique, ville: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-[0.95rem]" />
+              <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Ville
+                <input value={newBoutique.ville} onChange={(e) => setNewBoutique({ ...newBoutique, ville: e.target.value })} className="mt-1.5 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-sm font-sans" />
               </label>
-              <div className="sm:col-span-2"><button type="submit" className="inline-flex items-center gap-2 rounded-[5px] bg-djassa-red min-h-[2.875rem] px-4 py-2.5 font-spacegrotesk text-[0.9375rem] font-extrabold text-white"><Plus size={15} /> Créer la boutique</button></div>
+              <div className="sm:col-span-2"><button type="submit" className="inline-flex items-center gap-2 rounded-[5px] bg-djassa-red min-h-[2.875rem] px-4 py-2.5 font-sans text-[0.9375rem] font-extrabold text-white"><Plus size={15} /> Créer la boutique</button></div>
             </form>
           </Panel>
           <AdminTable
@@ -568,41 +574,41 @@ export default function AdminDashboard() {
         <div className="space-y-5">
           <Panel title={editingOffreId ? 'Modifier l’offre' : 'Créer une offre'} subtitle="Catalogue d’abonnement administrable (affiché à l’inscription/onboarding)">
             <form onSubmit={saveOffre} className="grid gap-3 sm:grid-cols-2">
-              <label className="block text-[0.8125rem] font-bold text-djassa-black/60">Code
-                <input required disabled={Boolean(editingOffreId)} value={newOffre.code} onChange={(e) => setNewOffre({ ...newOffre, code: e.target.value.toUpperCase() })} placeholder="PRO_MENSUEL" className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 font-DM-Sans text-[0.95rem] disabled:opacity-60" />
+              <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Code
+                <input required disabled={Boolean(editingOffreId)} value={newOffre.code} onChange={(e) => setNewOffre({ ...newOffre, code: e.target.value.toUpperCase() })} placeholder="PRO_MENSUEL" className="mt-1.5 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 font-DM-Sans text-[0.95rem] disabled:opacity-60" />
               </label>
-              <label className="block text-[0.8125rem] font-bold text-djassa-black/60">Nom
-                <input required value={newOffre.nom} onChange={(e) => setNewOffre({ ...newOffre, nom: e.target.value })} placeholder="Pack Boutique Pro" className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 font-DM-Sans text-[0.95rem]" />
+              <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Nom
+                <input required value={newOffre.nom} onChange={(e) => setNewOffre({ ...newOffre, nom: e.target.value })} placeholder="Pack Boutique Pro" className="mt-1.5 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 font-DM-Sans text-sm font-sans" />
               </label>
-              <label className="block text-[0.8125rem] font-bold text-djassa-black/60">Cible / Rôle
-                <select value={newOffre.role_cible} onChange={(e) => setNewOffre({ ...newOffre, role_cible: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 font-DM-Sans text-[0.95rem]">
+              <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Cible / Rôle
+                <select value={newOffre.role_cible} onChange={(e) => setNewOffre({ ...newOffre, role_cible: e.target.value })} className="mt-1.5 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 font-DM-Sans text-sm font-sans">
                   <option value="vendeur_pro">Vendeur Pro — Boutique Pro Neuf</option>
                   <option value="particulier">Particulier — Occasion/Troc</option>
                   <option value="tous">Tous</option>
                 </select>
               </label>
-              <label className="block text-[0.8125rem] font-bold text-djassa-black/60">Montant (FCFA)
-                <input required type="number" min={0} value={newOffre.montant_fcfa} onChange={(e) => setNewOffre({ ...newOffre, montant_fcfa: e.target.value })} placeholder="15000" className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 font-DM-Sans text-[0.95rem]" />
+              <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Montant (FCFA)
+                <input required type="number" min={0} value={newOffre.montant_fcfa} onChange={(e) => setNewOffre({ ...newOffre, montant_fcfa: e.target.value })} placeholder="15000" className="mt-1.5 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 font-DM-Sans text-sm font-sans" />
               </label>
-              <label className="block text-[0.8125rem] font-bold text-djassa-black/60">Durée (jours)
-                <input required type="number" min={1} value={newOffre.duree_jours} onChange={(e) => setNewOffre({ ...newOffre, duree_jours: e.target.value })} placeholder="30" className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 font-DM-Sans text-[0.95rem]" />
+              <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Durée (jours)
+                <input required type="number" min={1} value={newOffre.duree_jours} onChange={(e) => setNewOffre({ ...newOffre, duree_jours: e.target.value })} placeholder="30" className="mt-1.5 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 font-DM-Sans text-sm font-sans" />
               </label>
-              <label className="block text-[0.8125rem] font-bold text-djassa-black/60">Limite d’articles (vide = illimité)
-                <input type="number" min={1} value={newOffre.max_articles} onChange={(e) => setNewOffre({ ...newOffre, max_articles: e.target.value })} placeholder="Illimité" className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 font-DM-Sans text-[0.95rem]" />
+              <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Limite d’articles (vide = illimité)
+                <input type="number" min={1} value={newOffre.max_articles} onChange={(e) => setNewOffre({ ...newOffre, max_articles: e.target.value })} placeholder="Illimité" className="mt-1.5 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 font-DM-Sans text-sm font-sans" />
               </label>
-              <label className="block text-[0.8125rem] font-bold text-djassa-black/60 sm:col-span-2">Description courte
-                <textarea rows={2} value={newOffre.description} onChange={(e) => setNewOffre({ ...newOffre, description: e.target.value })} placeholder="Idéal pour lancer votre boutique et vendre en toute confiance." className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 font-DM-Sans text-[0.95rem]" />
+              <label className="block text-xs font-semibold text-neutral-700 sm:col-span-2">Description courte
+                <textarea rows={2} value={newOffre.description} onChange={(e) => setNewOffre({ ...newOffre, description: e.target.value })} placeholder="Idéal pour lancer votre boutique et vendre en toute confiance." className="mt-1.5 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 font-DM-Sans text-sm font-sans" />
               </label>
-              <label className="block text-[0.8125rem] font-bold text-djassa-black/60 sm:col-span-2">Avantages inclus (un par ligne)
-                <textarea rows={4} value={newOffre.avantagesText} onChange={(e) => setNewOffre({ ...newOffre, avantagesText: e.target.value })} placeholder={"Boutique vérifiée\nArticles neufs illimités\nStatistiques de vente"} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 font-DM-Sans text-[0.95rem]" />
+              <label className="block text-xs font-semibold text-neutral-700 sm:col-span-2">Avantages inclus (un par ligne)
+                <textarea rows={4} value={newOffre.avantagesText} onChange={(e) => setNewOffre({ ...newOffre, avantagesText: e.target.value })} placeholder={"Boutique vérifiée\nArticles neufs illimités\nStatistiques de vente"} className="mt-1.5 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 font-DM-Sans text-sm font-sans" />
               </label>
               <div className="flex flex-wrap items-center gap-6 sm:col-span-2">
                 <ToggleSwitch checked={newOffre.actif} onChange={(v) => setNewOffre({ ...newOffre, actif: v })} label="Offre active" />
                 <ToggleSwitch checked={newOffre.is_featured} onChange={(v) => setNewOffre({ ...newOffre, is_featured: v })} label="Mise en avant (Populaire)" />
               </div>
               <div className="flex gap-2 sm:col-span-2">
-                <button type="submit" className="inline-flex items-center gap-2 rounded-[5px] bg-djassa-red min-h-[2.875rem] px-4 py-2.5 font-spacegrotesk text-[0.9375rem] font-extrabold text-white active:scale-95"><Plus size={15} /> {editingOffreId ? 'Mettre à jour' : 'Créer l’offre'}</button>
-                {editingOffreId && <button type="button" onClick={() => { setEditingOffreId(null); setNewOffre(emptyOffre); }} className="rounded-[5px] bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 font-spacegrotesk text-[0.9375rem] font-extrabold text-djassa-black">Annuler</button>}
+                <button type="submit" className="inline-flex items-center gap-2 rounded-[5px] bg-djassa-red min-h-[2.875rem] px-4 py-2.5 font-sans text-[0.9375rem] font-extrabold text-white active:scale-95"><Plus size={15} /> {editingOffreId ? 'Mettre à jour' : 'Créer l’offre'}</button>
+                {editingOffreId && <button type="button" onClick={() => { setEditingOffreId(null); setNewOffre(emptyOffre); }} className="rounded-[5px] bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 font-sans text-[0.9375rem] font-extrabold text-djassa-black">Annuler</button>}
               </div>
             </form>
           </Panel>
@@ -614,7 +620,7 @@ export default function AdminDashboard() {
               <>
                 <td className="px-4 py-3.5">
                   <div className="flex items-center gap-2">
-                    <p className="font-spacegrotesk text-[0.9375rem] font-extrabold text-djassa-black">{o.nom}</p>
+                    <p className="font-sans text-[0.9375rem] font-extrabold text-djassa-black">{o.nom}</p>
                     {o.is_featured && <span className="rounded-[5px] bg-djassa-red/10 px-1.5 py-0.5 text-[0.8125rem] font-bold text-djassa-red">Populaire</span>}
                   </div>
                   <p className="font-mono text-[0.8125rem] text-djassa-black/45">{o.code}</p>
@@ -651,23 +657,23 @@ export default function AdminDashboard() {
                 {campaignTemplates.map((tpl) => (
                   <button key={tpl.key} type="button"
                     onClick={() => { setCampaign((c) => ({ ...c, titre: tpl.titre, corps: tpl.corps, priorite: tpl.priorite })); setCampaignEstimate(null); }}
-                    className="rounded-[5px] bg-djassa-cloud px-3 py-1.5 font-spacegrotesk text-[0.8125rem] font-extrabold text-djassa-black hover:bg-djassa-red/10 hover:text-djassa-red">
+                    className="rounded-[5px] bg-djassa-cloud px-3 py-1.5 font-sans text-[0.8125rem] font-extrabold text-djassa-black hover:bg-djassa-red/10 hover:text-djassa-red">
                     {tpl.titre}
                   </button>
                 ))}
               </div>
               <form onSubmit={sendCampaign} className="space-y-3">
                 <div className="grid gap-3 sm:grid-cols-2">
-                  <label className="block text-[0.8125rem] font-bold text-djassa-black/60">Audience
-                    <select value={campaign.audience} onChange={(e) => { setCampaign({ ...campaign, audience: e.target.value, user_id: '' }); setCampaignEstimate(null); }} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-[0.95rem]">
+                  <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Audience
+                    <select value={campaign.audience} onChange={(e) => { setCampaign({ ...campaign, audience: e.target.value, user_id: '' }); setCampaignEstimate(null); }} className="mt-1.5 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-sm font-sans">
                       <option value="all">Tous les utilisateurs</option>
                       <option value="vendeur_pro">Vendeurs Pro</option>
                       <option value="particulier">Particuliers</option>
                       <option value="user">Utilisateur spécifique</option>
                     </select>
                   </label>
-                  <label className="block text-[0.8125rem] font-bold text-djassa-black/60">Priorité
-                    <select value={campaign.priorite} onChange={(e) => setCampaign({ ...campaign, priorite: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-[0.95rem]">
+                  <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Priorité
+                    <select value={campaign.priorite} onChange={(e) => setCampaign({ ...campaign, priorite: e.target.value })} className="mt-1.5 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-sm font-sans">
                       <option value="info">Info — Information</option>
                       <option value="warning">Warning — Important</option>
                       <option value="urgent">Urgent — Urgence</option>
@@ -675,19 +681,19 @@ export default function AdminDashboard() {
                   </label>
                 </div>
                 {campaign.audience === 'user' && (
-                  <label className="block text-[0.8125rem] font-bold text-djassa-black/60">Email ou ID utilisateur
-                    <input type="text" placeholder="uuid-utilisateur ou email@djassa.ci" value={campaign.user_id ?? ''} onChange={(e) => { setCampaign({ ...campaign, user_id: e.target.value }); setCampaignEstimate(null); }} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-[0.95rem]" />
+                  <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Email ou ID utilisateur
+                    <input type="text" placeholder="uuid-utilisateur ou email@djassa.ci" value={campaign.user_id ?? ''} onChange={(e) => { setCampaign({ ...campaign, user_id: e.target.value }); setCampaignEstimate(null); }} className="mt-1.5 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-sm font-sans" />
                   </label>
                 )}
-                <label className="block text-[0.8125rem] font-bold text-djassa-black/60">Titre
-                  <input type="text" placeholder="Titre de la notification" required value={campaign.titre} onChange={(e) => setCampaign({ ...campaign, titre: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-[0.95rem]" />
+                <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Titre
+                  <input type="text" placeholder="Titre de la notification" required value={campaign.titre} onChange={(e) => setCampaign({ ...campaign, titre: e.target.value })} className="mt-1.5 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-sm font-sans" />
                 </label>
-                <label className="block text-[0.8125rem] font-bold text-djassa-black/60">Message
-                  <textarea placeholder="Votre message aux utilisateurs..." required rows={4} value={campaign.corps} onChange={(e) => setCampaign({ ...campaign, corps: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-[0.95rem]" />
+                <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Message
+                  <textarea placeholder="Votre message aux utilisateurs..." required rows={4} value={campaign.corps} onChange={(e) => setCampaign({ ...campaign, corps: e.target.value })} className="mt-1.5 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-sm font-sans" />
                 </label>
                 <div className="flex flex-wrap items-center gap-4 rounded-[5px] bg-djassa-cloud px-4 py-3.5">
                   <ToggleSwitch checked={campaign.email} onChange={(v) => setCampaign({ ...campaign, email: v })} label="Envoyer aussi par email Brevo" />
-                  <button type="button" onClick={estimateCampaign} className="font-spacegrotesk text-[0.8125rem] font-extrabold text-djassa-red underline">Estimer les destinataires</button>
+                  <button type="button" onClick={estimateCampaign} className="font-sans text-[0.8125rem] font-extrabold text-djassa-red underline">Estimer les destinataires</button>
                 </div>
                 <div className="rounded-[5px] border-l-4 border-djassa-red bg-djassa-red/5 min-h-[2.875rem] px-4 py-2.5 text-[0.9375rem] text-djassa-black/75">
                   {campaignEstimate != null ? (
@@ -696,14 +702,14 @@ export default function AdminDashboard() {
                     <span>Estimez les destinataires avant l’envoi pour sécuriser la campagne.</span>
                   )}
                 </div>
-                <button type="submit" className="inline-flex items-center gap-2 rounded-[5px] bg-djassa-red min-h-[2.875rem] px-4 py-2.5 font-spacegrotesk text-[0.9375rem] font-extrabold text-white active:scale-95"><Send size={15} /> Envoyer la campagne</button>
+                <button type="submit" className="inline-flex items-center gap-2 rounded-[5px] bg-djassa-red min-h-[2.875rem] px-4 py-2.5 font-sans text-[0.9375rem] font-extrabold text-white active:scale-95"><Send size={15} /> Envoyer la campagne</button>
               </form>
             </Panel>
             <Panel title="Centre de notifications" subtitle="Aperçu sécurité & file Redis">
               <div className="space-y-3">
                 <div className="rounded-[5px] bg-djassa-cloud p-3">
-                  <p className="font-spacegrotesk text-[0.8125rem] font-extrabold uppercase tracking-[0.12em] text-djassa-red">Aperçu</p>
-                  <p className="mt-1 font-spacegrotesk text-[1.25rem] font-extrabold text-djassa-black">{campaign.titre || 'Titre de la campagne'}</p>
+                  <p className="font-sans text-[0.8125rem] font-extrabold uppercase tracking-[0.12em] text-djassa-red">Aperçu</p>
+                  <p className="mt-1 font-sans text-[1.25rem] font-extrabold text-djassa-black">{campaign.titre || 'Titre de la campagne'}</p>
                   <p className="mt-1 text-[0.9375rem] text-djassa-black/65">{campaign.corps || 'Le message apparaîtra ici avant envoi.'}</p>
                   <div className="mt-2 flex flex-wrap gap-2">
                     <span className={`rounded-[5px] px-2 py-0.5 text-[0.8125rem] font-bold ${campaign.priorite === 'urgent' ? 'bg-red-100 text-red-700' : campaign.priorite === 'warning' ? 'bg-amber-100 text-amber-700' : 'bg-sky-100 text-sky-700'}`}>{campaign.priorite}</span>
@@ -720,13 +726,13 @@ export default function AdminDashboard() {
 
           <AdminTable
             title="Historique des campagnes" totalLabel={`${campaigns.length} campagnes`}
-            action={<button type="button" onClick={exportCampaignsPdf} className="rounded-[5px] bg-djassa-black min-h-[2.875rem] px-4 py-2.5 font-spacegrotesk text-[0.8125rem] font-extrabold text-white">Exporter en PDF</button>}
+            action={<button type="button" onClick={exportCampaignsPdf} className="rounded-[5px] bg-djassa-black min-h-[2.875rem] px-4 py-2.5 font-sans text-[0.8125rem] font-extrabold text-white">Exporter en PDF</button>}
             columns={[{ key: 'date', label: 'Date' }, { key: 'titre', label: 'Campagne' }, { key: 'priorite', label: 'Priorité' }, { key: 'audience', label: 'Audience' }, { key: 'canal', label: 'Canal' }, { key: 'dest', label: 'Destinataires' }, { key: 'statut', label: 'Statut' }]}
             rows={campaigns}
             renderRow={(c) => (
               <>
                 <td className="px-4 py-3.5 text-[0.8125rem] text-djassa-black/60">{c.created_at ? new Date(c.created_at).toLocaleString('fr-FR') : '—'}</td>
-                <td className="px-4 py-3.5"><p className="font-spacegrotesk text-[0.9375rem] font-extrabold text-djassa-black">{c.titre}</p><p className="max-w-[280px] truncate text-[0.8125rem] text-djassa-black/50">{c.message}</p></td>
+                <td className="px-4 py-3.5"><p className="font-sans text-[0.9375rem] font-extrabold text-djassa-black">{c.titre}</p><p className="max-w-[280px] truncate text-[0.8125rem] text-djassa-black/50">{c.message}</p></td>
                 <td className="px-4 py-3.5"><span className={`rounded-[5px] px-2 py-0.5 text-[0.8125rem] font-bold ${c.priorite === 'urgent' ? 'bg-red-100 text-red-700' : c.priorite === 'warning' ? 'bg-amber-100 text-amber-700' : 'bg-sky-100 text-sky-700'}`}>{c.priorite || 'info'}</span></td>
                 <td className="px-4 py-3.5 text-[0.8125rem] font-bold text-djassa-black/70">{c.audience}</td>
                 <td className="px-4 py-3.5 text-[0.8125rem]">{c.send_email ? 'In-App + Email Brevo' : 'In-App'}</td>
@@ -746,68 +752,68 @@ export default function AdminDashboard() {
               <div className="flex items-center gap-2">
                 {maintenanceOn ? <Lock size={18} className="text-djassa-red" /> : <Unlock size={18} className="text-emerald-600" />}
                 <div>
-                  <span className="font-spacegrotesk text-[0.95rem] font-extrabold">{maintenanceOn ? 'Maintenance activée' : 'Plateforme opérationnelle'}</span>
+                  <span className="font-sans text-[0.95rem] font-extrabold">{maintenanceOn ? 'Maintenance activée' : 'Plateforme opérationnelle'}</span>
                   <p className="text-[0.8125rem] text-djassa-black/55">{maintenanceOn ? 'Les non-admins sont redirigés vers /maintenance.' : 'Aucune coupure publique en cours.'}</p>
                 </div>
               </div>
               <button type="button" onClick={() => toggleMaintenance(!maintenanceOn)}
-                className={`rounded-[5px] min-h-[2.875rem] px-4 py-2.5 font-spacegrotesk text-[0.8125rem] font-extrabold text-white active:scale-95 ${maintenanceOn ? 'bg-djassa-black' : 'bg-djassa-red'}`}>
+                className={`rounded-[5px] min-h-[2.875rem] px-4 py-2.5 font-sans text-[0.8125rem] font-extrabold text-white active:scale-95 ${maintenanceOn ? 'bg-djassa-black' : 'bg-djassa-red'}`}>
                 {maintenanceOn ? 'Désactiver' : 'Activer'}
               </button>
             </div>
 
             <div className="mt-3 grid gap-3 rounded-[5px] bg-djassa-cloud p-3 sm:grid-cols-2">
               <div>
-                <p className="font-spacegrotesk text-[0.8125rem] font-extrabold uppercase tracking-[0.12em] text-djassa-black/45">État Redis</p>
+                <p className="font-sans text-[0.8125rem] font-extrabold uppercase tracking-[0.12em] text-djassa-black/45">État Redis</p>
                 <p className="mt-1 text-[0.9375rem] font-bold text-djassa-black">{maintenanceOn ? 'Verrou maintenance actif' : 'Aucun verrou actif'}</p>
               </div>
               <div>
-                <p className="font-spacegrotesk text-[0.8125rem] font-extrabold uppercase tracking-[0.12em] text-djassa-black/45">Dernière bascule</p>
+                <p className="font-sans text-[0.8125rem] font-extrabold uppercase tracking-[0.12em] text-djassa-black/45">Dernière bascule</p>
                 <p className="mt-1 text-[0.9375rem] font-bold text-djassa-black">{maintenance.updated_at ? new Date(maintenance.updated_at).toLocaleString('fr-FR') : '—'}</p>
                 <p className="text-[0.8125rem] text-djassa-black/50">{maintenance.updated_by ? `Par ${maintenance.updated_by}` : 'Auteur non renseigné'}</p>
               </div>
               <div>
-                <p className="font-spacegrotesk text-[0.8125rem] font-extrabold uppercase tracking-[0.12em] text-djassa-black/45">Début</p>
+                <p className="font-sans text-[0.8125rem] font-extrabold uppercase tracking-[0.12em] text-djassa-black/45">Début</p>
                 <p className="mt-1 text-[0.9375rem] text-djassa-black">{maintenance.started_at ? new Date(maintenance.started_at).toLocaleString('fr-FR') : '—'}</p>
               </div>
               <div>
-                <p className="font-spacegrotesk text-[0.8125rem] font-extrabold uppercase tracking-[0.12em] text-djassa-black/45">Reprise estimée</p>
+                <p className="font-sans text-[0.8125rem] font-extrabold uppercase tracking-[0.12em] text-djassa-black/45">Reprise estimée</p>
                 <p className="mt-1 text-[0.9375rem] font-bold text-djassa-red">{maintenance.ends_at ? new Date(maintenance.ends_at).toLocaleString('fr-FR') : '—'}</p>
               </div>
             </div>
 
-            <label className="mt-3 block font-DM-Sans text-[0.8125rem] font-bold text-djassa-black/60">Message affiché aux utilisateurs
-              <textarea rows={3} placeholder="Nous effectuons une maintenance. Merci de revenir bientôt." value={maintenanceMsg} onChange={(e) => setMaintenanceMsg(e.target.value)} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-[0.95rem]" />
+            <label className="mt-3 block font-DM-Sans text-xs font-semibold text-neutral-700">Message affiché aux utilisateurs
+              <textarea rows={3} placeholder="Nous effectuons une maintenance. Merci de revenir bientôt." value={maintenanceMsg} onChange={(e) => setMaintenanceMsg(e.target.value)} className="mt-1.5 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-sm font-sans" />
             </label>
-            <label className="mt-3 block font-DM-Sans text-[0.8125rem] font-bold text-djassa-black/60">Durée estimée (minutes)
+            <label className="mt-3 block font-DM-Sans text-xs font-semibold text-neutral-700">Durée estimée (minutes)
               <input type="number" min={1} max={10080} value={maintenanceDuration} onChange={(e) => setMaintenanceDuration(e.target.value)}
-                className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-[0.95rem]" />
+                className="mt-1.5 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-sm font-sans" />
             </label>
             <div className="mt-3 flex flex-wrap gap-2">
-              <button type="button" onClick={() => toggleMaintenance(true)} className="rounded-[5px] bg-djassa-red min-h-[2.875rem] px-4 py-2.5 font-spacegrotesk text-[0.8125rem] font-extrabold text-white active:scale-95">{maintenanceOn ? 'Sauvegarder le message/durée' : 'Activer avec confirmation'}</button>
-              <a href="/maintenance" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-[5px] bg-djassa-black min-h-[2.875rem] px-4 py-2.5 font-spacegrotesk text-[0.8125rem] font-extrabold text-white"><Eye size={14} /> Prévisualiser la page /maintenance</a>
+              <button type="button" onClick={() => toggleMaintenance(true)} className="rounded-[5px] bg-djassa-red min-h-[2.875rem] px-4 py-2.5 font-sans text-[0.8125rem] font-extrabold text-white active:scale-95">{maintenanceOn ? 'Sauvegarder le message/durée' : 'Activer avec confirmation'}</button>
+              <a href="/maintenance" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-[5px] bg-djassa-black min-h-[2.875rem] px-4 py-2.5 font-sans text-[0.8125rem] font-extrabold text-white"><Eye size={14} /> Prévisualiser la page /maintenance</a>
             </div>
             <p className="mt-2 text-[0.8125rem] text-djassa-black/50">L’activation coupe l’accès public (503). La sauvegarde à chaud met à jour message/durée sans désactiver.</p>
           </Panel>
           <Panel title="Mon profil admin" subtitle="Nom, email, téléphone et mot de passe optionnel">
             <form onSubmit={saveProfile} className="space-y-3">
-              <label className="block text-[0.8125rem] font-bold text-djassa-black/60">Nom
-                <input type="text" value={profile.nom ?? ''} onChange={(e) => setProfile({ ...profile, nom: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-[0.95rem]" />
+              <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Nom
+                <input type="text" value={profile.nom ?? ''} onChange={(e) => setProfile({ ...profile, nom: e.target.value })} className="mt-1.5 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-sm font-sans" />
               </label>
-              <label className="block text-[0.8125rem] font-bold text-djassa-black/60">Email
-                <input type="email" value={profile.email ?? ''} onChange={(e) => setProfile({ ...profile, email: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-[0.95rem]" />
+              <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Email
+                <input type="email" value={profile.email ?? ''} onChange={(e) => setProfile({ ...profile, email: e.target.value })} className="mt-1.5 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-sm font-sans" />
               </label>
-              <label className="block text-[0.8125rem] font-bold text-djassa-black/60">Téléphone
-                <input type="text" value={profile.telephone ?? ''} onChange={(e) => setProfile({ ...profile, telephone: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-[0.95rem]" />
+              <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Téléphone
+                <input type="text" value={profile.telephone ?? ''} onChange={(e) => setProfile({ ...profile, telephone: e.target.value })} className="mt-1.5 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-sm font-sans" />
               </label>
               <div className="rounded-[5px] bg-djassa-cloud p-3">
-                <p className="font-spacegrotesk text-[0.8125rem] font-extrabold text-djassa-black/70">Changer le mot de passe (optionnel)</p>
+                <p className="font-sans text-[0.8125rem] font-extrabold text-djassa-black/70">Changer le mot de passe (optionnel)</p>
                 <div className="mt-2 grid gap-2 sm:grid-cols-2">
-                  <input type="password" autoComplete="new-password" placeholder="Nouveau mot de passe" value={profile.password ?? ''} onChange={(e) => setProfile({ ...profile, password: e.target.value })} className="w-full rounded-[5px] border-none bg-white min-h-[2.875rem] px-4 py-2.5 text-[0.95rem]" />
-                  <input type="password" autoComplete="new-password" placeholder="Confirmer" value={profile.password_confirmation ?? ''} onChange={(e) => setProfile({ ...profile, password_confirmation: e.target.value })} className="w-full rounded-[5px] border-none bg-white min-h-[2.875rem] px-4 py-2.5 text-[0.95rem]" />
+                  <input type="password" autoComplete="new-password" placeholder="Nouveau mot de passe" value={profile.password ?? ''} onChange={(e) => setProfile({ ...profile, password: e.target.value })} className="w-full rounded-[5px] border-none bg-white min-h-[2.875rem] px-4 py-2.5 text-sm font-sans" />
+                  <input type="password" autoComplete="new-password" placeholder="Confirmer" value={profile.password_confirmation ?? ''} onChange={(e) => setProfile({ ...profile, password_confirmation: e.target.value })} className="w-full rounded-[5px] border-none bg-white min-h-[2.875rem] px-4 py-2.5 text-sm font-sans" />
                 </div>
               </div>
-              <button type="submit" className="rounded-[5px] bg-djassa-red min-h-[2.875rem] px-4 py-2.5 font-spacegrotesk text-[0.9375rem] font-extrabold text-white active:scale-95">Enregistrer</button>
+              <button type="submit" className="rounded-[5px] bg-djassa-red min-h-[2.875rem] px-4 py-2.5 font-sans text-[0.9375rem] font-extrabold text-white active:scale-95">Enregistrer</button>
             </form>
           </Panel>
         </div>

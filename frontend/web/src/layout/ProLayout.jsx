@@ -48,10 +48,10 @@ function SidebarContent({ onNavigate, counts }) {
         <Link to="/" className="group flex items-center gap-3" onClick={onNavigate} aria-label="Djassa Online — accueil">
           <img src="/images/logo-mark.svg" alt="" className="h-11 w-11 shrink-0 rounded-[5px] shadow-[0_6px_20px_rgba(120,0,0,0.55)] transition group-hover:shadow-[0_8px_26px_rgba(120,0,0,0.75)]" />
           <div className="min-w-0">
-            <p className="font-spacegrotesk text-[1.25rem] font-extrabold leading-none tracking-tight">
+            <p className="font-display text-[1.25rem] font-extrabold leading-none tracking-tight">
               Djassa <span className="text-white/45">Online</span>
             </p>
-            <p className="mt-1.5 font-spacegrotesk text-[0.625rem] font-extrabold uppercase tracking-[0.24em] text-djassa-red">
+            <p className={`mt-1.5 uppercase ${isAdmin ? 'font-sans text-[10px] font-semibold tracking-[0.14em] text-white/75' : 'font-display text-[0.625rem] font-extrabold tracking-[0.24em] text-djassa-red'}`}>
               {isAdmin ? 'Supervision plateforme' : 'Espace vendeur'}
             </p>
           </div>
@@ -67,14 +67,14 @@ function SidebarContent({ onNavigate, counts }) {
             <div className="min-w-0 flex-1">
               {isAdmin ? (
                 <>
-                  <p className="font-spacegrotesk text-[0.875rem] font-extrabold uppercase tracking-[0.14em] text-white">SUPER ADMIN</p>
-                  <p className="mt-1 inline-flex items-center gap-1 rounded-[5px] bg-white/12 px-2 py-1 font-spacegrotesk text-[0.8125rem] font-extrabold uppercase tracking-[0.12em] text-white/90">
+                  <p className="font-sans text-[0.875rem] font-extrabold uppercase tracking-[0.14em] text-white">SUPER ADMIN</p>
+                  <p className="mt-1 inline-flex items-center gap-1 rounded-[5px] bg-white/12 px-2 py-1 font-sans text-[0.8125rem] font-extrabold uppercase tracking-[0.12em] text-white/90">
                     <ShieldCheck size={12} aria-hidden="true" /> Accès Total
                   </p>
                 </>
               ) : (
                 <>
-                  <p className="truncate font-spacegrotesk text-[0.9375rem] font-extrabold">{nomBoutique}</p>
+                  <p className="truncate font-sans text-[0.9375rem] font-extrabold">{nomBoutique}</p>
                   <p className="mt-0.5 flex items-center gap-1 text-[0.8125rem] font-bold uppercase tracking-wide text-white/55">
                     {boutique?.verifie ? (
                       <><BadgeCheck size={14} className="text-white" /> Vendeur vérifié</>
@@ -90,7 +90,7 @@ function SidebarContent({ onNavigate, counts }) {
             <Link
               to="/dashboard-pro/ma-boutique"
               onClick={onNavigate}
-              className="relative mt-3 flex min-h-[2.875rem] items-center justify-center rounded-[5px] bg-white px-4 py-2.5 font-spacegrotesk text-[0.875rem] font-extrabold text-[#780000] transition hover:bg-white/85"
+              className="relative mt-3 flex min-h-[2.875rem] items-center justify-center rounded-[5px] bg-white px-4 py-2.5 font-sans text-[0.875rem] font-extrabold text-[#780000] transition hover:bg-white/85"
             >
               Créer ma boutique
             </Link>
@@ -100,7 +100,7 @@ function SidebarContent({ onNavigate, counts }) {
 
       {/* ===== NAVIGATION ===== */}
       <nav className={`mt-4 flex-1 px-3 ${isAdmin ? 'space-y-0.5 overflow-y-hidden' : 'space-y-1 overflow-y-auto'}`} aria-label="Navigation espace Pro">
-        <p className={`px-3.5 font-spacegrotesk text-[0.625rem] font-extrabold uppercase tracking-[0.24em] text-white/50 ${isAdmin ? 'mb-1' : 'mb-2'}`}>Pilotage</p>
+        <p className={`px-3.5 uppercase ${isAdmin ? 'mb-1 font-sans text-[11px] font-bold tracking-[0.12em] text-white/60' : 'mb-2 font-display text-[0.625rem] font-extrabold tracking-[0.24em] text-white/50'}`}>Pilotage</p>
 
         {nav.map(({ to, end, label, icon: Icon, key, tab }) => {
           const active = isAdmin ? activeTab === tab : undefined;
@@ -112,7 +112,8 @@ function SidebarContent({ onNavigate, counts }) {
               onClick={onNavigate}
               className={({ isActive }) => {
                 const isItemActive = isAdmin ? active : isActive;
-                return `group flex items-center gap-3 rounded-[5px] px-3.5 ${isAdmin ? 'py-2' : 'py-2.5'} text-[0.9375rem] font-bold transition-all duration-200 ${
+                const adminTypo = isItemActive ? 'font-sans text-sm font-semibold' : 'font-sans text-sm font-medium';
+                return `group flex items-center gap-3 rounded-[5px] px-3.5 ${isAdmin ? 'py-2' : 'py-2.5'} ${isAdmin ? adminTypo : 'text-[0.9375rem] font-bold'} transition-all duration-200 ${
                   isItemActive
                     ? 'bg-[#0A0A0A] text-white shadow-[0_8px_22px_rgba(0,0,0,0.35)]'
                     : 'text-white/75 hover:bg-black/20 hover:text-white'
@@ -132,7 +133,7 @@ function SidebarContent({ onNavigate, counts }) {
                     </span>
                     <span className="min-w-0 flex-1 leading-tight">{label}</span>
                     {key && counts[key] > 0 && (
-                      <span className="flex h-[1.375rem] min-w-[1.375rem] shrink-0 items-center justify-center rounded-[5px] bg-white px-1 font-spacegrotesk text-[0.6875rem] font-extrabold tabular-nums text-[#780000]">
+                      <span className="flex h-[1.375rem] min-w-[1.375rem] shrink-0 items-center justify-center rounded-[5px] bg-white px-1 font-sans text-[0.6875rem] font-extrabold tabular-nums text-[#780000]">
                         {counts[key] > 9 ? '9+' : counts[key]}
                       </span>
                     )}
@@ -149,24 +150,24 @@ function SidebarContent({ onNavigate, counts }) {
         <div className="relative overflow-hidden rounded-[5px] bg-white/[0.04] p-3.5">
           {isAdmin ? (
             <>
-              <p className="font-spacegrotesk text-[0.8125rem] font-extrabold uppercase tracking-[0.2em] text-white/40">État Système</p>
+              <p className="font-sans text-[11px] font-bold uppercase tracking-[0.12em] text-white/60">État Système</p>
               <div className="mt-2.5 flex items-center gap-2">
                 <span className="flex h-7 w-7 items-center justify-center rounded-[5px] bg-emerald-500/15 text-emerald-300">
                   <Server size={14} aria-hidden="true" />
                 </span>
-                <span className="text-[0.875rem] font-bold text-white/90">5 Microservices Actifs</span>
+                <span className="font-sans text-sm font-medium text-white/90"><span className="font-mono tabular-nums">5</span> Microservices Actifs</span>
               </div>
-              <p className="mt-2 flex items-center gap-1.5 text-[0.8125rem] text-white/50">
+              <p className="mt-2 flex items-center gap-1.5 font-sans text-xs text-white/55">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" aria-hidden="true" /> Gateway, Auth, Catalogue, Troc, Escrow
               </p>
             </>
           ) : (
             <>
-              <p className="font-spacegrotesk text-[0.8125rem] font-extrabold uppercase tracking-[0.2em] text-white/40">Santé boutique</p>
+              <p className="font-sans text-[0.8125rem] font-extrabold uppercase tracking-[0.2em] text-white/40">Santé boutique</p>
               <div className="mt-2.5 flex items-center justify-between gap-2">
                 <span className="text-[0.875rem] font-bold text-white/85">Offre Pro active</span>
                 {joursRestants !== null && (
-                  <span className="font-spacegrotesk text-[0.8125rem] font-extrabold tabular-nums text-white/60">{joursRestants} j restants</span>
+                  <span className="font-sans text-[0.8125rem] font-extrabold tabular-nums text-white/60">{joursRestants} j restants</span>
                 )}
               </div>
               <p className="mt-2 text-[0.8125rem] text-white/45">Compte vérifié · Paiements sécurisés</p>
@@ -180,7 +181,7 @@ function SidebarContent({ onNavigate, counts }) {
         <div className="flex items-center gap-3">
           <Avatar name={nomUser} size={34} tone="red" />
           <div className="min-w-0 flex-1">
-            <p className="truncate font-spacegrotesk text-[0.875rem] font-extrabold">{nomUser}</p>
+            <p className="truncate font-sans text-[0.875rem] font-extrabold">{nomUser}</p>
             <p className="truncate text-[0.8125rem] text-white/40">{user?.email}</p>
           </div>
           <button
@@ -257,10 +258,10 @@ export default function ProLayout() {
               <Menu size={22} />
             </button>
             <div className="min-w-0">
-              <p className="font-spacegrotesk text-[0.8125rem] font-extrabold uppercase tracking-[0.2em] text-djassa-red">
+              <p className={`${isAdmin ? 'font-sans text-[11px] font-bold uppercase tracking-[0.15em] text-[#780000]' : 'font-display text-[0.8125rem] font-extrabold uppercase tracking-[0.2em] text-djassa-red'}`}>
                 {isAdmin ? 'Administration' : 'Espace vendeur Pro'}
               </p>
-              <p className="truncate font-spacegrotesk text-[1rem] font-extrabold">
+              <p className={`truncate ${isAdmin ? 'font-display text-base font-bold tracking-tight text-neutral-950' : 'font-display text-[1rem] font-extrabold'}`}>
                 {isAdmin ? 'Supervision de la plateforme' : 'Pilotage de votre activité'}
               </p>
             </div>
@@ -269,7 +270,7 @@ export default function ProLayout() {
               <Link to="/messages" className="hidden rounded-[5px] p-2 text-djassa-black/60 transition hover:bg-djassa-cloud hover:text-djassa-black sm:inline-flex" aria-label="Notifications — mes messages">
                 <Bell size={24} />
               </Link>
-              <Link to="/" className="hidden rounded-[5px] px-3 py-2 font-spacegrotesk text-[0.875rem] font-extrabold text-djassa-black/70 transition hover:text-djassa-red sm:inline-flex">
+              <Link to="/" className="hidden rounded-[5px] px-3 py-2 font-sans text-[0.875rem] font-extrabold text-djassa-black/70 transition hover:text-djassa-red sm:inline-flex">
                 Marché
               </Link>
               <Link to={isAdmin ? '/admin' : '/dashboard-pro/ma-boutique'} className="rounded-[5px] ring-2 ring-transparent transition hover:ring-djassa-red/40" aria-label={isAdmin ? 'Mon profil admin' : 'Mon profil Pro'}>
@@ -309,7 +310,7 @@ export default function ProLayout() {
                       <span className="relative">
                         <Icon size={20} strokeWidth={isItemActive ? 2.6 : 2} />
                         {key && counts[key] > 0 && (
-                          <span className="absolute -right-2 -top-1 flex h-3.5 min-w-3.5 items-center justify-center rounded-[5px] bg-djassa-red px-0.5 font-spacegrotesk text-[0.625rem] font-extrabold text-white">
+                          <span className="absolute -right-2 -top-1 flex h-3.5 min-w-3.5 items-center justify-center rounded-[5px] bg-djassa-red px-0.5 font-sans text-[0.625rem] font-extrabold text-white">
                             {counts[key] > 9 ? '9+' : counts[key]}
                           </span>
                         )}

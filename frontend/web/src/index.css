@@ -51,12 +51,12 @@
   }
 
   body {
-    @apply bg-djassa-cream text-djassa-black font-DM-Sans antialiased;
+    @apply bg-djassa-cream text-djassa-black font-sans antialiased;
     text-rendering: optimizeLegibility;
   }
 
   h1, h2, h3, h4, h5, h6, .font-display {
-    font-family: 'Space Grotesk', system-ui, sans-serif;
+    font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
     letter-spacing: -0.025em;
   }
 

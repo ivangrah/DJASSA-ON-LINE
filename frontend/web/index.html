@@ -10,7 +10,10 @@
     <meta name="description" content="Djassa Online — la marketplace hybride de revente et de troc en Côte d'Ivoire : seconde main C2C, troc pur et mixte, Boutiques Pro B2C. Paiement Mobile Money sécurisé (Wave, Orange Money, MTN, Moov) avec séquestre et code PIN." />
     <meta name="theme-color" content="#121212" />
   <!-- CSP : durcissement minimal (anti-XSS, anti-clickjacking, anti-injection). Préférer un header HTTP côté gateway en prod. -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob:; worker-src 'self' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' http://localhost:* http://127.0.0.1:* ws: wss:; object-src 'none'; base-uri 'self';" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' blob:; worker-src 'self' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' http://localhost:* http://127.0.0.1:* ws: wss: https://fonts.googleapis.com https://fonts.gstatic.com; object-src 'none'; base-uri 'self';" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet" />
     <title>Djassa Online — La marketplace de revente et de troc en Afrique de l'Ouest</title>
   </head>
   <body>

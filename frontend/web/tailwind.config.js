@@ -21,10 +21,13 @@ export default {
         },
       },
       fontFamily: {
-        jakarta: ['"Space Grotesk"', 'system-ui', 'sans-serif'],
-        inter: ['"DM Sans"', 'system-ui', 'sans-serif'],
-        spacegrotesk: ['"Space Grotesk"', 'system-ui', 'sans-serif'],
-        'DM-Sans': ['"DM Sans"', 'system-ui', 'sans-serif'],
+        sans: ['Inter', 'system-ui', 'sans-serif'],
+        display: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
+        mono: ['"JetBrains Mono"', 'ui-monospace', 'SFMono-Regular', 'monospace'],
+        jakarta: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
+        inter: ['Inter', 'system-ui', 'sans-serif'],
+        spacegrotesk: ['"Plus Jakarta Sans"', 'Inter', 'system-ui', 'sans-serif'],
+        'DM-Sans': ['Inter', 'system-ui', 'sans-serif'],
       },
       boxShadow: {
         soft: '0 10px 28px -6px rgba(120,0,0,0.12)',
