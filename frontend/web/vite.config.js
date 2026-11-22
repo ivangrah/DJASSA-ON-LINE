@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
 // Djassa Online — dev server sur :5199 (5173 occupé sur la machine).
-// /api est proxifié vers l'API Laravel (:8899) — pas de CORS en dev.
+// /api est proxifié vers le gateway microservices (:8080) — pas de CORS en dev.
 export default defineConfig({
   plugins: [react()],
   build: {
@@ -31,7 +31,7 @@ export default defineConfig({
     strictPort: true,
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:8899',
+        target: 'http://127.0.0.1:8080',
         changeOrigin: true,
       },
     },
