@@ -15,7 +15,7 @@ import { PUBLISH_CATEGORIES } from '../lib/categories';
 /** Carte de souhait isolée (memoïsée via React dans la liste virtuelle). */
 function SouhaitCard({ s, onRespond }) {
   return (
-    <article className="djassa-card flex gap-3 p-3">
+    <article className="djassa-card card-lift flex gap-3 p-3">
       <Avatar name={s.utilisateur?.nom} size={42} />
       <div className="min-w-0 flex-1">
         <p className="font-spacegrotesk text-[13px] font-bold leading-snug text-djassa-black">{s.titre}</p>

@@ -298,6 +298,16 @@
     }
   }
 
+  /* ---------- View Transitions (navigation SPA) ---------- */
+  @view-transition {
+    navigation: auto;
+  }
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.28s;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
   /* ---------- Transition de page (AppShell) ---------- */
   .route-enter {
     animation: routeEnter 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
@@ -311,6 +321,23 @@
       opacity: 1;
       transform: translateY(0);
     }
+  }
+
+  /* ---------- Micro-interactions (Vague 2) ---------- */
+  .card-lift {
+    transition: transform 0.22s cubic-bezier(0.23, 1, 0.32, 1), box-shadow 0.22s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+  .card-lift:hover {
+    transform: translateY(-2px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card-lift, .card-lift:hover { transition: none; transform: none; }
+  }
+
+  /* Anneau de focus accessible (clavier) */
+  .focus-ring:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px #780000, 0 0 0 4px rgba(120, 0, 0, 0.15);
   }
 
   /* ---------- Erreur image désactivée ---------- */
