@@ -109,11 +109,25 @@ services:
     depends_on: { postgres: { condition: service_healthy }, redis: { condition: service_started } }
 
   troc-engine-service:
-    build: { context: ./services, args: { SERVICE: troc-engine-service } }
+    image: djassa-php:8.4
+    working_dir: /repo/services/troc-engine-service
+    volumes:
+      - .:/repo
+      - ./services/troc-engine-service/.env.docker:/repo/services/troc-engine-service/.env:ro
+    command: php artisan serve --host=0.0.0.0 --port=8080
     environment:
-      DJASSA_SERVICE: troc-engine-service
-      DB_URL: postgresql://djassa_troc:change_me_djassa_troc@postgres:5432/djassa_troc_db
-      REDIS_URL: redis://redis:6379
+      APP_ENV: local
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: djassa_troc_db
+      DB_USERNAME: postgres
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-djassa_dev}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      CATALOG_INTERNAL_URL: http://catalog-boutique-service:8080
+      ESCROW_INTERNAL_URL: http://escrow-payment-service:8080
+      DJASSA_INTERNAL_API_URL: http://api-gateway:8081/internal
+      DJASSA_INTERNAL_SIGNING_KEY: ${DJASSA_INTERNAL_SIGNING_KEY:-dev-signing-key}
     depends_on: { postgres: { condition: service_healthy }, redis: { condition: service_started } }
 
   escrow-payment-service:
