@@ -308,18 +308,26 @@
     animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  /* ---------- Transition de page (AppShell) ---------- */
+  /* ---------- Transition de page (toutes les routes) ---------- */
   .route-enter {
-    animation: routeEnter 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: routeEnter 0.38s cubic-bezier(0.22, 1, 0.36, 1) both;
+    will-change: opacity, transform;
   }
   @keyframes routeEnter {
     from {
       opacity: 0;
-      transform: translateY(10px);
+      transform: translateY(12px) scale(0.995);
+      filter: blur(2px);
     }
     to {
       opacity: 1;
-      transform: translateY(0);
+      transform: translateY(0) scale(1);
+      filter: blur(0);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .route-enter {
+      animation: none;
     }
   }
 

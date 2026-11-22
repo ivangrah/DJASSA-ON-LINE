@@ -165,7 +165,7 @@ export default function ParticulierLayout() {
           </div>
         </aside>
 
-        <main className="min-w-0">
+        <main key={location.pathname} className="route-enter min-w-0">
           <Outlet />
 
           {/* Liens mobiles de secours */}

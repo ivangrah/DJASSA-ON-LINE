@@ -1,7 +1,8 @@
 import { lazy, Suspense } from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { DashboardSkeleton } from './components/ui';
 import { RouteError } from './components/ErrorPages.jsx';
+import RouteProgress from './components/RouteProgress.jsx';
 import { useAuth } from './context/AuthContext';
 import AppShell from './layout/AppShell';
 import ParticulierLayout from './layout/ParticulierLayout';
@@ -33,6 +34,11 @@ const AdminSecurite = lazy(() => import('./pages/admin/AdminSecurite'));
 const Maintenance = lazy(() => import('./pages/Maintenance'));
 
 /** Redirection de compatibilité pour les anciens liens /moi et /pro/dashboard. */
+function PageTransition({ children }) {
+  const { pathname } = useLocation();
+  return <div key={pathname} className="route-enter">{children}</div>;
+}
+
 function DashboardRedirect() {
   const { user, needsPlan, isAdmin } = useAuth();
 
@@ -46,6 +52,7 @@ function DashboardRedirect() {
 export default function App() {
   return (
     <>
+    <RouteProgress />
     <Suspense fallback={<DashboardSkeleton />}>
     <Routes errorElement={<RouteError />}>
       {/* Anciennes URLs — conservées pour ne pas casser les favoris */}
@@ -54,7 +61,7 @@ export default function App() {
       {/* --- Espace de séparation des offres (plein écran, hors shell) --- */}
       <Route
         path="/choisir-offre"
-        element={<RequireAuth><ChoisirOffre /></RequireAuth>}
+        element={<RequireAuth><PageTransition><ChoisirOffre /></PageTransition></RequireAuth>}
       />
 
       {/* --- Dashboards étanches, chacun avec son propre layout --- */}
@@ -90,7 +97,7 @@ export default function App() {
       </Route>
 
       {/* --- Page Maintenance (hors shell) --- */}
-      <Route path="/maintenance" element={<Maintenance />} />
+      <Route path="/maintenance" element={<PageTransition><Maintenance /></PageTransition>} />
 
       {/* --- Marketplace publique (AppShell) --- */}
       <Route element={<AppShell />}>

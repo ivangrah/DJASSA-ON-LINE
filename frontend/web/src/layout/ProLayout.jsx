@@ -280,7 +280,7 @@ export default function ProLayout() {
           </div>
         </header>
 
-        <main className="route-enter mx-auto max-w-[1400px] px-4 pb-28 pt-5 sm:px-6 lg:px-8 lg:pb-12 lg:pt-7">
+        <main key={location.pathname} className="route-enter mx-auto max-w-[1400px] px-4 pb-28 pt-5 sm:px-6 lg:px-8 lg:pb-12 lg:pt-7">
           <Outlet />
         </main>
       </div>
