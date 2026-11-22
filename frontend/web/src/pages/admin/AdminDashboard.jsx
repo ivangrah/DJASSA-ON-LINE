@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useSearchParams } from 'react-router-dom';
 import { gsap } from 'gsap';
 import {
   Users, Store, ReceiptText, ShieldAlert, Activity, Settings, BellRing,
@@ -27,21 +28,25 @@ const TABS = [
   { id: 'notifications', label: 'Notifications & Email', short: 'Notif', icon: BellRing },
   { id: 'system', label: 'Maintenance & Profil', short: 'Système', icon: Settings },
 ];
+const TAB_IDS = new Set(TABS.map((t) => t.id));
 
 function AnimatedNumber({ value, prefix = '', suffix = '' }) {
   const el = useRef(null);
-  const prev = useRef(0);
+  const prev = useRef(null);
   useEffect(() => {
     if (el.current == null) return;
-    const obj = { v: prev.current };
+    const next = Number(value) || 0;
+    const from = prev.current == null ? next : prev.current;
+    const obj = { v: from };
     const tween = gsap.to(obj, {
-      v: Number(value) || 0, duration: 0.9, ease: 'power2.out',
+      v: next, duration: prev.current == null ? 0 : 0.9, ease: 'power2.out',
       onUpdate: () => { if (el.current) el.current.textContent = prefix + Math.round(obj.v).toLocaleString('fr-FR') + suffix; },
     });
-    prev.current = Number(value) || 0;
+    prev.current = next;
     return () => tween.kill();
   }, [value, prefix, suffix]);
-  return <span ref={el} className="tabular-nums">{prefix}{Number(value || 0).toLocaleString('fr-FR')}{suffix}</span>;
+  const initial = Number(value) || 0;
+  return <span ref={el} className="tabular-nums">{prefix}{initial.toLocaleString('fr-FR')}{suffix}</span>;
 }
 
 /** Super Dashboard Admin — 6 onglets, charte Djassa. */
@@ -50,9 +55,19 @@ export default function AdminDashboard() {
   const toast = useToast();
   const qc = useQueryClient();
   const scope = useRef(null);
-  const [tab, setTab] = useState('overview');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const tabFromUrl = searchParams.get('tab');
+  const tab = TAB_IDS.has(tabFromUrl) ? tabFromUrl : 'overview';
   const [period, setPeriod] = useState('30j');
   usePageReveal(scope);
+
+  useEffect(() => {
+    if (tabFromUrl && !TAB_IDS.has(tabFromUrl)) {
+      setSearchParams({ tab: 'overview' }, { replace: true });
+    }
+  }, [tabFromUrl, setSearchParams]);
+
+  const setTab = (next) => setSearchParams({ tab: next });
 
   // Aucune requête protégée tant que l'utilisateur n'est pas authentifié et résolu.
   const canFetch = Boolean(user && authResolved);
@@ -63,15 +78,25 @@ export default function AdminDashboard() {
   const { data: offresData } = useQuery({ queryKey: ['admin', 'offres'], queryFn: () => adminApi.offres(), enabled: canFetch, retry: false, staleTime: 30_000 });
   const { data: maintenanceData } = useQuery({ queryKey: ['admin', 'maintenance'], queryFn: () => adminApi.maintenance(), enabled: canFetch, retry: false, staleTime: 10_000 });
 
-  const users = Array.isArray(usersData?.data) ? usersData.data : [];
-  const audit = Array.isArray(auditData?.data) ? auditData.data : [];
-  const financesRows = Array.isArray(finances?.data) ? financesData.data : [];
-  const boutiques = Array.isArray(boutiquesData?.data) ? boutiquesData.data : [];
-  const offres = Array.isArray(offresData?.data) ? offresData.data : [];
+  const users = Array.isArray(usersData?.data?.data) ? usersData.data.data : (Array.isArray(usersData?.data) ? usersData.data : []);
+  const audit = Array.isArray(auditData?.data?.data) ? auditData.data.data : (Array.isArray(auditData?.data) ? auditData.data : []);
+  const financesRows = Array.isArray(finances?.data?.data) ? finances.data.data : (Array.isArray(finances?.data) ? finances.data : []);
+  const boutiques = Array.isArray(boutiquesData?.data?.data) ? boutiquesData.data.data : (Array.isArray(boutiquesData?.data) ? boutiquesData.data : []);
+  const offres = Array.isArray(offresData?.data?.data) ? offresData.data.data : (Array.isArray(offresData?.data) ? offresData.data : []);
+  const usersTotal = Number(usersData?.data?.meta?.total ?? users.length);
+  const boutiquesTotal = Number(boutiquesData?.data?.meta?.total ?? boutiques.length);
 
-  const [maintenanceOn, setMaintenanceOn] = useState(Boolean(maintenanceData?.data?.enabled));
-  const [maintenanceMsg, setMaintenanceMsg] = useState(maintenanceData?.data?.message ?? '');
-  const [maintenanceDuration, setMaintenanceDuration] = useState(maintenanceData?.data?.duration_minutes ?? 60);
+  const [maintenanceOn, setMaintenanceOn] = useState(false);
+  const [maintenanceMsg, setMaintenanceMsg] = useState('');
+  const [maintenanceDuration, setMaintenanceDuration] = useState(60);
+
+  useEffect(() => {
+    const state = maintenanceData?.data?.data ?? maintenanceData?.data;
+    if (!state) return;
+    setMaintenanceOn(Boolean(state.enabled));
+    setMaintenanceMsg(state.message ?? '');
+    setMaintenanceDuration(state.duration_minutes ?? 60);
+  }, [maintenanceData]);
   const [campaign, setCampaign] = useState({ audience: 'all', titre: '', corps: '', email: false });
   const [newUser, setNewUser] = useState({ nom: '', email: '', telephone: '', role: 'particulier', password: '' });
   const [profile, setProfile] = useState({ nom: user?.nom ?? '', email: user?.email ?? '', telephone: user?.telephone ?? '' });
@@ -130,7 +155,8 @@ export default function AdminDashboard() {
     } catch (err) { toast.error(err.response?.data?.message ?? 'Suppression impossible.'); }
   };
 
-  const totalCA = Number(finances?.totaux?.chiffre_affaires ?? 0) || 0;
+  const financesTotals = finances?.data?.totaux ?? finances?.totaux ?? finances?.data?.meta?.totaux ?? {};
+  const totalCA = Number(financesTotals?.chiffre_affaires ?? 0) || 0;
   const activeUsers = users.filter((u) => u?.statut === 'actif').length;
 
   return (
@@ -142,8 +168,8 @@ export default function AdminDashboard() {
         action={<img src="/images/admin-text.webp" alt="" aria-hidden="true" className="hidden h-14 w-auto object-contain lg:block" />}
       />
 
-      {/* Onglets */}
-      <div className="flex flex-wrap gap-1.5 rounded-[5px] bg-white p-1.5 shadow-card" role="tablist">
+      {/* Onglets (mobile uniquement, sidebar pilote sur desktop) */}
+      <div className="flex flex-wrap gap-1.5 rounded-[5px] bg-white p-1.5 shadow-card md:hidden" role="tablist">
         {TABS.map(({ id, label, icon: Icon }) => (
           <button key={id} type="button" role="tab" aria-selected={tab === id} onClick={() => setTab(id)}
             className={`inline-flex items-center gap-1.5 rounded-[5px] px-3 py-2 font-spacegrotesk text-[10.5px] font-extrabold transition ${tab === id ? 'bg-djassa-red text-white shadow-pop' : 'text-djassa-black/60 hover:bg-djassa-cloud'}`}>
@@ -156,9 +182,9 @@ export default function AdminDashboard() {
       {tab === 'overview' && (
         <div className="space-y-5">
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <div data-reveal><StatCard icon={Users} label="Utilisateurs" value={<AnimatedNumber value={users.length} />} tone="red" /></div>
+            <div data-reveal><StatCard icon={Users} label="Utilisateurs" value={<AnimatedNumber value={usersTotal} />} tone="red" /></div>
             <div data-reveal><StatCard icon={Activity} label="Comptes actifs" value={<AnimatedNumber value={activeUsers} />} tone="ink" /></div>
-            <div data-reveal><StatCard icon={Store} label="Boutiques Pro" value={<AnimatedNumber value={boutiques.length} />} tone="ink" /></div>
+            <div data-reveal><StatCard icon={Store} label="Boutiques Pro" value={<AnimatedNumber value={boutiquesTotal} />} tone="ink" /></div>
             <div data-reveal><StatCard icon={Wallet} label="CA séquestre" value={<AnimatedNumber value={totalCA} prefix="FCFA " />} tone="amber" /></div>
           </div>
 
@@ -177,7 +203,7 @@ export default function AdminDashboard() {
             </Panel>
             <Panel title="Répartition Escrow" subtitle="Statuts des fonds séquestrés">
               <div className="flex items-center gap-3">
-                <div className="flex-1"><Suspense fallback={<div className="skeleton h-[230px]" />}><EscrowDonut stats={finances?.totaux} /></Suspense></div>
+                <div className="flex-1"><Suspense fallback={<div className="skeleton h-[230px]" />}><EscrowDonut stats={financesTotals} /></Suspense></div>
                 <img src="/images/admin-coins.webp" alt="" aria-hidden="true" className="hidden h-28 w-auto object-contain md:block" />
               </div>
             </Panel>
