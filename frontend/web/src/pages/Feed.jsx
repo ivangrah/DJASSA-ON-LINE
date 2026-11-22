@@ -94,6 +94,7 @@ export default function Feed() {
   const {
     data,
     isLoading,
+    isFetching,
     isError,
     hasNextPage,
     fetchNextPage,
@@ -784,7 +785,7 @@ export default function Feed() {
             />
           ) : (
             <>
-              <div ref={gridRef} className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4">
+              <div ref={gridRef} className={`grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4 transition-opacity duration-200 ${isFetching && !isFetchingNextPage ? 'opacity-50' : 'opacity-100'}`}>
                 {articles.map((article) => (
                   <div key={article.id} data-card>
                     <MemoProductCardWide article={article} />
