@@ -15,8 +15,6 @@ import BarterModal from '../components/BarterModal';
 
 export default function Messages() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const scope = useRef(null);
-  usePageReveal(scope);
   const partnerId = searchParams.get('to');
   const articleId = searchParams.get('article');
 
@@ -93,6 +91,8 @@ function preview(conv) {
 }
 
 function Inbox({ conversations, isLoading, partnerId, articleId, onSelect }) {
+  const scope = useRef(null);
+  usePageReveal(scope);
   const [query, setQuery] = useState('');
   const [onlyUnread, setOnlyUnread] = useState(false);
 
