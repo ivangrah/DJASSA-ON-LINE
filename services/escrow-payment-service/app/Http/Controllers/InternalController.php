@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\Transaction;
+use App\Services\GeniusPayService;
 use App\Models\WebhookLog;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -21,6 +22,34 @@ class InternalController extends Controller
         $body = $request->getContent();
         $expected = hash_hmac('sha256', $request->getMethod()."\n".$request->getPathInfo()."\n".$body, $key);
         abort_unless(hash_equals($expected, (string) $request->header('X-Djassa-Signature')), 401);
+    }
+
+    /** Checkout d'abonnement Pro appelé par auth-subscription ( interne signé ). */
+    public function checkout(Request $request, GeniusPayService $geniusPay): JsonResponse
+    {
+        $this->verifyInternalSignature($request);
+        $data = $request->validate([
+            'user_id' => ['required','uuid'],
+            'reference' => ['required','string'],
+            'montant' => ['required','numeric','min:0'],
+        ]);
+
+        $transaction = Transaction::create([
+            'acheteur_id' => $data['user_id'],
+            'vendeur_id' => '00000000-0000-4000-8000-000000000000',
+            'type' => Transaction::TYPE_ACHAT, 'montant' => $data['montant'],
+            'frais_escrow' => 0, 'escrow_status' => Transaction::ESCROW_INITIATED,
+        ]);
+        $session = $geniusPay->initiate((float) $data['montant'], $data['reference'], [
+            'description' => 'Abonnement Pro Djassa Online',
+            'metadata' => ['type' => 'abonnement', 'transaction_id' => $transaction->id],
+        ]);
+        $transaction->update(['geniuspay_ref' => $session['geniuspay_ref']]);
+
+        return response()->json([
+            'payment_url' => $session['payment_url'], 'mock' => $session['mock'],
+            'geniuspay_ref' => $session['geniuspay_ref'], 'transaction_id' => $transaction->id,
+        ]);
     }
 
     public function getTransaction(Request $request, string $id): JsonResponse

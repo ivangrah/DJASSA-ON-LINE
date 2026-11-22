@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\Article;
+use App\Models\Boutique;
 use App\Models\OffreTroc;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
@@ -37,6 +38,16 @@ class InternalController extends Controller
         Article::whereKey($id)->update(['statut' => $statut]);
 
         return response()->json(['ok' => true, 'article_id' => $id, 'statut' => $statut]);
+    }
+
+    /** Boutique d'un vendeur — évite une relation Eloquent cross-base côté auth. */
+    public function getBoutiqueByUser(string $id): JsonResponse
+    {
+        $boutique = Boutique::query()->select([
+            'id', 'utilisateur_id', 'slug', 'nom_boutique', 'verifie', 'ville', 'note_moyenne',
+        ])->where('utilisateur_id', $id)->first();
+
+        return response()->json(['boutique' => $boutique?->toArray()]);
     }
 
     public function getUser(string $id): JsonResponse

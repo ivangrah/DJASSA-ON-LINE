@@ -65,11 +65,25 @@ services:
     depends_on: { postgres: { condition: service_healthy }, redis: { condition: service_started } }
 
   auth-subscription-service:
-    build: { context: ./services, args: { SERVICE: auth-subscription-service } }
+    image: djassa-php:8.4
+    working_dir: /repo/services/auth-subscription-service
+    volumes:
+      - .:/repo
+      - ./services/auth-subscription-service/.env.docker:/repo/services/auth-subscription-service/.env:ro
+    command: php artisan serve --host=0.0.0.0 --port=8080
     environment:
-      DJASSA_SERVICE: auth-subscription-service
-      DB_URL: postgresql://djassa_auth:change_me_djassa_auth@postgres:5432/djassa_auth_db
-      REDIS_URL: redis://redis:6379
+      APP_ENV: local
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: djassa_auth_db
+      DB_USERNAME: postgres
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-djassa_dev}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      DJASSA_INTERNAL_API_URL: http://api-gateway:8081/internal
+      DJASSA_INTERNAL_SIGNING_KEY: ${DJASSA_INTERNAL_SIGNING_KEY:-dev-signing-key}
     depends_on: { postgres: { condition: service_healthy }, redis: { condition: service_started } }
 
   catalog-boutique-service:
