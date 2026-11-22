@@ -91,7 +91,9 @@ export default function Publish() {
   const addSpec = () => setForm((f) => ({ ...f, specs: [...f.specs, { key: '', value: '' }] }));
   const removeSpec = (idx) => setForm((f) => ({ ...f, specs: f.specs.filter((_, i) => i !== idx) }));
 
-  const canNext = step === 0 ? images.length >= 4 : step === 1 ? form.titre.trim().length >= 5 && Number(form.prix) > 0 : true;
+  // Le prix n'est saisi qu'à l'étape 3 : l'exiger ici bloquerait le passage
+  // de l'étape 2 (titre/état) vers l'étape 3.
+  const canNext = step === 0 ? images.length >= 4 : step === 1 ? form.titre.trim().length >= 5 : true;
 
   const submit = async () => {
     if (images.length < 4) {
@@ -127,7 +129,7 @@ export default function Publish() {
       payload.append('stock', String(Math.max(1, Number(form.stock) || 1)));
       payload.append('categorie', form.categorie);
       payload.append('ville', form.ville);
-      payload.append('quartier', form.quartier);
+      if (form.quartier.trim()) payload.append('quartier', form.quartier.trim());
       const specs = Object.fromEntries(form.specs.filter((s) => s.key.trim()).map((s) => [s.key.trim().toLowerCase().replaceAll(' ', '_'), s.value.trim()]));
       Object.entries(specs).forEach(([k, v]) => payload.append(`specs[${k}]`, v));
       images.forEach((img) => payload.append('images[]', img.file));

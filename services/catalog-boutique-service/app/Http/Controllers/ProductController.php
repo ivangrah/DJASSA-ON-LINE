@@ -65,10 +65,29 @@ class ProductController extends Controller
             'mode_transaction' => ['sometimes','string','in:vente,troc,mixte'],
             'est_trocable' => ['sometimes','boolean'],
             'stock' => ['sometimes','integer','min:0'],
-            'ville' => ['sometimes','string','max:100'],
-            'quartier' => ['sometimes','string','max:100'],
+            'ville' => ['sometimes','nullable','string','max:100'],
+            'quartier' => ['sometimes','nullable','string','max:100'],
             'images' => ['sometimes','array'],
         ]);
+        // Les fichiers uploadés sont enregistrés dans public/uploads du service
+        // et exposés en URLs courtes (/uploads/<uuid>.<ext>) via le gateway.
+        // Le contrat `images` reste un tableau de chaînes (src d'<img>).
+        $images = [];
+        \Illuminate\Support\Facades\File::ensureDirectoryExists(public_path('uploads'));
+        foreach ($request->file('images', []) as $file) {
+            if (count($images) >= 6 || !$file?->isValid()) continue;
+            $mime = (string) $file->getMimeType();
+            if (!str_starts_with($mime, 'image/') || $file->getSize() > 2 * 1024 * 1024) continue;
+            $ext = match ($mime) {
+                'image/webp' => 'webp', 'image/jpeg' => 'jpg', 'image/png' => 'png',
+                'image/avif' => 'avif', 'image/gif' => 'gif', default => 'img',
+            };
+            $name = \Illuminate\Support\Str::uuid()->toString().'.'.$ext;
+            $file->move(public_path('uploads'), $name);
+            $images[] = '/uploads/'.$name;
+        }
+        $data['images'] = $images;
+
         $condition = $data['condition'] ?? Article::CONDITION_BON_ETAT;
         $boutiqueId = null;
         if ($condition === Article::CONDITION_NEUF) {

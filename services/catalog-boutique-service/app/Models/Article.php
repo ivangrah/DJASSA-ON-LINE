@@ -30,7 +30,17 @@ class Article extends Model
         'vente_flash' => 'boolean','flash_fin_at' => 'datetime',
     ];
     public function scopePublished($q) { return $q->where('statut', self::STATUT_PUBLISHED); }
-    public function getImagePrincipaleAttribute(): ?string { return $this->images[0] ?? null; }
+    /** Première image exploitable. Les anciennes lignes peuvent contenir des
+     *  objets sérialisés (tableaux) : on ne renvoie qu'une chaîne, jamais un array. */
+    public function getImagePrincipaleAttribute(): ?string
+    {
+        $images = $this->images;
+        if (!is_array($images)) return null;
+        foreach ($images as $image) {
+            if (is_string($image) && $image !== '') return $image;
+        }
+        return null;
+    }
     public function getPrixActuelAttribute(): string { return (string) ($this->prix_flash ?? $this->prix); }
     public function getEstNeufBoutiqueAttribute(): bool { return $this->condition === self::CONDITION_NEUF && $this->boutique_id !== null; }
 }
