@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Reponse initiation de paiement",
+  "type": "object",
+  "required": [
+    "payment_url",
+    "montant",
+    "mock"
+  ],
+  "properties": {
+    "payment_url": {
+      "type": "string",
+      "minLength": 1
+    },
+    "montant": {
+      "type": "string"
+    },
+    "mock": {
+      "type": "boolean"
+    },
+    "geniuspay_ref": {
+      "type": "string"
+    },
+    "abonnement": {
+      "type": [
+        "object",
+        "null"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

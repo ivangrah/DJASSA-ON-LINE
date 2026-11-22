@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "OffreTroc (BarterOfferResource)",
+  "type": "object",
+  "required": [
+    "id",
+    "statut",
+    "montant_soulte_fcfa",
+    "est_troc_pur",
+    "soulte_effective"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "article_cible": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "articles_offerts": {
+      "type": "array"
+    },
+    "acheteur": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "vendeur": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "montant_soulte_fcfa": {
+      "type": "string"
+    },
+    "montant_contre_offre_fcfa": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "soulte_effective": {
+      "type": "string"
+    },
+    "est_troc_pur": {
+      "type": "boolean"
+    },
+    "message": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "statut": {
+      "enum": [
+        "pending",
+        "accepted",
+        "rejected",
+        "countered",
+        "completed",
+        "cancelled"
+      ]
+    },
+    "created_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    }
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Payload webhook GeniusPay (entrant)",
+  "type": "object",
+  "required": [
+    "reference",
+    "status"
+  ],
+  "properties": {
+    "reference": {
+      "type": "string",
+      "minLength": 1
+    },
+    "event_id": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "success",
+        "successful",
+        "completed",
+        "payment.success",
+        "paid",
+        "failed",
+        "failure",
+        "cancelled",
+        "canceled",
+        "error",
+        "payment.failed"
+      ]
+    },
+    "montant": {
+      "type": [
+        "number",
+        "string"
+      ]
+    },
+    "data": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": true
+}

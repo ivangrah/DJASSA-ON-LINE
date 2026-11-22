@@ -6,7 +6,7 @@ namespace Djassa\Models\Enums;
 /** Séquence financière : pending -> held -> released (ou refunded / failed). */
 enum StatutEscrow: string
 {
-    case PENDING  = 'pending';
+    case INITIATED = 'initiated';
     case HELD     = 'held';
     case RELEASED = 'released';
     case REFUNDED = 'refunded';

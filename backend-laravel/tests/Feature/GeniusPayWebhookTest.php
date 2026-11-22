@@ -108,7 +108,7 @@ class GeniusPayWebhookTest extends TestCase
         $call()->assertStatus(200)->assertJsonPath('idempotent', true);
 
         $this->assertSame(1, WebhookLog::count());
-        $this->assertSame(1, Abonnement::where('statut', Abonnement::STATUT_ACTIVE)->count());
+        $this->assertSame(1, Abonnement::where('reference', $abonnement->reference)->where('statut', Abonnement::STATUT_ACTIVE)->count());
         $this->assertSame(User::ROLE_VENDEUR_PRO, $user->refresh()->role);
     }
 }

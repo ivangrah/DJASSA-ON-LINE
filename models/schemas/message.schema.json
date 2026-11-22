@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Message (MessageResource)",
+  "type": "object",
+  "required": [
+    "id",
+    "expediteur_id",
+    "destinataire_id",
+    "type",
+    "contenu",
+    "created_at"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "expediteur_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "destinataire_id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "article_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uuid"
+    },
+    "offre_troc_id": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uuid"
+    },
+    "type": {
+      "enum": [
+        "texte",
+        "offre_prix",
+        "carte_troc",
+        "systeme"
+      ]
+    },
+    "contenu": {
+      "type": "string",
+      "maxLength": 4000
+    },
+    "payload": {
+      "type": [
+        "object",
+        "null"
+      ]
+    },
+    "lu_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "created_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    }
+  }
+}

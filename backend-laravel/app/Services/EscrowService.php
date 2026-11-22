@@ -136,10 +136,21 @@ class EscrowService
                 if ($offre && $offre->statut !== \App\Models\OffreTroc::STATUT_COMPLETED) {
                     $offre->update(['statut' => \App\Models\OffreTroc::STATUT_COMPLETED]);
                 }
-                // Articles offerts par l'acheteur → vendus (transférés au vendeur)
-                Article::whereHas('propositionsTroc', fn ($q) => $q->where('offres_troc.id', $tx->offre_troc_id))
-                    ->where('statut', Article::STATUT_RESERVED)
-                    ->update(['statut' => Article::STATUT_SOLD]);
+                // Résolution cross-domaine (D2) : les IDs des articles offerts sont lus dans
+                // le domaine troc, puis les articles sont mis à jour dans le domaine catalog
+                // par IDs — aucun JOIN SQL entre deux bases distinctes.
+                $articleOffertIds = DB::connection('troc')
+                    ->table('offres_troc_articles')
+                    ->where('offre_troc_id', $tx->offre_troc_id)
+                    ->pluck('article_offert_id')
+                    ->all();
+
+                if ($articleOffertIds !== []) {
+                    Article::query()
+                        ->whereIn('id', $articleOffertIds)
+                        ->where('statut', Article::STATUT_RESERVED)
+                        ->update(['statut' => Article::STATUT_SOLD]);
+                }
             }
 
             return $tx->refresh();

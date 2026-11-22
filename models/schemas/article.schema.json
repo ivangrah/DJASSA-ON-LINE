@@ -1,12 +1,16 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Article",
+  "title": "Article (ProductResource)",
   "type": "object",
   "required": [
     "id",
     "titre",
-    "etat",
-    "prix_fcfa"
+    "prix",
+    "condition",
+    "mode_transaction",
+    "statut",
+    "stock",
+    "categorie"
   ],
   "properties": {
     "id": {
@@ -17,39 +21,113 @@
       "type": "string",
       "minLength": 1
     },
-    "etat": {
-      "enum": [
-        "used",
-        "new"
+    "description": {
+      "type": [
+        "string",
+        "null"
       ]
     },
-    "marche": {
-      "enum": [
-        "occasion",
-        "neuf"
+    "prix": {
+      "type": "string",
+      "pattern": "^[0-9]+(\\.[0-9]{1,2})?$"
+    },
+    "prix_flash": {
+      "type": [
+        "string",
+        "null"
       ]
     },
-    "prix_fcfa": {
-      "type": "number",
-      "minimum": 0,
-      "multipleOf": 0.01
+    "prix_actuel": {
+      "type": [
+        "string",
+        "number"
+      ]
+    },
+    "prix_negociable": {
+      "type": "boolean"
+    },
+    "condition": {
+      "enum": [
+        "neuf",
+        "comme_neuf",
+        "bon_etat",
+        "usage"
+      ]
+    },
+    "mode_transaction": {
+      "enum": [
+        "vente",
+        "troc",
+        "mixte"
+      ]
+    },
+    "est_trocable": {
+      "type": "boolean"
     },
     "stock": {
       "type": "integer",
       "minimum": 0
     },
-    "boutique_id": {
+    "categorie": {
+      "type": "string"
+    },
+    "specs": {
+      "type": "object"
+    },
+    "images": {
+      "type": "array"
+    },
+    "image_principale": {
       "type": [
         "string",
         "null"
-      ],
-      "format": "uuid"
+      ]
+    },
+    "ville": {
+      "type": "string"
     },
     "quartier": {
       "type": [
         "string",
         "null"
       ]
+    },
+    "statut": {
+      "enum": [
+        "draft",
+        "published",
+        "reserved",
+        "sold",
+        "archived"
+      ]
+    },
+    "vente_flash": {
+      "type": "boolean"
+    },
+    "flash_fin_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "vues": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "favoris": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "est_neuf_boutique": {
+      "type": "boolean"
+    },
+    "created_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
     }
   }
 }

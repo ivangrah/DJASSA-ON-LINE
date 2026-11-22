@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Boutique (BoutiqueResource)",
+  "type": "object",
+  "required": [
+    "id",
+    "slug",
+    "nom_boutique",
+    "verifie",
+    "note_moyenne",
+    "url"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "slug": {
+      "type": "string",
+      "minLength": 1
+    },
+    "nom_boutique": {
+      "type": "string",
+      "minLength": 3
+    },
+    "description": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "logo": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "banniere": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "categorie": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "ville": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "adresse": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "telephone": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "verifie": {
+      "type": "boolean"
+    },
+    "accepte_troc": {
+      "type": "boolean"
+    },
+    "note_moyenne": {
+      "type": "string"
+    },
+    "nombre_avis": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "total_ventes": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "url": {
+      "type": "string"
+    },
+    "created_at": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    }
+  }
+}
