@@ -12,11 +12,11 @@ import { playSuccessChord } from '../utils/soundEffects';
  * Modale « Proposer un troc » (PRD §3.3, App Flow §5).
  * L'utilisateur coche 1..N de ses articles publiés + soulte FCFA optionnelle.
  */
-export default function BarterModal({ open, onClose, targetArticle, onSuccess }) {
+export default function BarterModal({ open, onClose, targetArticle, onSuccess, initialSoulte = '' }) {
   const toast = useToast();
   const queryClient = useQueryClient();
   const [selected, setSelected] = useState([]);
-  const [soulte, setSoulte] = useState('');
+  const [soulte, setSoulte] = useState(initialSoulte);
   const [message, setMessage] = useState('');
   const [sent, setSent] = useState(null); // offre créée → écran succès
 
@@ -58,6 +58,15 @@ export default function BarterModal({ open, onClose, targetArticle, onSuccess })
       toast.error(error.response?.data?.message ?? 'Impossible d’envoyer la proposition.');
     },
   });
+
+  useEffect(() => {
+    if (open) {
+      setSelected([]);
+      setSoulte(String(initialSoulte ?? ''));
+      setMessage('');
+      setSent(null);
+    }
+  }, [open, initialSoulte]);
 
   useEffect(() => {
     if (!sent || !successRef.current || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;

@@ -1,81 +1,34 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { usePageReveal } from '../hooks/usePageReveal';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSearchParams, Link } from 'react-router-dom';
 import { gsap } from 'gsap';
 import {
-  ArrowLeftRight, BadgeCheck, CheckCheck, ChevronLeft, ExternalLink, Image as ImageIcon,
-  LockKeyhole, MessageCircle, Search, SendHorizonal, ShieldCheck, ShoppingBag, Tag, X, Zap,
+  ArrowLeftRight, BadgeCheck, Camera, CheckCheck, ChevronLeft, ChevronRight, ExternalLink,
+  Image as ImageIcon, LockKeyhole, MessageCircle, Plus, Search, SendHorizonal, ShieldCheck,
+  ShoppingBag, Tag, X, Zap,
 } from 'lucide-react';
 import { api } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { BARTER_STATUS, CONDITION_LABELS, formatFCFA, timeAgo } from '../lib/format';
-import { Avatar, EmptyState, Spinner } from '../components/ui';
+import { Avatar, EmptyState, Modal, PinInput, Spinner } from '../components/ui';
 import BarterModal from '../components/BarterModal';
-import { playMessageReceived, playMessageSent } from '../utils/soundEffects';
+import {
+  playButtonClick, playErrorThud, playMessageReceived, playMessageSent, playSuccessChord,
+} from '../utils/soundEffects';
 
-export default function Messages() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const partnerId = searchParams.get('to');
-  const articleId = searchParams.get('article');
+/* Charte Djassa — Space Grotesk (titres) + DM Sans (corps), auto-hébergées. */
+const FONT_TITLE = "'Space Grotesk', sans-serif";
+const FONT_BODY = "'DM Sans', sans-serif";
 
-  const { data } = useQuery({
-    queryKey: ['messages', 'conversations'],
-    queryFn: async () => (await api.get('/messages/conversations')).data,
-    refetchInterval: 8000,
-  });
-  const conversations = data?.conversations ?? [];
-
-  const open = (to, article) => setSearchParams({ to, article: article ?? '' });
-  const back = () => setSearchParams({});
-
-  const active = conversations.find((c) => (
-    c.with?.id === partnerId && (c.article?.id ?? '') === (articleId ?? '')
-  ));
-
-  return (
-    <div className="mx-auto max-w-[1500px] md:my-4 md:h-[calc(100vh-7.5rem)] md:px-4">
-      <div className="grid h-full overflow-hidden bg-white border-solid border-[0.5px] border-[rgba(18,18,18,0.08)] md:rounded-[5px] md:shadow-card md:grid-cols-[320px_minmax(0,1fr)] xl:grid-cols-[320px_minmax(0,1fr)]">
-        {/* Inbox — masquée sur mobile quand un fil est ouvert */}
-        <div className={`${partnerId ? 'hidden md:block' : 'block'} h-full min-h-0   bg-white`}>
-          <Inbox conversations={conversations} isLoading={!data} partnerId={partnerId} articleId={articleId} onSelect={open} />
-        </div>
-
-        {/* Fil de discussion */}
-        <div className={`${partnerId ? 'block' : 'hidden md:block'} h-full min-h-0 bg-djassa-red/[0.035]`}>
-          {partnerId ? (
-            <Thread
-              partnerId={partnerId}
-              articleId={articleId}
-              conversation={active}
-              onBack={back}
-            />
-          ) : (
-            <div className="flex h-full flex-col items-center justify-center gap-4 px-6 text-center">
-              <span className="flex h-16 w-16 items-center justify-center rounded-[5px] bg-djassa-red border-solid border-[0.5px] border-[rgba(255,255,255,0.12)] text-white shadow-pop ring-4">
-                <MessageCircle size={30} strokeWidth={1.7} />
-              </span>
-              <div>
-                <h2 className="font-spacegrotesk text-[17px] font-extrabold tracking-tight text-djassa-black">
-                  Vos négociations Djassa
-                </h2>
-                <p className="mx-auto mt-1 max-w-xs text-[12px] leading-relaxed text-djassa-black/55">
-                  Sélectionnez une conversation pour reprendre l’échange, ou ouvrez une fiche article pour proposer un troc.
-                </p>
-              </div>
-              <Link to="/" className="inline-flex items-center gap-1.5 rounded-[5px] bg-djassa-red border-solid border-[0.5px] border-[rgba(255,255,255,0.12)] px-4 py-2 font-spacegrotesk text-[11px] font-extrabold uppercase tracking-wide text-white shadow-pop transition hover:bg-djassa-black active:scale-95">
-                Explorer le marché <ExternalLink size={24} />
-              </Link>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ================= Inbox ================= */
+/* Surfaces charte : #780000 accent · #121212 encre · #FFFFFF · #F7F7F7 / #EFEFEF. */
+const STATUS_META = {
+  'En cours': { pill: 'bg-[#EFEFEF] text-[#121212]', dot: 'bg-[#780000]' },
+  'Troc proposé': { pill: 'bg-[#780000] text-white', dot: 'bg-white' },
+  'Séquestre actif': { pill: 'bg-[#121212] text-white', dot: 'bg-[#780000]' },
+  'Résolu': { pill: 'bg-[#EFEFEF] text-[#121212]/60', dot: 'bg-[#121212]/35' },
+};
+const STATUS_PROGRESS = { 'En cours': 20, 'Troc proposé': 45, 'Séquestre actif': 72, 'Résolu': 100 };
 
 const PREVIEW_ICONS = {
   carte_troc: ArrowLeftRight,
@@ -83,6 +36,30 @@ const PREVIEW_ICONS = {
   systeme: ShieldCheck,
   texte: MessageCircle,
 };
+
+function reduceMotion() {
+  return typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+/** Entrée étagée, sans bloquer l'interaction (clearProps). */
+function animateEntrance(scope, selector = '[data-reveal-item]') {
+  if (!scope) return undefined;
+  const els = Array.from(scope.querySelectorAll(selector));
+  if (!els.length || reduceMotion()) return undefined;
+  const ctx = gsap.context(() => {
+    gsap.from(els, {
+      y: 12, opacity: 0, duration: 0.4, stagger: 0.055, ease: 'power2.out',
+      clearProps: 'transform,opacity',
+    });
+  }, scope);
+  return () => ctx.revert();
+}
+
+/** Impulsion sur une icône d'action (retour tactile visuel). */
+function pulseIcon(el) {
+  if (!el || reduceMotion()) return;
+  gsap.fromTo(el, { rotate: -14, scale: 0.82 }, { rotate: 0, scale: 1, duration: 0.42, ease: 'back.out(2.4)' });
+}
 
 function preview(conv) {
   const m = conv?.dernier_message;
@@ -92,9 +69,130 @@ function preview(conv) {
   return m.contenu;
 }
 
+/** Statut affiché déduit des champs réellement exposés par l'API (aucun champ inventé). */
+function conversationStatus(conv) {
+  const last = conv?.dernier_message;
+  const text = last?.contenu ?? '';
+  if (conv?.statut === 'resolu' || /résolu|libér|terminé|clôtur/i.test(text)) return 'Résolu';
+  if (last?.payload?.statut_escrow || /séquestre|escrow/i.test(text)) return 'Séquestre actif';
+  if (last?.type === 'carte_troc') return 'Troc proposé';
+  return 'En cours';
+}
+
+function partnerBadge(partner, conv) {
+  if (partner?.role === 'livreur' || conv?.livreur_id || partner?.livreur === true) {
+    return { label: 'Livreur', className: 'bg-[#780000] text-white' };
+  }
+  if (partner?.is_pro || partner?.role === 'vendeur_pro') {
+    return { label: 'Vendeur Pro Vérifié', className: 'bg-[#121212] text-white' };
+  }
+  return { label: 'Client', className: 'bg-[#EFEFEF] text-[#121212]/70' };
+}
+
+function compressImage(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onload = () => {
+      const img = new Image();
+      img.onerror = reject;
+      img.onload = () => {
+        const max = 480;
+        const scale = Math.min(1, max / Math.max(img.width, img.height));
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.round(img.width * scale));
+        canvas.height = Math.max(1, Math.round(img.height * scale));
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', 0.62));
+      };
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+export default function Messages() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const partnerId = searchParams.get('to');
+  const articleId = searchParams.get('article');
+  const [summaryOpen, setSummaryOpen] = useState(false);
+
+  const { data } = useQuery({
+    queryKey: ['messages', 'conversations'],
+    queryFn: async () => (await api.get('/messages/conversations')).data,
+    refetchInterval: 8000,
+  });
+  const conversations = data?.conversations ?? [];
+
+  const open = (to, article) => { setSearchParams({ to, article: article ?? '' }); setSummaryOpen(false); };
+  const back = () => { setSearchParams({}); setSummaryOpen(false); };
+
+  const active = conversations.find((c) => (
+    c.with?.id === partnerId && (c.article?.id ?? '') === (articleId ?? '')
+  ));
+  const status = active ? conversationStatus(active) : 'En cours';
+
+  return (
+    <div className="mx-auto max-w-[1500px] md:my-4 md:h-[calc(100vh-7.5rem)] md:px-4" style={{ fontFamily: FONT_BODY }}>
+      <div className="grid h-full overflow-hidden bg-white shadow-card md:rounded-[5px] md:grid-cols-[300px_minmax(0,1fr)] xl:grid-cols-[300px_minmax(0,1fr)_296px]">
+        {/* Colonne gauche — liste des discussions */}
+        <div className={`${partnerId ? 'hidden md:flex' : 'flex'} h-full min-h-0 min-w-0`}>
+          <Inbox conversations={conversations} isLoading={!data} partnerId={partnerId} articleId={articleId} onSelect={open} />
+        </div>
+
+        {/* Zone centrale — fil de discussion */}
+        <div className={`${partnerId ? 'flex' : 'hidden md:flex'} h-full min-h-0 min-w-0 bg-[#F7F7F7]`}>
+          {partnerId ? (
+            <Thread
+              partnerId={partnerId}
+              articleId={articleId}
+              conversation={active}
+              status={status}
+              onBack={back}
+              onToggleSummary={() => setSummaryOpen(true)}
+            />
+          ) : (
+            <div className="flex h-full flex-col items-center justify-center gap-4 px-6 text-center">
+              <span className="flex h-16 w-16 items-center justify-center rounded-[5px] bg-[#780000] text-white shadow-pop">
+                <MessageCircle size={30} strokeWidth={1.7} />
+              </span>
+              <div>
+                <h2 className="text-[17px] font-extrabold tracking-tight text-[#121212]" style={{ fontFamily: FONT_TITLE }}>
+                  Vos négociations Djassa
+                </h2>
+                <p className="mx-auto mt-1 max-w-xs text-[12px] leading-relaxed text-[#121212]/55">
+                  Sélectionnez une conversation pour reprendre l’échange, ou ouvrez une fiche article pour proposer un troc.
+                </p>
+              </div>
+              <Link to="/" className="inline-flex items-center gap-1.5 rounded-[5px] bg-[#780000] px-4 py-2 text-[11px] font-extrabold uppercase tracking-wide text-white transition hover:bg-[#121212]">
+                Explorer le marché <ExternalLink size={16} />
+              </Link>
+            </div>
+          )}
+        </div>
+
+        {/* Panneau droit — récapitulatif (desktop, uniquement si un fil est ouvert) */}
+        {active && (
+          <div className="hidden min-h-0 xl:flex">
+            <Summary conversation={active} status={status} onClose={() => {}} embedded />
+          </div>
+        )}
+      </div>
+
+      {/* Tiroir récapitulatif (mobile / tablette) */}
+      {summaryOpen && (
+        <SummaryDrawer conversation={active} status={status} onClose={() => setSummaryOpen(false)} />
+      )}
+    </div>
+  );
+}
+
+/* ================================================================
+   Inbox — liste des discussions
+   ================================================================ */
+
 function Inbox({ conversations, isLoading, partnerId, articleId, onSelect }) {
-  const scope = useRef(null);
-  usePageReveal(scope);
+  const listRef = useRef(null);
   const [query, setQuery] = useState('');
   const [onlyUnread, setOnlyUnread] = useState(false);
 
@@ -107,12 +205,14 @@ function Inbox({ conversations, isLoading, partnerId, articleId, onSelect }) {
       .some((value) => value?.toLowerCase().includes(q));
   }), [conversations, query, onlyUnread]);
 
+  useLayoutEffect(() => animateEntrance(listRef.current, '[data-reveal-item]'), [query, onlyUnread]);
+
   return (
-    <div ref={scope} data-reveal className="flex h-full flex-col">
-      <div className="shrink-0 bg-djassa-red px-4 pb-3 pt-4 text-white">
+    <div ref={listRef} className="flex h-full w-full flex-col">
+      <div className="shrink-0 bg-[#780000] px-4 pb-3 pt-4 text-white">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
-            <h1 className="font-spacegrotesk text-[17px] font-extrabold tracking-tight text-white">
+            <h1 className="text-[17px] font-extrabold tracking-tight text-white" style={{ fontFamily: FONT_TITLE }}>
               Messages <span className="text-white/80">& Négociations</span>
             </h1>
             <p className="mt-0.5 text-[10.5px] text-white/80">
@@ -121,24 +221,24 @@ function Inbox({ conversations, isLoading, partnerId, articleId, onSelect }) {
             </p>
           </div>
           {totalUnread > 0 && (
-            <span className="mt-0.5 flex h-6 min-w-6 items-center justify-center rounded-[5px] bg-white px-1.5 font-spacegrotesk text-[10px] font-extrabold text-djassa-red shadow-sm">
+            <span className="mt-0.5 flex h-6 min-w-6 items-center justify-center rounded-[5px] bg-white px-1.5 text-[10px] font-extrabold text-[#780000] shadow-sm">
               {totalUnread}
             </span>
           )}
         </div>
 
         <div className="mt-3 flex h-9 items-center gap-2 rounded-[5px] bg-white/15 px-3 transition focus-within:bg-white focus-within:ring-2 focus-within:ring-white/70">
-          <Search size={24} className="shrink-0 text-white/75" />
+          <Search size={16} className="shrink-0 text-white/75" />
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Rechercher une conversation…"
             aria-label="Rechercher une conversation"
-            className="min-w-0 flex-1 bg-transparent text-[11.5px] text-white outline-none placeholder:text-white/75 focus:text-djassa-black focus:placeholder:text-djassa-black/40"
+            className="min-w-0 flex-1 bg-transparent text-[11.5px] text-white outline-none placeholder:text-white/75 focus:text-[#121212] focus:placeholder:text-[#121212]/40"
           />
           {query && (
             <button type="button" onClick={() => setQuery('')} className="rounded-[5px] p-1 text-white/75 transition hover:bg-white/15 hover:text-white" aria-label="Effacer la recherche">
-              <X size={24} />
+              <X size={16} />
             </button>
           )}
         </div>
@@ -153,9 +253,9 @@ function Inbox({ conversations, isLoading, partnerId, articleId, onSelect }) {
               type="button"
               role="tab"
               aria-selected={onlyUnread === value}
-              onClick={() => setOnlyUnread(value)}
-              className={`flex-1 rounded-[5px] py-1.5 font-spacegrotesk text-[10px] font-extrabold transition ${
-                onlyUnread === value ? 'bg-white border-solid border-[0.5px] border-[rgba(18,18,18,0.08)] text-djassa-red shadow-sm' : 'text-white/80 hover:text-white'
+              onClick={() => { setOnlyUnread(value); playButtonClick(); }}
+              className={`flex-1 rounded-[5px] py-1.5 text-[10px] font-extrabold transition ${
+                onlyUnread === value ? 'bg-white text-[#780000] shadow-sm' : 'text-white/80 hover:text-white'
               }`}
             >
               {label}
@@ -179,7 +279,7 @@ function Inbox({ conversations, isLoading, partnerId, articleId, onSelect }) {
           </div>
         ) : visible.length === 0 ? (
           <div className="px-4 py-10">
-            <img src="/images/illustrations/chat-bubbles.webp" alt="" aria-hidden="true" className="art-warm pointer-events-none mx-auto mb-2 h-32 w-auto select-none object-contain opacity-80"  loading="lazy" decoding="async" />
+            <img src="/images/illustrations/chat-bubbles.webp" alt="" aria-hidden="true" className="art-warm pointer-events-none mx-auto mb-2 h-32 w-auto select-none object-contain opacity-80" loading="lazy" decoding="async" />
             <EmptyState
               art={query ? 'search' : 'message'}
               title={query ? 'Aucun résultat' : onlyUnread ? 'Tout est lu' : 'Aucune conversation'}
@@ -188,49 +288,52 @@ function Inbox({ conversations, isLoading, partnerId, articleId, onSelect }) {
           </div>
         ) : (
           visible.map((conv) => {
-            const active = conv.with?.id === partnerId && (conv.article?.id ?? '') === (articleId ?? '');
+            const activeRow = conv.with?.id === partnerId && (conv.article?.id ?? '') === (articleId ?? '');
             const unread = conv.non_lus ?? 0;
             const Icon = PREVIEW_ICONS[conv.dernier_message?.type] ?? MessageCircle;
+            const status = conversationStatus(conv);
+            const meta = STATUS_META[status];
             return (
               <button
                 key={`${conv.with?.id}-${conv.article?.id ?? 'global'}`}
                 type="button"
+                data-reveal-item
                 onClick={() => onSelect(conv.with?.id, conv.article?.id)}
-                aria-current={active ? 'true' : undefined}
-                className={`flex w-full items-start gap-3   px-4 py-3 text-left transition ${
-                  active ? 'bg-djassa-red/10 shadow-card' : 'hover:bg-djassa-red/[0.04]'
+                aria-current={activeRow ? 'true' : undefined}
+                className={`flex w-full items-start gap-3 px-4 py-3 text-left transition ${
+                  activeRow ? 'bg-[#F7F7F7] shadow-card' : 'hover:bg-[#F7F7F7]'
                 }`}
               >
                 <div className="relative shrink-0">
                   <Avatar name={conv.with?.nom} size={40} tone={conv.with?.is_pro ? 'black' : 'red'} />
                   {unread > 0 && (
-                    <span className="absolute -right-1.5 -top-1.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-[5px] bg-djassa-red px-1 font-spacegrotesk text-[9px] font-extrabold text-white ring-2">
+                    <span className="absolute -right-1.5 -top-1.5 flex h-[18px] min-w-[18px] items-center justify-center rounded-[5px] bg-[#780000] px-1 text-[9px] font-extrabold text-white ring-2 ring-white">
                       {unread}
                     </span>
                   )}
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-baseline justify-between gap-2">
-                    <p className={`truncate font-spacegrotesk text-[12px] font-extrabold ${active ? 'text-djassa-red' : 'text-djassa-black'}`}>
+                    <p className={`truncate text-[12px] font-extrabold ${activeRow ? 'text-[#780000]' : 'text-[#121212]'}`} style={{ fontFamily: FONT_TITLE }}>
                       {conv.with?.nom ?? 'Partenaire'}
                     </p>
-                    <time className="shrink-0 text-[9px] text-djassa-black/45">
+                    <time className="shrink-0 text-[9px] text-[#121212]/45">
                       {timeAgo(conv.dernier_message?.created_at)}
                     </time>
                   </div>
-                  <div className="mt-0.5 flex items-center gap-1.5">
+                  <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                    <span className={`inline-flex items-center gap-1 rounded-[5px] px-1.5 py-0.5 text-[8px] font-extrabold uppercase tracking-wide ${meta.pill}`}>
+                      <span className={`h-1.5 w-1.5 rounded-full ${meta.dot}`} /> {status}
+                    </span>
                     {conv.with?.is_pro && (
-                      <span className="inline-flex items-center gap-0.5 rounded-[5px] bg-djassa-red/10 px-1.5 py-0.5 text-[8px] font-extrabold uppercase tracking-wide text-djassa-red">
+                      <span className="inline-flex items-center gap-0.5 rounded-[5px] bg-[#EFEFEF] px-1.5 py-0.5 text-[8px] font-extrabold uppercase tracking-wide text-[#121212]/70">
                         <BadgeCheck size={16} /> Pro
                       </span>
                     )}
-                    {conv.article && (
-                      <span className="truncate text-[9.5px] font-semibold text-djassa-black/55">{conv.article.titre}</span>
-                    )}
                   </div>
                   <div className="mt-1.5 flex items-center gap-1.5">
-                    <Icon size={20} className={unread ? 'shrink-0 text-djassa-red' : 'shrink-0 text-djassa-black/35'} />
-                    <p className={`truncate text-[11px] ${unread ? 'font-semibold text-djassa-black' : 'text-djassa-black/55'}`}>
+                    <Icon size={16} className={unread ? 'shrink-0 text-[#780000]' : 'shrink-0 text-[#121212]/35'} />
+                    <p className={`truncate text-[11px] ${unread ? 'font-semibold text-[#121212]' : 'text-[#121212]/55'}`}>
                       {preview(conv)}
                     </p>
                   </div>
@@ -244,17 +347,25 @@ function Inbox({ conversations, isLoading, partnerId, articleId, onSelect }) {
   );
 }
 
-/* ================= Thread ================= */
+/* ================================================================
+   Fil de discussion
+   ================================================================ */
 
-function Thread({ partnerId, articleId, conversation, onBack }) {
+function Thread({ partnerId, articleId, conversation, status, onBack, onToggleSummary }) {
   const { user, dashboardPath } = useAuth();
   const toast = useToast();
   const queryClient = useQueryClient();
   const endRef = useRef(null);
+  const threadRef = useRef(null);
+  const sendIconRef = useRef(null);
+  const fileRef = useRef(null);
   const [text, setText] = useState('');
   const [offerMode, setOfferMode] = useState(false);
   const [offerAmount, setOfferAmount] = useState('');
   const [trocOpen, setTrocOpen] = useState(false);
+  const [trocSoulte, setTrocSoulte] = useState('');
+  const [attachedPhoto, setAttachedPhoto] = useState(null);
+  const [pinOpen, setPinOpen] = useState(false);
 
   const { data: thread, isLoading } = useQuery({
     queryKey: ['messages', 'thread', partnerId, articleId],
@@ -271,13 +382,26 @@ function Thread({ partnerId, articleId, conversation, onBack }) {
   const article = articleData?.data ?? conversation?.article;
   const messages = thread?.data ?? [];
   const partner = conversation?.with;
+  const badge = partnerBadge(partner, conversation);
+  const meta = STATUS_META[status];
   const knownMsgIdsRef = useRef(new Set());
   const msgInitRef = useRef(false);
+  const animatedThreadRef = useRef(null);
 
   useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    endRef.current?.scrollIntoView({ behavior: reduceMotion() ? 'auto' : 'smooth', block: 'end' });
   }, [messages.length]);
 
+  /* Entrée étagée du fil au changement de conversation / de filtre. */
+  useEffect(() => {
+    if (isLoading) return undefined;
+    const key = `${partnerId}|${articleId ?? ''}`;
+    if (animatedThreadRef.current === key) return undefined;
+    animatedThreadRef.current = key;
+    return animateEntrance(threadRef.current, '[data-thread-item]');
+  }, [partnerId, articleId, isLoading, messages.length]);
+
+  /* Glissement doux des nouveaux messages + son de réception. */
   useEffect(() => {
     if (!messages.length) return;
     if (!msgInitRef.current) {
@@ -289,11 +413,11 @@ function Thread({ partnerId, articleId, conversation, onBack }) {
     const hasNewIncoming = messages.some((m) => !knownMsgIdsRef.current.has(m.id) && m.expediteur_id !== user?.id);
     messages.forEach((m) => knownMsgIdsRef.current.add(m.id));
     if (hasNewIncoming) playMessageReceived();
-    if (newIds.length && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (newIds.length && !reduceMotion()) {
       requestAnimationFrame(() => {
         newIds.forEach((id) => {
           const el = document.querySelector(`[data-msg-id="${CSS.escape(String(id))}"]`);
-          if (el) gsap.fromTo(el, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.32, ease: 'power2.out', clearProps: 'transform' });
+          if (el) gsap.fromTo(el, { opacity: 0, y: 14, x: 6 }, { opacity: 1, y: 0, x: 0, duration: 0.34, ease: 'power2.out', clearProps: 'transform,opacity' });
         });
       });
     }
@@ -303,10 +427,17 @@ function Thread({ partnerId, articleId, conversation, onBack }) {
     mutationFn: async (payload) => (await api.post('/messages', payload)).data,
     onSuccess: () => {
       playMessageSent();
-      setText(''); setOfferAmount(''); setOfferMode(false);
+      pulseIcon(sendIconRef.current);
+      setText(''); setOfferAmount(''); setOfferMode(false); setAttachedPhoto(null);
       queryClient.invalidateQueries({ queryKey: ['messages'] });
     },
     onError: (error) => toast.error(error.response?.data?.message ?? 'Message non envoyé.'),
+  });
+
+  const markRead = useMutation({
+    mutationFn: (id) => api.post(`/messages/${id}/read`),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['messages'] }),
+    onError: () => toast.error('Lecture du message non enregistrée.'),
   });
 
   const respondOffer = useMutation({
@@ -331,8 +462,14 @@ function Thread({ partnerId, articleId, conversation, onBack }) {
 
   const submit = () => {
     const value = text.trim();
-    if (!value) return;
-    send.mutate({ destinataire_id: partnerId, article_id: articleId || undefined, type: 'texte', contenu: value });
+    if (!value && !attachedPhoto) return;
+    send.mutate({
+      destinataire_id: partnerId,
+      article_id: articleId || undefined,
+      type: 'texte',
+      contenu: value || 'Photo jointe',
+      ...(attachedPhoto ? { payload: { photo: attachedPhoto.dataUrl, photo_nom: attachedPhoto.name } } : {}),
+    });
   };
 
   const submitOffer = () => {
@@ -347,47 +484,68 @@ function Thread({ partnerId, articleId, conversation, onBack }) {
     });
   };
 
+  const onPhotoChange = async (e) => {
+    const file = e.target.files?.[0];
+    e.target.value = '';
+    if (!file) return;
+    if (!file.type.startsWith('image/')) { toast.error('Seules les images sont acceptées.'); return; }
+    if (file.size > 2 * 1024 * 1024) { toast.error('Image trop volumineuse (2 Mo maximum).'); return; }
+    try {
+      const dataUrl = await compressImage(file);
+      setAttachedPhoto({ dataUrl, name: file.name });
+      playButtonClick();
+    } catch {
+      toast.error('Impossible de lire cette image.');
+    }
+  };
+
   const dayLabel = messages.length
     ? new Date(messages[0].created_at).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })
     : '';
 
   return (
-    <div className="flex h-full min-h-0 flex-col">
-      {/* En-tête du fil */}
+    <div className="flex h-full min-h-0 w-full flex-col" ref={threadRef}>
+      {/* En-tête de conversation */}
       <div className="flex shrink-0 items-center gap-3 bg-white px-3 py-2.5 sm:px-4">
-        <button type="button" onClick={onBack} className="rounded-[5px] p-1.5 text-djassa-black/60 transition hover:bg-djassa-cloud hover:text-djassa-red md:hidden" aria-label="Retour aux conversations">
+        <button type="button" onClick={onBack} className="rounded-[5px] p-1.5 text-[#121212]/60 transition hover:bg-[#EFEFEF] hover:text-[#780000] md:hidden" aria-label="Retour aux conversations">
           <ChevronLeft size={20} />
         </button>
-        <Avatar name={partner?.nom ?? partnerId?.slice(0, 2)} size={40} tone={partner?.is_pro ? 'black' : 'red'} />
+        <div className="relative shrink-0">
+          <Avatar name={partner?.nom ?? partnerId?.slice(0, 2)} size={40} tone={partner?.is_pro ? 'black' : 'red'} />
+          <span className={`absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full ring-2 ring-white ${partner?.en_ligne === true ? 'bg-[#780000]' : 'bg-[#121212]/25'}`} aria-label={partner?.en_ligne === true ? 'En ligne' : 'Hors ligne'} />
+        </div>
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-1.5">
-            <h2 className="truncate font-spacegrotesk text-[13px] font-extrabold tracking-tight text-djassa-black">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <h2 className="truncate text-[13px] font-extrabold tracking-tight text-[#121212]" style={{ fontFamily: FONT_TITLE }}>
               {partner?.nom ?? 'Conversation'}
             </h2>
-            {partner?.is_pro && (
-              <span className="inline-flex shrink-0 items-center gap-0.5 rounded-[5px] bg-djassa-red/10 px-1.5 py-0.5 text-[8px] font-extrabold uppercase tracking-wide text-djassa-red">
-                <BadgeCheck size={16} /> Pro
-              </span>
-            )}
+            <span className={`inline-flex shrink-0 items-center gap-0.5 rounded-[5px] px-1.5 py-0.5 text-[8px] font-extrabold uppercase tracking-wide ${badge.className}`}>
+              {badge.label === 'Vendeur Pro Vérifié' && <BadgeCheck size={16} />}
+              <span className="sm:hidden">Pro vérifié</span>
+              <span className="hidden sm:inline">{badge.label}</span>
+            </span>
           </div>
-          <p className="mt-0.5 truncate text-[10px] text-djassa-black/50">
-            {article ? `Négociation · ${article.titre}` : 'Négociation Djassa Online'}
+          <p className="mt-0.5 truncate text-[10px] text-[#121212]/50">
+            {partner?.en_ligne === true ? 'En ligne' : 'Hors ligne'} · {article ? `Négociation · ${article.titre}` : 'Négociation Djassa Online'}
           </p>
         </div>
+        <button type="button" onClick={onToggleSummary} className="rounded-[5px] bg-[#EFEFEF] p-2 text-[#121212]/70 transition hover:bg-[#121212] hover:text-white xl:hidden" aria-label="Ouvrir le récapitulatif">
+          <ChevronRight size={18} />
+        </button>
         {article && trocableHint(article) && (
-          <button type="button" className="inline-flex shrink-0 items-center gap-1.5 rounded-[5px] bg-djassa-red border-solid border-[0.5px] border-[rgba(255,255,255,0.12)] px-3 py-2 font-spacegrotesk text-[10px] font-extrabold uppercase tracking-wide text-white shadow-pop transition hover:bg-djassa-black active:scale-95" onClick={() => setTrocOpen(true)}>
-            <ArrowLeftRight size={20} /> <span className="hidden sm:inline">Proposer un</span> troc
+          <button type="button" onClick={() => { setTrocSoulte(''); setTrocOpen(true); playButtonClick(); }} aria-label="Proposer un troc" className="inline-flex shrink-0 items-center gap-1.5 rounded-[5px] bg-[#780000] p-2 text-[10px] font-extrabold uppercase tracking-wide text-white transition hover:bg-[#121212] sm:px-3 sm:py-2">
+            <ArrowLeftRight size={16} /> <span className="hidden lg:inline">Proposer un troc</span>
           </button>
         )}
       </div>
 
       {/* Bandeau article — écrans moyens (l'aside le remplace en xl) */}
       {article && (
-        <Link to={`/article/${article.id}`} className="flex shrink-0 items-center gap-2.5 bg-djassa-red/[0.06] px-3 py-2 transition hover:bg-djassa-red/10 xl:hidden">
+        <Link to={`/article/${article.id}`} className="flex shrink-0 items-center gap-2.5 bg-[#EFEFEF] px-3 py-2 transition hover:bg-[#F7F7F7] xl:hidden">
           <ArticleThumb article={article} className="h-9 w-9" />
-          <span className="min-w-0 flex-1 truncate text-[10.5px] font-semibold text-djassa-black/70">{article.titre}</span>
-          <span className="shrink-0 font-spacegrotesk text-[11px] font-extrabold text-djassa-red">{formatFCFA(article.prix_actuel ?? article.prix)}</span>
-          <ExternalLink size={24} className="shrink-0 text-djassa-red" />
+          <span className="min-w-0 flex-1 truncate text-[10.5px] font-semibold text-[#121212]/70">{article.titre}</span>
+          <span className="shrink-0 text-[11px] font-extrabold text-[#780000]">{formatFCFA(article.prix_actuel ?? article.prix)}</span>
+          <ExternalLink size={16} className="shrink-0 text-[#780000]" />
         </Link>
       )}
 
@@ -403,28 +561,36 @@ function Thread({ partnerId, articleId, conversation, onBack }) {
               </div>
             ) : messages.length === 0 ? (
               <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
-                <MessageCircle size={30} className="text-djassa-black/15" />
-                <p className="font-spacegrotesk text-[12px] font-extrabold text-djassa-black">Aucun message dans ce fil</p>
-                <p className="max-w-[260px] text-[10.5px] text-djassa-black/50">Écrivez le premier message pour lancer la négociation.</p>
+                <MessageCircle size={30} className="text-[#121212]/15" />
+                <p className="text-[12px] font-extrabold text-[#121212]" style={{ fontFamily: FONT_TITLE }}>Aucun message dans ce fil</p>
+                <p className="max-w-[260px] text-[10.5px] text-[#121212]/50">Écrivez le premier message pour lancer la négociation.</p>
               </div>
             ) : (
               <>
                 {dayLabel && (
-                  <div className="flex items-center gap-3 py-1">
-                    <span className="h-px flex-1 bg-djassa-red/25" />
-                    <time className="shrink-0 font-spacegrotesk text-[9px] font-extrabold uppercase tracking-[0.14em] text-djassa-red">{dayLabel}</time>
-                    <span className="h-px flex-1 bg-djassa-red/25" />
+                  <div data-thread-item className="flex items-center gap-3 py-1">
+                    <span className="h-px flex-1 bg-[#780000]/25" />
+                    <time className="shrink-0 text-[9px] font-extrabold uppercase tracking-[0.14em] text-[#780000]" style={{ fontFamily: FONT_TITLE }}>{dayLabel}</time>
+                    <span className="h-px flex-1 bg-[#780000]/25" />
                   </div>
                 )}
+
+                {/* Cartes d'action rapide intégrées au fil */}
+                <ActionCards
+                  article={article}
+                  status={status}
+                  onTroc={(soulte) => { setTrocSoulte(soulte); setTrocOpen(true); }}
+                  onPhoto={() => fileRef.current?.click()}
+                  onPin={() => setPinOpen(true)}
+                />
+
                 {messages.map((m) => {
                   const mine = m.expediteur_id === user?.id;
-                  const wrap = (node) => <div key={m.id} data-msg-id={m.id}>{node}</div>;
+                  const wrap = (node) => <div key={m.id} data-msg-id={m.id} data-thread-item>{node}</div>;
                   if (m.type === 'systeme') return wrap(<SystemNote message={m} />);
-                  if (m.type === 'carte_troc') {
-                    return wrap(<TrocCard message={m} mine={mine} onRespond={respondOffer} pending={respondOffer.isPending} />);
-                  }
+                  if (m.type === 'carte_troc') return wrap(<TrocCard message={m} mine={mine} onRespond={respondOffer} pending={respondOffer.isPending} />);
                   if (m.type === 'offre_prix') return wrap(<PriceCard message={m} mine={mine} />);
-                  return wrap(<TextBubble message={m} mine={mine} partnerName={partner?.nom} />);
+                  return wrap(<TextBubble message={m} mine={mine} partnerName={partner?.nom} onRead={() => markRead.mutate(m.id)} />);
                 })}
               </>
             )}
@@ -432,11 +598,11 @@ function Thread({ partnerId, articleId, conversation, onBack }) {
             <div ref={endRef} />
           </div>
 
-          {/* Offre de prix (bandeau) */}
+          {/* Offre de prix */}
           {offerMode && (
-            <div className="shrink-0 bg-amber-50 px-3 py-2.5 sm:px-4">
+            <div className="shrink-0 bg-[#EFEFEF] px-3 py-2.5 sm:px-4">
               <div className="flex items-center gap-2">
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[5px] bg-amber-100 text-amber-800"><Tag size={24} /></span>
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[5px] bg-[#780000] text-white"><Tag size={16} /></span>
                 <input
                   autoFocus
                   type="number"
@@ -447,21 +613,40 @@ function Thread({ partnerId, articleId, conversation, onBack }) {
                   onKeyDown={(e) => e.key === 'Enter' && submitOffer()}
                   placeholder="Montant proposé en FCFA"
                   aria-label="Montant de l'offre en FCFA"
-                  className="h-9 min-w-0 flex-1 rounded-[5px] bg-white border-solid border-[0.5px] border-[rgba(18,18,18,0.08)] px-3 text-[12px] text-djassa-black outline-none transition"
+                  className="h-9 min-w-0 flex-1 rounded-[5px] bg-white px-3 text-[12px] text-[#121212] outline-none focus:ring-2 focus:ring-[#780000]/30"
                 />
-                <button type="button" className="inline-flex h-9 items-center gap-1.5 rounded-[5px] bg-djassa-black border-solid border-[0.5px] border-[rgba(255,255,255,0.12)] px-3 font-spacegrotesk text-[10px] font-extrabold uppercase tracking-wide text-white transition hover:bg-djassa-red disabled:cursor-not-allowed disabled:opacity-40" disabled={!offerAmount || Number(offerAmount) <= 0 || send.isPending} onClick={submitOffer}>
+                <button type="button" className="inline-flex h-9 items-center gap-1.5 rounded-[5px] bg-[#121212] px-3 text-[10px] font-extrabold uppercase tracking-wide text-white transition hover:bg-[#780000] disabled:cursor-not-allowed disabled:opacity-40" disabled={!offerAmount || Number(offerAmount) <= 0 || send.isPending} onClick={submitOffer}>
                   Envoyer
                 </button>
-                <button type="button" className="rounded-[5px] p-1.5 text-amber-800 transition hover:bg-amber-100" onClick={() => setOfferMode(false)} aria-label="Annuler l'offre">
+                <button type="button" className="rounded-[5px] p-1.5 text-[#121212]/60 transition hover:bg-white" onClick={() => setOfferMode(false)} aria-label="Annuler l'offre">
                   <X size={16} />
                 </button>
               </div>
             </div>
           )}
 
-          {/* Composer */}
+          {/* Zone de saisie */}
           <div className="shrink-0 bg-white px-3 py-2.5 sm:px-4">
+            {attachedPhoto && (
+              <div className="mb-2 flex items-center gap-2 rounded-[5px] bg-[#EFEFEF] px-2.5 py-2">
+                <img src={attachedPhoto.dataUrl} alt="Aperçu de la photo jointe" className="h-9 w-9 rounded-[5px] object-cover" />
+                <span className="min-w-0 flex-1 truncate text-[10.5px] font-semibold text-[#121212]/70">{attachedPhoto.name}</span>
+                <button type="button" onClick={() => setAttachedPhoto(null)} className="rounded-[5px] p-1 text-[#121212]/55 hover:bg-white hover:text-[#780000]" aria-label="Retirer la photo">
+                  <X size={16} />
+                </button>
+              </div>
+            )}
             <div className="flex items-center gap-2">
+              <input ref={fileRef} type="file" accept="image/*" onChange={onPhotoChange} className="hidden" aria-label="Joindre une photo" />
+              <button
+                type="button"
+                onClick={() => fileRef.current?.click()}
+                aria-label="Joindre une photo ou une offre"
+                title="Joindre une photo"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[5px] bg-[#EFEFEF] text-[#121212]/70 transition hover:bg-[#780000]/10 hover:text-[#780000]"
+              >
+                <Plus size={18} />
+              </button>
               <button
                 type="button"
                 onClick={() => setOfferMode((v) => !v)}
@@ -469,7 +654,7 @@ function Thread({ partnerId, articleId, conversation, onBack }) {
                 aria-pressed={offerMode}
                 title="Faire une offre de prix"
                 className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-[5px] transition ${
-                  offerMode ? 'bg-djassa-red border-solid border-[0.5px] border-[rgba(255,255,255,0.12)] text-white' : 'bg-djassa-cloud text-djassa-black/60 hover:bg-djassa-red/10 hover:text-djassa-red'
+                  offerMode ? 'bg-[#780000] text-white' : 'bg-[#EFEFEF] text-[#121212]/70 hover:bg-[#780000]/10 hover:text-[#780000]'
                 }`}
               >
                 <Tag size={18} />
@@ -480,84 +665,295 @@ function Thread({ partnerId, articleId, conversation, onBack }) {
                 onKeyDown={(e) => e.key === 'Enter' && submit()}
                 placeholder="Écrire un message…"
                 aria-label="Votre message"
-                className="h-10 min-w-0 flex-1 rounded-[5px] bg-djassa-cloud border-solid border-[0.5px] border-[rgba(18,18,18,0.08)] px-4 text-[12.5px] text-djassa-black outline-none transition placeholder:text-djassa-black/40 focus:bg-white focus:ring-2 focus:ring-djassa-red/25"
+                className="h-10 min-w-0 flex-1 rounded-[5px] bg-[#F7F7F7] px-4 text-[12.5px] text-[#121212] outline-none transition placeholder:text-[#121212]/40 focus:bg-white focus:ring-2 focus:ring-[#780000]/25"
               />
               <button
                 type="button"
                 onClick={submit}
-                disabled={!text.trim() || send.isPending}
+                disabled={(!text.trim() && !attachedPhoto) || send.isPending}
                 aria-label="Envoyer le message"
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[5px] bg-djassa-red border-solid border-[0.5px] border-[rgba(255,255,255,0.12)] text-white shadow-pop transition hover:bg-djassa-black active:scale-95 disabled:cursor-not-allowed disabled:bg-djassa-gray disabled:text-djassa-black/40 disabled:shadow-none"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[5px] bg-[#780000] text-white shadow-card transition hover:bg-[#121212] disabled:cursor-not-allowed disabled:bg-[#EFEFEF] disabled:text-[#121212]/35"
               >
-                {send.isPending ? <Spinner size={16} className="" /> : <SendHorizonal size={18} />}
+                {send.isPending ? <Spinner size={16} /> : <span ref={sendIconRef} className="inline-flex"><SendHorizonal size={18} /></span>}
               </button>
             </div>
-            <p className="mt-1.5 pl-12 text-[9px] text-djassa-black/35">Entrée pour envoyer · Les échanges restent dans votre fil Djassa.</p>
+            <p className="mt-1.5 pl-12 text-[9px] text-[#121212]/35">Entrée pour envoyer · Les échanges restent dans votre fil Djassa.</p>
           </div>
         </div>
-
-        {/* Contexte — grand écran */}
-        <aside className="hidden w-[264px] shrink-0 flex-col bg-white xl:flex">
-          <div className="p-4">
-            <h3 className="font-spacegrotesk text-[10px] font-extrabold uppercase tracking-[0.16em] text-djassa-red">Article concerné</h3>
-            {article ? (
-              <div className="mt-3">
-                <ArticleThumb article={article} className="aspect-[4/3] w-full rounded-[5px]" />
-                <p className="mt-2.5 line-clamp-2 font-spacegrotesk text-[11.5px] font-extrabold leading-snug text-djassa-black">{article.titre}</p>
-                <div className="mt-1.5 flex items-center justify-between gap-2">
-                  <span className="price-fcfa text-[14px] text-djassa-red">{formatFCFA(article.prix_actuel ?? article.prix)}</span>
-                  {article.condition && (
-                    <span className="rounded-[5px] bg-djassa-cloud px-2 py-0.5 text-[8.5px] font-extrabold uppercase tracking-wide text-djassa-black/55">
-                      {CONDITION_LABELS[article.condition] ?? article.condition}
-                    </span>
-                  )}
-                </div>
-                <Link to={`/article/${article.id}`} className="mt-3 inline-flex items-center gap-1.5 font-spacegrotesk text-[10px] font-extrabold text-djassa-red transition hover:gap-2">
-                  Voir l’annonce <ExternalLink size={20} />
-                </Link>
-              </div>
-            ) : (
-              <p className="mt-2 text-[11px] text-djassa-black/50">Aucun article lié à cette conversation.</p>
-            )}
-          </div>
-
-          <div className="bg-djassa-red/[0.04] p-4">
-            <h3 className="font-spacegrotesk text-[10px] font-extrabold uppercase tracking-[0.16em] text-djassa-red">Paiement sécurisé</h3>
-            <ul className="mt-3 space-y-2.5 text-[10.5px] leading-snug text-djassa-black/60">
-              <li className="flex gap-2"><ShieldCheck size={20} className="mt-0.5 shrink-0 text-djassa-red" /> Fonds bloqués en séquestre jusqu’à la remise.</li>
-              <li className="flex gap-2"><LockKeyhole size={20} className="mt-0.5 shrink-0 text-djassa-red" /> Code PIN envoyé à l’acheteur par e-mail.</li>
-              <li className="flex gap-2"><BadgeCheck size={20} className="mt-0.5 shrink-0 text-djassa-red" /> Libération après validation du vendeur.</li>
-            </ul>
-          </div>
-
-          <div className="p-4">
-            <h3 className="font-spacegrotesk text-[10px] font-extrabold uppercase tracking-[0.16em] text-djassa-red">Actions rapides</h3>
-            <div className="mt-3 space-y-2">
-              <button type="button" onClick={() => setOfferMode(true)} className="flex w-full items-center gap-2 rounded-[5px] px-3 py-2 text-left font-spacegrotesk text-[10.5px] font-bold text-djassa-black/70 transition hover:text-djassa-red">
-                <Tag size={20} className="text-djassa-red" /> Faire une offre de prix
-              </button>
-              <button type="button" onClick={() => setTrocOpen(true)} disabled={!article || !trocableHint(article)} className="flex w-full items-center gap-2 rounded-[5px] px-3 py-2 text-left font-spacegrotesk text-[10.5px] font-bold text-djassa-black/70 transition hover:text-djassa-red disabled:cursor-not-allowed disabled:opacity-40">
-                <ArrowLeftRight size={20} className="text-djassa-red" /> Proposer un troc
-              </button>
-              <Link to={dashboardPath === '/dashboard-pro' ? '/dashboard-pro/achats' : '/dashboard?onglet=achats'} className="flex w-full items-center gap-2 rounded-[5px] px-3 py-2 text-left font-spacegrotesk text-[10.5px] font-bold text-djassa-black/70 transition hover:text-djassa-red">
-                <ShoppingBag size={20} className="text-djassa-red" /> Mes achats & PIN
-              </Link>
-            </div>
-          </div>
-        </aside>
       </div>
 
-      <BarterModal open={trocOpen} onClose={() => setTrocOpen(false)} targetArticle={article} onSuccess={() => setTrocOpen(false)} />
+      <BarterModal
+        open={trocOpen}
+        onClose={() => setTrocOpen(false)}
+        targetArticle={article}
+        initialSoulte={trocSoulte}
+        onSuccess={() => setTrocOpen(false)}
+      />
+      <PinSheet
+        open={pinOpen}
+        onClose={() => setPinOpen(false)}
+        transactionId={conversation?.transaction_id ?? article?.transaction_id}
+        dashboardPath={dashboardPath}
+      />
     </div>
   );
 }
 
-/* ================= Briques de fil ================= */
+/* ================================================================
+   Cartes d'action rapide (dans le fil)
+   ================================================================ */
+
+function ActionCards({ article, status, onTroc, onPhoto, onPin }) {
+  const cardRef = useRef(null);
+  useLayoutEffect(() => animateEntrance(cardRef.current, '[data-action-card]'), [article?.id, status]);
+
+  return (
+    <section ref={cardRef} className="grid gap-2 sm:grid-cols-2" aria-label="Actions rapides de négociation">
+      <ArticleActionCard article={article} status={status} />
+
+      <ActionCard icon={ArrowLeftRight} title="Troc pur" hint="Échanger sans soulte" onClick={() => onTroc('0')} />
+      <ActionCard icon={Tag} title="Troc + soulte" hint="Ajouter un montant FCFA" onClick={() => onTroc('')} />
+      <ActionCard icon={Camera} title="Joindre une photo" hint="Article ou preuve de remise" onClick={onPhoto} />
+      <ActionCard icon={ShieldCheck} title="Code PIN de remise" hint="Valider la remise sécurisée" onClick={onPin} />
+    </section>
+  );
+}
+
+function ActionCard({ icon: Icon, title, hint, onClick, to }) {
+  const iconRef = useRef(null);
+  const activate = (e) => {
+    if (to) return;
+    e.preventDefault();
+    pulseIcon(iconRef.current);
+    playButtonClick();
+    onClick?.();
+  };
+  const inner = (
+    <>
+      <span ref={iconRef} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[5px] bg-[#780000]/10 text-[#780000]">
+        <Icon size={16} />
+      </span>
+      <span className="min-w-0 flex-1 text-left">
+        <span className="block truncate text-[11px] font-extrabold text-[#121212]" style={{ fontFamily: FONT_TITLE }}>{title}</span>
+        <span className="mt-0.5 block truncate text-[9.5px] text-[#121212]/55">{hint}</span>
+      </span>
+      <ChevronRight size={16} className="shrink-0 text-[#121212]/35" />
+    </>
+  );
+  const className = 'flex w-full items-center gap-2.5 rounded-[5px] bg-white px-3 py-2.5 shadow-card transition hover:shadow-pop';
+  return to ? (
+    <Link data-action-card to={to} className={className} onClick={() => playButtonClick()}>{inner}</Link>
+  ) : (
+    <button data-action-card type="button" onClick={activate} className={className}>{inner}</button>
+  );
+}
+
+function ArticleActionCard({ article, status }) {
+  const meta = STATUS_META[status] ?? STATUS_META['En cours'];
+  return (
+    <div data-action-card className="flex items-center gap-3 rounded-[5px] bg-white px-3 py-2.5 shadow-card sm:col-span-2">
+      <ArticleThumb article={article} className="h-12 w-12" />
+      <div className="min-w-0 flex-1">
+        <p className="text-[8.5px] font-extrabold uppercase tracking-[0.14em] text-[#780000]" style={{ fontFamily: FONT_TITLE }}>Article concerné</p>
+        <p className="mt-0.5 truncate text-[11.5px] font-extrabold text-[#121212]" style={{ fontFamily: FONT_TITLE }}>
+          {article?.titre ?? 'Aucun article lié à ce fil'}
+        </p>
+        <div className="mt-1 flex flex-wrap items-center gap-2">
+          <span className="text-[11px] font-extrabold text-[#780000]">{article ? formatFCFA(article.prix_actuel ?? article.prix) : '—'}</span>
+          <span className={`inline-flex items-center gap-1 rounded-[5px] px-1.5 py-0.5 text-[8px] font-extrabold uppercase tracking-wide ${meta.pill}`}>
+            <span className={`h-1.5 w-1.5 rounded-full ${meta.dot}`} /> {status}
+          </span>
+        </div>
+      </div>
+      {article && (
+        <Link to={`/article/${article.id}`} onClick={() => playButtonClick()} className="inline-flex shrink-0 items-center gap-1 rounded-[5px] bg-[#EFEFEF] px-2.5 py-2 text-[9.5px] font-extrabold text-[#121212]/75 transition hover:bg-[#121212] hover:text-white" aria-label="Voir l'article">
+          Voir <ExternalLink size={16} />
+        </Link>
+      )}
+    </div>
+  );
+}
+
+/* ================================================================
+   Récapitulatif de transaction (desktop + tiroir mobile)
+   ================================================================ */
+
+function Summary({ conversation, status, onClose, embedded = false }) {
+  const article = conversation?.article;
+  const last = conversation?.dernier_message;
+  const amount = article ? (article.prix_actuel ?? article.prix ?? 0) : (last?.payload?.montant_fcfa ?? 0);
+  const soulte = last?.payload?.montant_soulte_fcfa ?? 0;
+  const progress = STATUS_PROGRESS[status] ?? 20;
+  const meta = STATUS_META[status] ?? STATUS_META['En cours'];
+  const nextStep = {
+    'En cours': 'Répondre au message pour avancer la négociation.',
+    'Troc proposé': 'Examiner les articles proposés et répondre à l’offre.',
+    'Séquestre actif': 'Remettre l’article en main propre, puis saisir le code PIN.',
+    'Résolu': 'Transaction finalisée — fonds libérés au vendeur.',
+  }[status];
+
+  return (
+    <aside className={`${embedded ? 'h-full w-full' : 'h-full w-[min(88vw,340px)]'} flex flex-col overflow-y-auto bg-[#F7F7F7]`} aria-label="Récapitulatif de transaction">
+      <div className="flex items-center justify-between px-4 pb-2 pt-4">
+        <h3 className="text-[10px] font-extrabold uppercase tracking-[0.16em] text-[#780000]" style={{ fontFamily: FONT_TITLE }}>Récapitulatif</h3>
+        {!embedded && (
+          <button type="button" onClick={onClose} className="rounded-[5px] bg-white p-1.5 text-[#121212]/60 transition hover:bg-[#121212] hover:text-white" aria-label="Fermer le récapitulatif">
+            <X size={16} />
+          </button>
+        )}
+      </div>
+
+      <div className="px-4 pb-3">
+        <div className="rounded-[5px] bg-white p-3 shadow-card">
+          <div className="flex items-center gap-2.5">
+            <ArticleThumb article={article} className="h-12 w-12" />
+            <div className="min-w-0 flex-1">
+              <p className="line-clamp-2 text-[11.5px] font-extrabold leading-snug text-[#121212]" style={{ fontFamily: FONT_TITLE }}>
+                {article?.titre ?? 'Aucun article lié'}
+              </p>
+              <p className="mt-1 text-[13px] font-extrabold text-[#780000]">{formatFCFA(amount)}</p>
+            </div>
+          </div>
+          {soulte > 0 && (
+            <div className="mt-2.5 flex items-center justify-between rounded-[5px] bg-[#EFEFEF] px-2.5 py-2 text-[10px]">
+              <span className="text-[#121212]/60">Soulte proposée</span>
+              <span className="font-extrabold text-[#780000]">{formatFCFA(soulte)}</span>
+            </div>
+          )}
+          {article?.condition && (
+            <p className="mt-2 text-[8.5px] font-extrabold uppercase tracking-wide text-[#121212]/55">
+              {CONDITION_LABELS[article.condition] ?? article.condition}
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* Carte séquestre — fort contraste #121212, barre #780000 */}
+      <div className="px-4 pb-3">
+        <div className="rounded-[5px] bg-[#121212] p-4 text-white shadow-card">
+          <div className="flex items-center justify-between gap-2">
+            <span className="flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-[0.12em]" style={{ fontFamily: FONT_TITLE }}>
+              <LockKeyhole size={16} className="text-white" /> Séquestre Djassa
+            </span>
+            <span className="rounded-[5px] bg-[#780000] px-2 py-0.5 text-[8px] font-extrabold uppercase tracking-wide text-white">{status}</span>
+          </div>
+          <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-white/15" role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100} aria-label="Progression de la transaction">
+            <div className="h-full rounded-full bg-[#780000]" style={{ width: `${progress}%` }} />
+          </div>
+          <ol className="mt-3 space-y-1.5">
+            {['Paiement bloqué', 'Remise en main propre', 'Code PIN', 'Fonds libérés'].map((step, i) => {
+              const done = progress >= 100 || i < Math.floor(progress / 25);
+              return (
+                <li key={step} className="flex items-center gap-2 text-[10px]">
+                  <span className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-[5px] ${done ? 'bg-[#780000] text-white' : 'bg-white/15 text-white/60'}`}>
+                    {done ? <CheckCheck size={16} /> : <span className="h-1.5 w-1.5 rounded-full bg-white/50" />}
+                  </span>
+                  <span className={done ? 'text-white/90' : 'text-white/55'}>{step}</span>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
+      </div>
+
+      <div className="px-4 pb-3">
+        <div className="rounded-[5px] bg-white p-3 shadow-card">
+          <p className="text-[9px] font-extrabold uppercase tracking-[0.14em] text-[#780000]" style={{ fontFamily: FONT_TITLE }}>Prochaine étape</p>
+          <p className="mt-1.5 text-[10.5px] leading-relaxed text-[#121212]/65">{nextStep}</p>
+          <span className={`mt-2 inline-flex items-center gap-1 rounded-[5px] px-2 py-1 text-[8.5px] font-extrabold uppercase tracking-wide ${meta.pill}`}>
+            <span className={`h-1.5 w-1.5 rounded-full ${meta.dot}`} /> {status}
+          </span>
+        </div>
+      </div>
+
+      <div className="mt-auto px-4 pb-4">
+        <p className="text-[9px] font-extrabold uppercase tracking-[0.16em] text-[#780000]" style={{ fontFamily: FONT_TITLE }}>Actions rapides</p>
+        <div className="mt-2 grid gap-1.5">
+          <Link to={conversation?.article ? `/article/${conversation.article.id}` : '/'} onClick={() => playButtonClick()} className="flex items-center gap-2 rounded-[5px] bg-white px-3 py-2 text-[10.5px] font-bold text-[#121212]/75 transition hover:bg-[#EFEFEF]">
+            <ShoppingBag size={16} className="text-[#780000]" /> Voir l’annonce
+          </Link>
+          <Link to="/dashboard?onglet=achats" onClick={() => playButtonClick()} className="flex items-center gap-2 rounded-[5px] bg-white px-3 py-2 text-[10.5px] font-bold text-[#121212]/75 transition hover:bg-[#EFEFEF]">
+            <ShieldCheck size={16} className="text-[#780000]" /> Mes achats & PIN
+          </Link>
+        </div>
+      </div>
+    </aside>
+  );
+}
+
+function SummaryDrawer({ conversation, status, onClose }) {
+  const panelRef = useRef(null);
+  useEffect(() => {
+    if (reduceMotion() || !panelRef.current) return undefined;
+    const tween = gsap.fromTo(panelRef.current, { xPercent: 100 }, { xPercent: 0, duration: 0.32, ease: 'power3.out' });
+    return () => tween.kill();
+  }, []);
+  return (
+    <div className="fixed inset-0 z-[80] flex justify-end" role="dialog" aria-modal="true" aria-label="Récapitulatif de transaction">
+      <button type="button" className="absolute inset-0 bg-[#121212]/60" onClick={onClose} aria-label="Fermer le récapitulatif" />
+      <div ref={panelRef} className="relative h-full shadow-pop">
+        <Summary conversation={conversation} status={status} onClose={onClose} />
+      </div>
+    </div>
+  );
+}
+
+/* ================================================================
+   PIN — validation de remise
+   ================================================================ */
+
+function PinSheet({ open, onClose, transactionId, dashboardPath }) {
+  const toast = useToast();
+  const queryClient = useQueryClient();
+  const [error, setError] = useState(false);
+  const verify = useMutation({
+    mutationFn: async (pin) => (await api.post(`/transactions/${transactionId}/verify-pin`, { pin })).data,
+    onSuccess: () => {
+      playSuccessChord();
+      toast.success('Remise validée — fonds libérés au vendeur.');
+      queryClient.invalidateQueries({ queryKey: ['messages'] });
+      onClose();
+    },
+    onError: (e) => {
+      playErrorThud();
+      toast.error(e.response?.data?.message ?? 'Code PIN invalide.');
+      setError(true);
+      setTimeout(() => setError(false), 400);
+    },
+  });
+
+  return (
+    <Modal open={open} onClose={onClose} title="Code PIN de remise">
+      {transactionId ? (
+        <div className="space-y-3">
+          <p className="text-[11.5px] leading-relaxed text-[#121212]/65">
+            Saisissez le code PIN à 4 chiffres transmis par l’acheteur au moment de la remise en main propre.
+          </p>
+          <PinInput onComplete={(pin) => { setError(false); verify.mutate(pin); }} error={error} />
+          {verify.isPending && <p className="text-center text-[10px] text-[#121212]/50">Validation en cours…</p>}
+        </div>
+      ) : (
+        <div className="space-y-3">
+          <p className="text-[11.5px] leading-relaxed text-[#121212]/65">
+            Aucune transaction en séquestre n’est liée à ce fil. Retrouvez vos codes et transactions depuis votre espace achats.
+          </p>
+          <Link to={dashboardPath === '/dashboard-pro' ? '/dashboard-pro/achats' : '/dashboard?onglet=achats'} onClick={onClose} className="inline-flex items-center gap-1.5 rounded-[5px] bg-[#780000] px-3 py-2 text-[10px] font-extrabold uppercase tracking-wide text-white transition hover:bg-[#121212]">
+            Voir mes achats <ExternalLink size={16} />
+          </Link>
+        </div>
+      )}
+    </Modal>
+  );
+}
+
+/* ================================================================
+   Briques de fil
+   ================================================================ */
 
 function TypingDots() {
   const dotsRef = useRef(null);
   useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
+    if (reduceMotion()) return undefined;
     const dots = dotsRef.current?.querySelectorAll('[data-dot]');
     if (!dots?.length) return undefined;
     const tl = gsap.timeline({ repeat: -1 });
@@ -570,7 +966,7 @@ function TypingDots() {
   return (
     <div className="flex items-end gap-2 justify-start" aria-live="polite" aria-label="En train d’écrire">
       <div ref={dotsRef} className="inline-flex items-center gap-1.5 rounded-[5px] bg-white px-3.5 py-3 shadow-sm">
-        {[0, 1, 2].map((i) => <span key={i} data-dot className="h-2 w-2 rounded-full bg-djassa-red/60 opacity-45" />)}
+        {[0, 1, 2].map((i) => <span key={i} data-dot className="h-2 w-2 rounded-full bg-[#780000]/60 opacity-45" />)}
       </div>
     </div>
   );
@@ -578,11 +974,11 @@ function TypingDots() {
 
 function ArticleThumb({ article, className = 'h-12 w-12' }) {
   return (
-    <div className={`${className} shrink-0 overflow-hidden bg-djassa-cloud`}>
+    <div className={`${className} shrink-0 overflow-hidden bg-[#EFEFEF]`}>
       {article?.image_principale || article?.images?.[0] ? (
-        <img src={article.image_principale ?? article.images[0]} alt="" className="h-full w-full object-cover" loading="lazy" />
+        <img src={article.image_principale ?? article.images[0]} alt="" className="h-full w-full object-cover" loading="lazy" decoding="async" />
       ) : (
-        <div className="flex h-full w-full items-center justify-center text-djassa-black/25"><ImageIcon size={18} /></div>
+        <div className="flex h-full w-full items-center justify-center text-[#121212]/25"><ImageIcon size={16} /></div>
       )}
     </div>
   );
@@ -591,27 +987,49 @@ function ArticleThumb({ article, className = 'h-12 w-12' }) {
 function SystemNote({ message }) {
   return (
     <div className="flex justify-center py-1">
-      <p className="inline-flex max-w-[90%] items-center gap-2 rounded-[5px] bg-djassa-red px-3.5 py-1.5 text-center text-[10px] font-medium leading-snug text-white shadow-pop">
-        <ShieldCheck size={20} className="shrink-0 text-white" />
+      <p className="inline-flex max-w-[90%] items-center gap-2 rounded-[5px] bg-[#780000] px-3.5 py-1.5 text-center text-[10px] font-medium leading-snug text-white shadow-card">
+        <ShieldCheck size={16} className="shrink-0 text-white" />
         {message.contenu}
       </p>
     </div>
   );
 }
 
-function TextBubble({ message, mine, partnerName }) {
+function TextBubble({ message, mine, partnerName, onRead }) {
+  const unreadIncoming = !mine && !message.lu_at && typeof onRead === 'function';
+  const photo = message.payload?.photo;
+  const inner = (
+    <>
+      {photo && <img src={photo} alt={message.payload?.photo_nom ?? 'Photo jointe'} className="mb-2 max-h-48 w-full rounded-[5px] object-cover" loading="lazy" decoding="async" />}
+      <p className="whitespace-pre-wrap break-words">{message.contenu}</p>
+      <span className={`mt-1.5 flex items-center justify-end gap-1 text-[8.5px] ${mine ? 'text-white/50' : 'text-[#121212]/40'}`}>
+        {timeAgo(message.created_at)}
+        {mine && message.lu_at && <CheckCheck size={16} className="text-[#780000]" />}
+      </span>
+    </>
+  );
   return (
     <div className={`flex items-end gap-2 ${mine ? 'justify-end' : 'justify-start'}`}>
       {!mine && <Avatar name={partnerName} size={26} tone="black" />}
-      <div className={`max-w-[78%] rounded-[5px] px-3.5 py-2.5 text-[12.5px] leading-relaxed shadow-sm ${
-        mine ? 'rounded-[5px] bg-djassa-black border-solid border-[0.5px] border-[rgba(255,255,255,0.12)] text-white' : 'rounded-[5px] bg-white text-djassa-black  '
-      }`}>
-        <p className="whitespace-pre-wrap break-words">{message.contenu}</p>
-        <span className={`mt-1.5 flex items-center justify-end gap-1 text-[8.5px] ${mine ? 'text-white/50' : 'text-djassa-black/40'}`}>
-          {timeAgo(message.created_at)}
-          {mine && message.lu_at && <CheckCheck size={16} className="text-djassa-red" />}
-        </span>
-      </div>
+      {unreadIncoming ? (
+        <button
+          type="button"
+          onClick={onRead}
+          title="Marquer comme lu"
+          aria-label={`Marquer le message de ${partnerName ?? ' votre interlocuteur'} comme lu`}
+          className={`max-w-[78%] rounded-[5px] px-3.5 py-2.5 text-[12.5px] leading-relaxed text-left shadow-card transition hover:shadow-pop ${
+            mine ? 'bg-[#121212] text-white' : 'bg-white text-[#121212]'
+          }`}
+        >
+          {inner}
+        </button>
+      ) : (
+        <div className={`max-w-[78%] rounded-[5px] px-3.5 py-2.5 text-[12.5px] leading-relaxed shadow-card ${
+          mine ? 'bg-[#121212] text-white' : 'bg-white text-[#121212]'
+        }`}>
+          {inner}
+        </div>
+      )}
     </div>
   );
 }
@@ -619,14 +1037,16 @@ function TextBubble({ message, mine, partnerName }) {
 function PriceCard({ message, mine }) {
   return (
     <div className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
-      <div className={`w-full max-w-[320px] overflow-hidden rounded-[5px] bg-white border-solid border-[0.5px] border-[rgba(18,18,18,0.08)]   shadow-card ${mine ? 'ring-djassa-black/15' : ''}`}>
-        <div className="flex items-center gap-2 bg-djassa-red/[0.07] px-3 py-2">
-          <Tag size={24} className="text-djassa-red" />
-          <p className="font-spacegrotesk text-[9px] font-extrabold uppercase tracking-[0.14em] text-djassa-red">Offre de prix formelle</p>
+      <div className="w-full max-w-[320px] overflow-hidden rounded-[5px] bg-white shadow-card">
+        <div className="flex items-center gap-2 bg-[#EFEFEF] px-3 py-2">
+          <Tag size={16} className="text-[#780000]" />
+          <p className="text-[9px] font-extrabold uppercase tracking-[0.14em] text-[#780000]" style={{ fontFamily: FONT_TITLE }}>Offre de prix formelle</p>
         </div>
         <div className="p-3">
-          <p className="price-fcfa text-[20px] tracking-tight text-djassa-red">{formatFCFA(message.payload?.montant_fcfa ?? 0)}</p>
-          <p className="mt-1 text-[10px] leading-relaxed text-djassa-black/50">
+          <p className="text-[20px] font-extrabold tracking-tight text-[#780000]" style={{ fontFamily: FONT_TITLE }}>
+            {formatFCFA(message.payload?.montant_fcfa ?? 0)}
+          </p>
+          <p className="mt-1 text-[10px] leading-relaxed text-[#121212]/50">
             {mine ? 'En attente de réponse de votre interlocuteur.' : 'Vous pouvez accepter ou refuser cette offre depuis la fiche article.'}
           </p>
         </div>
@@ -635,7 +1055,9 @@ function PriceCard({ message, mine }) {
   );
 }
 
-const trocableHint = (a) => Boolean(a?.est_trocable || ['troc', 'mixte'].includes(a?.mode_transaction));
+function trocableHint(a) {
+  return Boolean(a?.est_trocable || ['troc', 'mixte'].includes(a?.mode_transaction));
+}
 
 function TrocCard({ message, mine, onRespond, pending }) {
   const { user } = useAuth();
@@ -658,54 +1080,54 @@ function TrocCard({ message, mine, onRespond, pending }) {
 
   return (
     <div className={`flex ${mine ? 'justify-end' : 'justify-start'}`}>
-      <div className="w-full max-w-[420px] overflow-hidden rounded-[5px] bg-white border-solid border-[0.5px] border-[rgba(18,18,18,0.08)] shadow-card">
-        <div className="flex items-center gap-2 bg-djassa-red px-3.5 py-2.5 text-white">
-          <ArrowLeftRight size={24} className="text-white" strokeWidth={2.5} />
-          <p className="font-spacegrotesk text-[9.5px] font-extrabold uppercase tracking-[0.15em]">Proposition de troc</p>
-          <span className="ml-auto rounded-[5px] bg-white/10 px-2 py-0.5 text-[8px] font-extrabold uppercase tracking-wide text-white">
+      <div className="w-full max-w-[420px] overflow-hidden rounded-[5px] bg-white shadow-card">
+        <div className="flex items-center gap-2 bg-[#121212] px-3.5 py-2.5 text-white">
+          <ArrowLeftRight size={16} className="text-white" strokeWidth={2.5} />
+          <p className="text-[9.5px] font-extrabold uppercase tracking-[0.15em]" style={{ fontFamily: FONT_TITLE }}>Proposition de troc</p>
+          <span className="ml-auto rounded-[5px] bg-[#780000] px-2 py-0.5 text-[8px] font-extrabold uppercase tracking-wide text-white">
             {statusMeta.label}
           </span>
         </div>
 
         <div className="p-3.5">
-          <p className="font-spacegrotesk text-[9px] font-extrabold uppercase tracking-[0.14em] text-djassa-black/45">
+          <p className="text-[9px] font-extrabold uppercase tracking-[0.14em] text-[#121212]/45" style={{ fontFamily: FONT_TITLE }}>
             {mine ? 'Vous proposez' : 'L’acheteur propose'}
           </p>
           {offered.length > 0 ? (
             <ul className="mt-2 space-y-1.5">
               {offered.map((item, i) => (
-                <li key={`${item}-${i}`} className="flex items-start gap-2 text-[11.5px] font-semibold leading-snug text-djassa-black">
-                  <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-[5px] bg-djassa-red/10 text-djassa-red"><Zap size={16} /></span>
+                <li key={`${item}-${i}`} className="flex items-start gap-2 text-[11.5px] font-semibold leading-snug text-[#121212]">
+                  <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-[5px] bg-[#780000]/10 text-[#780000]"><Zap size={16} /></span>
                   {item}
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="mt-1 text-[11px] text-djassa-black/50">Article proposé sans détail complémentaire.</p>
+            <p className="mt-1 text-[11px] text-[#121212]/50">Article proposé sans détail complémentaire.</p>
           )}
 
-          <div className="mt-3 flex items-center justify-between gap-3 rounded-[5px] bg-djassa-red/[0.06] px-3 py-2.5">
+          <div className="mt-3 flex items-center justify-between gap-3 rounded-[5px] bg-[#F7F7F7] px-3 py-2.5">
             <div>
-              <p className="text-[8.5px] font-extrabold uppercase tracking-wide text-djassa-red/70">Soulte proposée</p>
-              <p className="price-fcfa mt-0.5 text-[17px] leading-none text-djassa-red">{formatFCFA(soulte)}</p>
+              <p className="text-[8.5px] font-extrabold uppercase tracking-wide text-[#780000]/75" style={{ fontFamily: FONT_TITLE }}>Soulte proposée</p>
+              <p className="mt-0.5 text-[17px] font-extrabold leading-none text-[#780000]" style={{ fontFamily: FONT_TITLE }}>{formatFCFA(soulte)}</p>
             </div>
-            <span className="rounded-[5px] bg-white px-2.5 py-1 text-[9px] font-extrabold text-djassa-red ring-djassa-red/25">
+            <span className="rounded-[5px] bg-[#EFEFEF] px-2.5 py-1 text-[9px] font-extrabold text-[#121212]/70">
               {Number(soulte) === 0 ? 'Troc pur' : 'Troc mixte'}
             </span>
           </div>
 
           {offer?.message && (
-            <p className="mt-2.5 rounded-[5px] bg-djassa-red/[0.05] px-2.5 py-2 text-[10.5px] italic leading-relaxed text-djassa-black/60">“{offer.message}”</p>
+            <p className="mt-2.5 rounded-[5px] bg-[#F7F7F7] px-2.5 py-2 text-[10.5px] italic leading-relaxed text-[#121212]/60">“{offer.message}”</p>
           )}
 
           {canRespond ? (
-            <div className="mt-3.5 space-y-2 pt-3">
+            <div className="mt-3.5 space-y-2">
               <div className="flex gap-2">
-                <button type="button" disabled={pending} onClick={() => onRespond.mutate({ offerId: offer.id, action: 'accept' })} className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-[5px] bg-djassa-red border-solid border-[0.5px] border-[rgba(255,255,255,0.12)] px-3 py-2 font-spacegrotesk text-[10px] font-extrabold uppercase tracking-wide text-white shadow-pop transition hover:bg-djassa-black active:scale-95 disabled:cursor-not-allowed disabled:opacity-50">
-                  <CheckCheck size={24} /> Accepter
+                <button type="button" disabled={pending} onClick={() => onRespond.mutate({ offerId: offer.id, action: 'accept' })} className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-[5px] bg-[#780000] px-3 py-2 text-[10px] font-extrabold uppercase tracking-wide text-white transition hover:bg-[#121212] disabled:cursor-not-allowed disabled:opacity-50">
+                  <CheckCheck size={16} /> Accepter
                 </button>
-                <button type="button" disabled={pending} onClick={() => onRespond.mutate({ offerId: offer.id, action: 'reject' })} className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-[5px] px-3 py-2 font-spacegrotesk text-[10px] font-extrabold uppercase tracking-wide text-djassa-black/60 transition hover:text-djassa-red disabled:cursor-not-allowed disabled:opacity-50">
-                  <X size={24} /> Refuser
+                <button type="button" disabled={pending} onClick={() => onRespond.mutate({ offerId: offer.id, action: 'reject' })} className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-[5px] bg-[#EFEFEF] px-3 py-2 text-[10px] font-extrabold uppercase tracking-wide text-[#121212]/70 transition hover:bg-[#121212] hover:text-white disabled:cursor-not-allowed disabled:opacity-50">
+                  <X size={16} /> Refuser
                 </button>
               </div>
               <div className="flex items-center gap-1.5">
@@ -717,15 +1139,15 @@ function TrocCard({ message, mine, onRespond, pending }) {
                   onChange={(e) => setCounter(e.target.value)}
                   placeholder="Contre-offre en FCFA…"
                   aria-label="Montant de la contre-offre"
-                  className="h-9 min-w-0 flex-1 rounded-[5px] px-2.5 text-[11px] outline-none transition"
+                  className="h-9 min-w-0 flex-1 rounded-[5px] bg-[#F7F7F7] px-2.5 text-[11px] text-[#121212] outline-none"
                 />
-                <button type="button" disabled={pending || !counter || Number(counter) < 0} onClick={() => onRespond.mutate({ offerId: offer.id, action: 'counter', montant: Number(counter) })} className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-[5px] bg-djassa-black border-solid border-[0.5px] border-[rgba(255,255,255,0.12)] px-3 font-spacegrotesk text-[9.5px] font-extrabold uppercase tracking-wide text-white transition hover:bg-djassa-red disabled:cursor-not-allowed disabled:opacity-40">
+                <button type="button" disabled={pending || !counter || Number(counter) < 0} onClick={() => onRespond.mutate({ offerId: offer.id, action: 'counter', montant: Number(counter) })} className="inline-flex h-9 shrink-0 items-center gap-1.5 rounded-[5px] bg-[#121212] px-3 text-[9.5px] font-extrabold uppercase tracking-wide text-white transition hover:bg-[#780000] disabled:cursor-not-allowed disabled:opacity-40">
                   Contre-offrir
                 </button>
               </div>
             </div>
           ) : (
-            <p className="mt-3 pt-2.5 text-[10px] text-djassa-red/70">
+            <p className="mt-3 text-[10px] text-[#780000]/75">
               {mine ? 'En attente de la réponse du vendeur.' : 'Cette proposition ne nécessite plus votre action.'}
             </p>
           )}
