@@ -33,3 +33,7 @@ CREATE TABLE IF NOT EXISTS notifications (
     created_at  TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications (user_id, created_at);
+
+-- Indexes complémentaires (règle 22)
+CREATE INDEX IF NOT EXISTS idx_messages_destinataire ON messages (destinataire_id);
+CREATE INDEX IF NOT EXISTS idx_messages_lu_at ON messages (lu_at);

@@ -25,6 +25,8 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        \Illuminate\Database\Eloquent\Model::preventLazyLoading(! app()->isProduction());
+
         require base_path('routes/internal.php');
 
         if (config('app.env') === 'production' && empty(config('services.internal.signing_key'))) {

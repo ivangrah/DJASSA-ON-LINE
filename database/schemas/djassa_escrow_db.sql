@@ -43,3 +43,8 @@ CREATE TABLE IF NOT EXISTS pins_remise (
     created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE UNIQUE INDEX IF NOT EXISTS idx_pin_transaction_unique ON pins_remise (transaction_id);
+
+-- Indexes complémentaires (règle 22)
+CREATE INDEX IF NOT EXISTS idx_transactions_vendeur ON transactions (vendeur_id);
+CREATE INDEX IF NOT EXISTS idx_transactions_escrow_status ON transactions (escrow_status);
+CREATE INDEX IF NOT EXISTS idx_transactions_created_at ON transactions (created_at DESC);

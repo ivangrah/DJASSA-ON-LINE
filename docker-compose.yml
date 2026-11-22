@@ -30,6 +30,25 @@ services:
     volumes:
       - redisdata:/data
 
+  pgbouncer:
+    image: edoburu/pgbouncer:latest
+    environment:
+      DB_USER: postgres
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-djassa_dev}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      LISTEN_PORT: 6432
+      AUTH_TYPE: scram-sha-256
+      # Pool toutes les bases du cluster postgres (auth, catalog, troc, escrow, chat)
+      PGBOUNCER_DATABASE: "*"
+      PGBOUNCER_POOL_MODE: transaction
+      PGBOUNCER_MAX_CLIENT_CONN: 200
+      PGBOUNCER_DEFAULT_POOL_SIZE: 20
+    ports:
+      - "6432:6432"
+    depends_on: { postgres: { condition: service_healthy } }
+    restart: unless-stopped
+
   api-gateway:
     image: nginx:1.27-alpine
     ports:
@@ -50,8 +69,8 @@ services:
     command: php artisan serve --host=0.0.0.0 --port=8080
     environment:
       APP_ENV: local
-      DB_HOST: postgres
-      DB_PORT: 5432
+      DB_HOST: pgbouncer
+      DB_PORT: 6432
       DB_DATABASE: djassa_auth_db
       DB_USERNAME: postgres
       DB_PASSWORD: ${POSTGRES_PASSWORD:-djassa_dev}
@@ -72,8 +91,8 @@ services:
     command: php artisan serve --host=0.0.0.0 --port=8080
     environment:
       APP_ENV: local
-      DB_HOST: postgres
-      DB_PORT: 5432
+      DB_HOST: pgbouncer
+      DB_PORT: 6432
       DB_DATABASE: djassa_catalog_db
       DB_USERNAME: postgres
       DB_PASSWORD: ${POSTGRES_PASSWORD:-djassa_dev}
@@ -94,8 +113,8 @@ services:
     command: php artisan serve --host=0.0.0.0 --port=8080
     environment:
       APP_ENV: local
-      DB_HOST: postgres
-      DB_PORT: 5432
+      DB_HOST: pgbouncer
+      DB_PORT: 6432
       DB_DATABASE: djassa_troc_db
       DB_USERNAME: postgres
       DB_PASSWORD: ${POSTGRES_PASSWORD:-djassa_dev}
@@ -116,8 +135,8 @@ services:
     command: php artisan serve --host=0.0.0.0 --port=8080
     environment:
       APP_ENV: local
-      DB_HOST: postgres
-      DB_PORT: 5432
+      DB_HOST: pgbouncer
+      DB_PORT: 6432
       DB_DATABASE: djassa_escrow_db
       DB_USERNAME: postgres
       DB_PASSWORD: ${POSTGRES_PASSWORD:-djassa_dev}
@@ -139,8 +158,8 @@ services:
     command: php artisan serve --host=0.0.0.0 --port=8080
     environment:
       APP_ENV: local
-      DB_HOST: postgres
-      DB_PORT: 5432
+      DB_HOST: pgbouncer
+      DB_PORT: 6432
       DB_DATABASE: djassa_chat_db
       DB_USERNAME: postgres
       DB_PASSWORD: ${POSTGRES_PASSWORD:-djassa_dev}

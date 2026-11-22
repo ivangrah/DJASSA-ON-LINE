@@ -39,3 +39,7 @@ CREATE TABLE IF NOT EXISTS verrous_stock (
     UNIQUE (article_id, offre_id)
 );
 CREATE INDEX IF NOT EXISTS idx_verrous_expiration ON verrous_stock (expire_le);
+
+-- Indexes complémentaires (règle 22)
+CREATE INDEX IF NOT EXISTS idx_troc_statut ON offres_troc (statut);
+CREATE INDEX IF NOT EXISTS idx_troc_created_at ON offres_troc (created_at DESC);

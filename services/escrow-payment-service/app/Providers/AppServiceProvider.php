@@ -30,6 +30,8 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        \Illuminate\Database\Eloquent\Model::preventLazyLoading(! app()->isProduction());
+
         // B5 : échec immédiat en production si la configuration GeniusPay est incomplète.
         if (config('app.env') === 'production' && (
             empty(config('services.geniuspay.api_key')) ||

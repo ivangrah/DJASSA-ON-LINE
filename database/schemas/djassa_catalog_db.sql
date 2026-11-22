@@ -55,3 +55,15 @@ CREATE TABLE IF NOT EXISTS souhaits (
     created_at   TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 CREATE INDEX IF NOT EXISTS idx_souhaits_user ON souhaits (user_id);
+
+-- Indexes complémentaires (règle 22) — filtres & tri
+CREATE INDEX IF NOT EXISTS idx_articles_statut ON articles (statut);
+CREATE INDEX IF NOT EXISTS idx_articles_categorie ON articles (categorie);
+CREATE INDEX IF NOT EXISTS idx_articles_ville ON articles (ville);
+CREATE INDEX IF NOT EXISTS idx_articles_created_at ON articles (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_articles_prix ON articles (prix);
+CREATE INDEX IF NOT EXISTS idx_articles_condition ON articles (condition);
+CREATE INDEX IF NOT EXISTS idx_boutiques_slug ON boutiques (slug);
+CREATE INDEX IF NOT EXISTS idx_souhaits_statut ON souhaits (statut);
+CREATE INDEX IF NOT EXISTS idx_souhaits_categorie ON souhaits (categorie);
+CREATE INDEX IF NOT EXISTS idx_souhaits_created_at ON souhaits (created_at DESC);
