@@ -1,4 +1,4 @@
-import { lazy, Suspense, useMemo, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { gsap } from 'gsap';
 import {
@@ -31,14 +31,15 @@ const TABS = [
 function AnimatedNumber({ value, prefix = '', suffix = '' }) {
   const el = useRef(null);
   const prev = useRef(0);
-  useMemo(() => {
+  useEffect(() => {
     if (el.current == null) return;
     const obj = { v: prev.current };
-    gsap.to(obj, {
+    const tween = gsap.to(obj, {
       v: Number(value) || 0, duration: 0.9, ease: 'power2.out',
       onUpdate: () => { if (el.current) el.current.textContent = prefix + Math.round(obj.v).toLocaleString('fr-FR') + suffix; },
     });
     prev.current = Number(value) || 0;
+    return () => tween.kill();
   }, [value, prefix, suffix]);
   return <span ref={el} className="tabular-nums">{prefix}{Number(value || 0).toLocaleString('fr-FR')}{suffix}</span>;
 }

@@ -1,5 +1,5 @@
-import { lazy, Suspense, useEffect, useRef } from 'react';
-import { Routes, Route, Navigate, useNavigate } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { DashboardSkeleton } from './components/ui';
 import { RouteError } from './components/ErrorPages.jsx';
 import { useAuth } from './context/AuthContext';
@@ -43,35 +43,9 @@ function DashboardRedirect() {
   return <Navigate to="/dashboard" replace />;
 }
 
-// Intercepte les clics sur les liens internes pour déclencher une transition de vue (View Transitions API)
-// quand le navigateur la supporte — animation de route sobre, sans JS lourd.
-function ViewTransitionSetup() {
-  const navigate = useNavigate();
-  const navigateRef = useRef(navigate);
-  navigateRef.current = navigate;
-  useEffect(() => {
-    if (typeof document.startViewTransition !== 'function') return;
-    const handler = (e) => {
-      const a = e.target?.closest?.('a[href]');
-      if (!a || a.target === '_blank' || a.hasAttribute('download')) return;
-      const href = a.getAttribute('href');
-      if (!href || href.startsWith('http') || href.startsWith('#') || href.startsWith('mailto:') || href.startsWith('tel:')) return;
-      // Laisse React Router gérer si déjà empêché
-      e.preventDefault();
-      document.startViewTransition(() => {
-        navigateRef.current(href);
-      });
-    };
-    document.addEventListener('click', handler, true);
-    return () => document.removeEventListener('click', handler, true);
-  }, []);
-  return null;
-}
-
 export default function App() {
   return (
     <>
-    <ViewTransitionSetup />
     <Suspense fallback={<DashboardSkeleton />}>
     <Routes errorElement={<RouteError />}>
       {/* Anciennes URLs — conservées pour ne pas casser les favoris */}
