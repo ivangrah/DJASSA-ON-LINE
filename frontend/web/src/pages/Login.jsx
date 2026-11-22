@@ -25,11 +25,14 @@ export default function Login() {
   // Une offre non choisie force l'onboarding, quelle que soit la page demandée.
   useEffect(() => {
     if (!isAuthenticated || !user) return;
-    const destination = needsPlan
-      ? '/choisir-offre'
-      : from && !['/moi', '/pro/dashboard', '/login', '/register'].includes(from)
-        ? from
-        : dashboardPath ?? '/';
+    // Un admin va toujours dans son espace, quelle que soit la page d'origine.
+    const destination = user?.role === 'admin'
+      ? '/admin'
+      : needsPlan
+        ? '/choisir-offre'
+        : from && !['/moi', '/pro/dashboard', '/login', '/register', '/maintenance'].includes(from)
+          ? from
+          : dashboardPath ?? '/';
     navigate(destination, { replace: true });
   }, [isAuthenticated, user, needsPlan, dashboardPath, from, navigate]);
 

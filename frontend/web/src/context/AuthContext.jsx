@@ -103,10 +103,10 @@ export function AuthProvider({ children }) {
   const refreshMe = useCallback(async () => {
     try {
       const { data } = await api.get('/auth/me');
-      persist(data.user, null);
-      return data.user;
+      if (data?.user) persist(data.user, null);
+      return data?.user ?? null;
     } catch {
-      persist(null, null);
+      // Ne pas effacer une session fraîchement connectée sur une erreur transitoire (503 maintenance/réseau).
       return null;
     }
   }, [persist]);
@@ -124,13 +124,14 @@ export function AuthProvider({ children }) {
     const isAdmin = role === 'admin';
     const hasActiveProPlan = Boolean(user?.has_active_pro_plan);
 
-    const needsPlan = Boolean(user) && plan === null;
+    // L'administrateur n'est jamais astreint au choix d'offre / onboarding.
+    const needsPlan = Boolean(user) && !isAdmin && plan === null;
 
     let dashboardPath = '/';
-    if (needsPlan) dashboardPath = '/choisir-offre';
+    if (isAdmin) dashboardPath = '/admin';
+    else if (needsPlan) dashboardPath = '/choisir-offre';
     else if (isPro) dashboardPath = '/dashboard-pro';
     else if (isParticulier) dashboardPath = '/dashboard';
-    else if (isAdmin) dashboardPath = '/dashboard-pro';
 
     return {
       user,
