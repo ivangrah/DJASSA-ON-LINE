@@ -9,6 +9,17 @@ export const api = axios.create({
   withCredentials: true,
 });
 
+/** Jeton Bearer courant (stocké en mémoire uniquement — mitigation XSS). */
+let memoryToken = null;
+
+export function setApiToken(token) {
+  memoryToken = token;
+}
+
+export function getApiToken() {
+  return memoryToken;
+}
+
 /** Déduplication des GET identiques en vol (règle 4). */
 const inFlight = new Map();
 
@@ -33,7 +44,8 @@ api.interceptors.request.use((config) => {
   // Compatibilité descendante : anciennes sessions stockées dans localStorage.
   // Les nouvelles sessions s'authentifient via le cookie HttpOnly (withCredentials).
   const legacyToken = localStorage.getItem('djassa_token');
-  if (legacyToken) config.headers.Authorization = `Bearer ${legacyToken}`;
+  if (memoryToken) config.headers.Authorization = `Bearer ${memoryToken}`;
+  else if (legacyToken) config.headers.Authorization = `Bearer ${legacyToken}`;
   return config;
 });
 

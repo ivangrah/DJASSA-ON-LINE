@@ -1,5 +1,5 @@
 import { createContext, useContext, useCallback, useEffect, useMemo, useState } from 'react';
-import { api } from '../lib/api';
+import { api, setApiToken } from '../lib/api';
 
 const AuthContext = createContext(null);
 
@@ -38,6 +38,7 @@ export function AuthProvider({ children }) {
     const normalized = normalizeUser(nextUser);
     setUser(normalized);
     setToken(nextToken ?? null);
+    setApiToken(nextToken ?? null);
     setAuthResolved(true);
     if (normalized) {
       localStorage.setItem('djassa_user', JSON.stringify(normalized));
