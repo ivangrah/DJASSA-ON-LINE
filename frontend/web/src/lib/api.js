@@ -52,6 +52,12 @@ api.interceptors.response.use(
       _rejectDedupe?.(error);
       inFlight.delete(_dedupeKey);
     }
+    if (error.response?.data?.maintenance === true || error.response?.status === 503) {
+      const msg = encodeURIComponent(error.response?.data?.message ?? '');
+      if (!window.location.pathname.startsWith('/maintenance')) {
+        window.location.assign(`/maintenance${msg ? `?message=${msg}` : ''}`);
+      }
+    }
     if (error.response?.status === 401) {
       localStorage.removeItem('djassa_token');
       localStorage.removeItem('djassa_user');

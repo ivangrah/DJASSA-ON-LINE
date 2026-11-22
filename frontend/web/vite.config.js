@@ -8,7 +8,8 @@ export default defineConfig({
   build: {
     // Three.js (767 ko) est chargé uniquement à la demande via React.lazy :
     // il ne fait pas partie du payload initial.
-    chunkSizeWarningLimit: 800,
+    // recharts/pdf/confetti sont isolés dans des chunks lazy (hors payload initial).
+    chunkSizeWarningLimit: 900,
     rollupOptions: {
       output: {
         manualChunks(id) {
@@ -16,6 +17,9 @@ export default defineConfig({
           if (id.includes('node_modules/@react-three/postprocessing')) return 'three-fx';
           if (id.includes('node_modules/@react-three/fiber')) return 'three-fiber';
           if (id.includes('node_modules/three/')) return 'three-core';
+          if (id.includes('node_modules/recharts') || id.includes('node_modules/d3-') || id.includes('node_modules/victory-vendor')) return 'charts';
+          if (id.includes('node_modules/jspdf') || id.includes('node_modules/html2canvas') || id.includes('node_modules/dompurify') || id.includes('node_modules/canvg')) return 'pdf';
+          if (id.includes('node_modules/canvas-confetti')) return 'confetti';
           if (id.includes('node_modules/gsap')) return 'gsap';
           if (id.includes('node_modules/lucide-react')) return 'lucide';
           if (id.includes('node_modules/@tanstack')) return 'query';

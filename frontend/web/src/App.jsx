@@ -30,6 +30,7 @@ const AdminLitiges = lazy(() => import('./pages/admin/AdminLitiges'));
 const AdminBoutiques = lazy(() => import('./pages/admin/AdminBoutiques'));
 const AdminUtilisateurs = lazy(() => import('./pages/admin/AdminUtilisateurs'));
 const AdminSecurite = lazy(() => import('./pages/admin/AdminSecurite'));
+const Maintenance = lazy(() => import('./pages/Maintenance'));
 
 /** Redirection de compatibilité pour les anciens liens /moi et /pro/dashboard. */
 function DashboardRedirect() {
@@ -113,6 +114,9 @@ export default function App() {
         <Route path="utilisateurs" element={<AdminUtilisateurs />} />
         <Route path="securite" element={<AdminSecurite />} />
       </Route>
+
+      {/* --- Page Maintenance (hors shell) --- */}
+      <Route path="/maintenance" element={<Maintenance />} />
 
       {/* --- Marketplace publique (AppShell) --- */}
       <Route element={<AppShell />}>
