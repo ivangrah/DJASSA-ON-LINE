@@ -73,6 +73,7 @@ export default function AdminDashboard() {
   const [maintenanceMsg, setMaintenanceMsg] = useState(maintenanceData?.data?.message ?? '');
   const [maintenanceDuration, setMaintenanceDuration] = useState(maintenanceData?.data?.duration_minutes ?? 60);
   const [campaign, setCampaign] = useState({ audience: 'all', titre: '', corps: '', email: false });
+  const [newUser, setNewUser] = useState({ nom: '', email: '', telephone: '', role: 'particulier', password: '' });
   const [profile, setProfile] = useState({ nom: user?.nom ?? '', email: user?.email ?? '', telephone: user?.telephone ?? '' });
 
   const toggleMaintenance = async (enabled) => {
@@ -109,6 +110,24 @@ export default function AdminDashboard() {
       const res = await adminApi.resetPassword(id);
       toast.success('Mot de passe réinitialisé.', { description: `Temporaire : ${res.data.temporary_password}` });
     } catch { toast.error('Réinitialisation impossible.'); }
+  };
+
+  const createUser = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await adminApi.createUser({ nom: newUser.nom, email: newUser.email, telephone: newUser.telephone || undefined, role: newUser.role, password: newUser.password });
+      toast.success(`Utilisateur « ${res.data?.data?.nom ?? newUser.nom} » créé.`);
+      setNewUser({ nom: '', email: '', telephone: '', role: 'particulier', password: '' });
+      qc.invalidateQueries({ queryKey: ['admin', 'users'] });
+    } catch (err) { toast.error(err.response?.data?.message ?? 'Création impossible.'); }
+  };
+
+  const deleteUser = async (id) => {
+    try {
+      const res = await adminApi.deleteUser(id);
+      toast.success(res.data?.deleted ? 'Utilisateur supprimé.' : 'Utilisateur supprimé.');
+      qc.invalidateQueries({ queryKey: ['admin', 'users'] });
+    } catch (err) { toast.error(err.response?.data?.message ?? 'Suppression impossible.'); }
   };
 
   const totalCA = Number(finances?.totaux?.chiffre_affaires ?? 0) || 0;
@@ -196,6 +215,34 @@ export default function AdminDashboard() {
       {/* ===== UTILISATEURS & AUDIT ===== */}
       {tab === 'users' && (
         <div className="space-y-5">
+          <Panel title="Créer un utilisateur" subtitle="Compte admin / onboarding plateforme">
+            <form onSubmit={createUser} className="grid gap-3 sm:grid-cols-2">
+              <label className="block text-[10px] font-bold text-djassa-black/60">Nom
+                <input required value={newUser.nom} onChange={(e) => setNewUser({ ...newUser, nom: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 text-[12px]" placeholder="Nom complet" />
+              </label>
+              <label className="block text-[10px] font-bold text-djassa-black/60">Email
+                <input required type="email" value={newUser.email} onChange={(e) => setNewUser({ ...newUser, email: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 text-[12px]" placeholder="user@djassa.ci" />
+              </label>
+              <label className="block text-[10px] font-bold text-djassa-black/60">Téléphone
+                <input value={newUser.telephone} onChange={(e) => setNewUser({ ...newUser, telephone: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 text-[12px]" placeholder="+225 07 00 00 00 00" />
+              </label>
+              <label className="block text-[10px] font-bold text-djassa-black/60">Rôle
+                <select value={newUser.role} onChange={(e) => setNewUser({ ...newUser, role: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 text-[12px]">
+                  <option value="particulier">particulier</option>
+                  <option value="vendeur_pro">vendeur_pro</option>
+                  <option value="admin">admin</option>
+                </select>
+              </label>
+              <label className="block text-[10px] font-bold text-djassa-black/60">Mot de passe
+                <input required type="text" value={newUser.password} onChange={(e) => setNewUser({ ...newUser, password: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 text-[12px]" placeholder="Min. 8 caractères" />
+              </label>
+              <div className="sm:col-span-2">
+                <button type="submit" className="inline-flex items-center gap-2 rounded-[5px] bg-djassa-red px-4 py-2 font-spacegrotesk text-[11px] font-extrabold text-white active:scale-95">
+                  <Plus size={15} /> Créer l'utilisateur
+                </button>
+              </div>
+            </form>
+          </Panel>
           {loadingUsers ? <div className="skeleton h-64" /> : (
             <AdminTable
               title="Utilisateurs" totalLabel={`${users.length} comptes`}
@@ -210,6 +257,9 @@ export default function AdminDashboard() {
                     <span className={`inline-flex items-center gap-1 ${u.statut === 'actif' ? 'text-emerald-700' : 'text-djassa-red'}`}>
                       {u.statut === 'actif' ? <CheckCircle2 size={13} /> : <XCircle size={13} />}{u.statut}
                     </span>
+                    <button type="button" onClick={() => deleteUser(u.id)} className="ml-3 inline-flex items-center gap-1 text-[9px] text-djassa-red hover:underline" title="Supprimer l'utilisateur">
+                      <Trash2 size={12} /> Supprimer
+                    </button>
                     <button type="button" onClick={() => resetPwd(u.id)} className="ml-3 inline-flex items-center gap-1 text-[9px] text-djassa-red hover:underline" title="Réinitialiser le mot de passe">
                       <RotateCcw size={12} /> Reset
                     </button>
