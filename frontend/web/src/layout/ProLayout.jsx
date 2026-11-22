@@ -3,7 +3,7 @@ import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
   AlertTriangle, ArrowLeftRight, BadgeCheck, Bell, LayoutDashboard,
-  LogOut, Menu, ReceiptText, Settings2, ShoppingBag, Sparkles, Store, Users, X,
+  LogOut, Menu, ReceiptText, Settings2, ShieldCheck, ShoppingBag, Sparkles, Store, Users, X,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Avatar } from '../components/ui';
