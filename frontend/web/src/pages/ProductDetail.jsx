@@ -210,7 +210,7 @@ export default function ProductDetail() {
         className="relative overflow-hidden rounded-[5px] px-5 py-5 text-white shadow-card sm:px-7 sm:py-6"
         style={{ background: 'linear-gradient(135deg, #780000 0%, #4A0000 60%, #140505 100%)' }}
       >
-        <img src="/images/shoppers.png" alt="" aria-hidden="true" className="art-warm pointer-events-none absolute -bottom-8 right-4 hidden h-40 w-auto select-none object-contain opacity-70 sm:block" />
+        <img src="/images/shoppers.webp" alt="" aria-hidden="true" className="art-warm pointer-events-none absolute -bottom-8 right-4 hidden h-40 w-auto select-none object-contain opacity-70 sm:block"  loading="lazy" decoding="async" />
         <div className="relative z-10">
           <span className="inline-flex items-center gap-1.5 rounded-[5px] bg-white/15 px-2.5 py-1 font-spacegrotesk text-[9px] font-extrabold uppercase tracking-[0.2em]">
             <Store size={13} /> Vitrine Djassa
@@ -229,7 +229,7 @@ export default function ProductDetail() {
         <div className="self-start lg:sticky lg:top-20">
           <div className="relative overflow-hidden rounded-[5px] bg-djassa-cloud border-solid border-[0.5px] border-[rgba(18,18,18,0.08)]">
             {images[activeImage] ? (
-              <img src={images[activeImage]} alt={article.titre} width={800} height={800} fetchPriority="high" className="aspect-square w-full object-cover" />
+              <img src={images[activeImage]} alt={article.titre} width={800} height={800} fetchPriority="high" className="aspect-square w-full object-cover"  loading="lazy" decoding="async" />
             ) : (
               <div className="flex aspect-square w-full flex-col items-center justify-center bg-djassa-red/[0.05]">
                 <ImageIcon size={42} className="text-djassa-red/30" />

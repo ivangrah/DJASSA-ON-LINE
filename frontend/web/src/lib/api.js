@@ -1,29 +1,56 @@
 import axios from 'axios';
 
-/**
- * Client API Djassa Online.
- * Dev  : baseURL `/api/v1` proxifié par Vite → http://127.0.0.1:8899
- * Prod : VITE_API_URL (ex. https://api.djassaonline.ci/api/v1)
- */
+/** Client API Djassa Online — dev : /api/v1 proxifié vers la gateway :8080. */
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL ?? '/api/v1',
   headers: { Accept: 'application/json' },
   timeout: 20000,
 });
 
+/** Déduplication des GET identiques en vol (règle 4). */
+const inFlight = new Map();
+
 api.interceptors.request.use((config) => {
+  const method = (config.method || 'get').toLowerCase();
+  if (method === 'get') {
+    const key = `${config.baseURL}${config.url}?${JSON.stringify(config.params ?? {})}`;
+    const existing = inFlight.get(key);
+    if (existing) return existing.then((response) => ({ ...response, config }));
+
+    let resolveRequest;
+    let rejectRequest;
+    const shared = new Promise((resolve, reject) => {
+      resolveRequest = resolve;
+      rejectRequest = reject;
+    });
+    inFlight.set(key, shared);
+    config._dedupeKey = key;
+    config._resolveDedupe = resolveRequest;
+    config._rejectDedupe = rejectRequest;
+  }
   const token = localStorage.getItem('djassa_token');
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    if (response.config?._dedupeKey) {
+      const { _dedupeKey, _resolveDedupe } = response.config;
+      _resolveDedupe?.(response);
+      setTimeout(() => inFlight.delete(_dedupeKey), 1000);
+    }
+    return response;
+  },
   (error) => {
+    if (error.config?._dedupeKey) {
+      const { _dedupeKey, _rejectDedupe } = error.config;
+      _rejectDedupe?.(error);
+      inFlight.delete(_dedupeKey);
+    }
     if (error.response?.status === 401) {
       localStorage.removeItem('djassa_token');
       localStorage.removeItem('djassa_user');
-      // Redirection douce hors routes d'auth
       if (!window.location.pathname.startsWith('/login') && !window.location.pathname.startsWith('/register')) {
         window.location.assign('/login');
       }
@@ -32,7 +59,6 @@ api.interceptors.response.use(
   }
 );
 
-/** Télécharge un fichier authentifié (reçu PDF) via blob. */
 export async function downloadAuthenticated(url, filename) {
   const res = await api.get(url.replace(/^.*\/api\/v1/, ''), { responseType: 'blob' });
   const blobUrl = URL.createObjectURL(res.data);

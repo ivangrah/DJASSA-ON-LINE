@@ -26,6 +26,45 @@ export function ProductCardSkeleton() {
   );
 }
 
+export function BoutiqueCardSkeleton() {
+  return (
+    <div className="djassa-card p-4">
+      <div className="skeleton h-24 w-full rounded-[5px]" />
+      <div className="mt-3 space-y-2">
+        <div className="skeleton h-4 w-3/4" />
+        <div className="skeleton h-3 w-1/2" />
+      </div>
+    </div>
+  );
+}
+
+export function MessageSkeleton() {
+  return (
+    <div className="flex gap-3 py-3">
+      <div className="skeleton h-9 w-9 shrink-0 rounded-full" />
+      <div className="flex-1 space-y-2">
+        <div className="skeleton h-3 w-1/3" />
+        <div className="skeleton h-3 w-4/5" />
+      </div>
+    </div>
+  );
+}
+
+export function DashboardSkeleton() {
+  return (
+    <div className="mx-auto w-full max-w-6xl animate-pulse px-4 py-10 sm:px-6">
+      <div className="skeleton h-8 w-56 rounded-[5px]" />
+      <div className="mt-6 grid gap-4 sm:grid-cols-3">
+        {[0, 1, 2].map((i) => <div key={i} className="skeleton h-24 rounded-[5px]" />)}
+      </div>
+      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {Array.from({ length: 6 }).map((_, i) => <ProductCardSkeleton key={i} />)}
+      </div>
+      <span className="sr-only">Chargement…</span>
+    </div>
+  );
+}
+
 /* ---------- État vide (flat line-art bichrome + accent rouge) ---------- */
 export function EmptyState({ title, hint, action, art = 'default', icon: Icon }) {
   const artMap = {

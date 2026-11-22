@@ -87,10 +87,10 @@ export default function Login() {
           {/* Illustration — panier avec produits flottants */}
           <div className="relative z-10 mt-auto flex flex-1 items-end justify-center pt-1 md:pt-3">
             <img
-              src="/images/illustrations/cart-3d-phone.png"
+              src="/images/illustrations/cart-3d-phone.webp"
               alt="Panier Djassa sur mobile — achats en ligne"
               className="art-warm h-40 w-auto max-w-[90%] select-none object-contain drop-shadow-[0_18px_40px_rgba(0,0,0,0.25)] sm:h-56 md:h-[380px] lg:h-[440px]"
-            />
+             loading="lazy" decoding="async" />
           </div>
         </div>
 

@@ -71,7 +71,7 @@ export default function CheckoutModal({ open, onClose, article, onPaid }) {
       {step === 'recap' && (
         <>
           <div className="flex items-center gap-3 rounded-[5px] bg-djassa-gray/15 p-3">
-            <img src={article.image_principale} alt="" className="h-16 w-16 rounded-[5px] object-cover bg-djassa-cloud border-solid border-[0.5px] border-[rgba(18,18,18,0.08)]" onError={(e) => { e.currentTarget.style.visibility = 'hidden'; }} />
+            <img src={article.image_principale} alt="" className="h-16 w-16 rounded-[5px] object-cover bg-djassa-cloud border-solid border-[0.5px] border-[rgba(18,18,18,0.08)]" onError={(e) => { e.currentTarget.style.visibility = 'hidden'; }} loading="lazy" decoding="async" />
             <div className="min-w-0 flex-1">
               <p className="clamp-2 text-xs font-bold text-djassa-black">{article.titre}</p>
               <p className="text-[10px] uppercase tracking-wide text-djassa-black/70">{article.boutique ? article.boutique.nom_boutique : 'Vendeur particulier'}</p>

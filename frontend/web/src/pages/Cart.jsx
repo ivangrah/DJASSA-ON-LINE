@@ -142,11 +142,11 @@ export default function Cart() {
             </p>
           </div>
           <img
-            src="/images/illustrations/shopper-phone.png"
+            src="/images/illustrations/shopper-phone.webp"
             alt=""
             aria-hidden="true"
             className="art-warm pointer-events-none h-24 w-auto shrink-0 select-none object-contain drop-shadow-[0_12px_24px_rgba(0,0,0,0.25)] sm:h-32 lg:h-40"
-          />
+           loading="lazy" decoding="async" />
         </div>
 
       {/* Réassurance — infos réelles du produit */}
@@ -168,11 +168,11 @@ export default function Cart() {
         <section className="mt-5 overflow-hidden rounded-[5px] bg-white border-solid border-[0.5px] border-[rgba(18,18,18,0.08)] shadow-card">
           <div className="flex flex-col items-center px-4 py-10 text-center sm:flex-row sm:gap-8 sm:px-10 sm:py-12 sm:text-left">
             <img
-              src="/images/cart-basket-receipt.png"
+              src="/images/cart-basket-receipt.webp"
               alt=""
               aria-hidden="true"
               className="art-warm h-44 w-auto shrink-0 select-none object-contain sm:h-56"
-            />
+             loading="lazy" decoding="async" />
             <div className="mt-5 sm:mt-0">
               <span className="inline-flex items-center gap-1.5 rounded-[5px] bg-djassa-red/10 px-2.5 py-1 font-spacegrotesk text-[9px] font-extrabold uppercase tracking-[0.18em] text-djassa-red">
                 <PackageOpen size={14} /> Panier vide
@@ -210,7 +210,7 @@ export default function Cart() {
                   </span>
                   <Link to={`/article/${item.id}`} className="h-20 w-20 shrink-0 overflow-hidden rounded-[5px] bg-white border-solid border-[0.5px] border-[rgba(18,18,18,0.08)] sm:h-24 sm:w-24">
                     {item.image ? (
-                      <img src={item.image} alt={item.titre} className="h-full w-full object-cover" />
+                      <img src={item.image} alt={item.titre} className="h-full w-full object-cover"  loading="lazy" decoding="async" />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center font-spacegrotesk text-sm font-extrabold text-djassa-black/15">Djassa</div>
                     )}
@@ -247,7 +247,7 @@ export default function Cart() {
               <Link to="/" className="inline-flex items-center gap-1.5 font-DM-Sans text-[10px] font-semibold text-djassa-black/60 transition hover:text-djassa-red">
                 <ArrowLeft size={13} /> Retour à la boutique
               </Link>
-              <img src="/images/cart-floating-products.png" alt="" aria-hidden="true" className="art-warm h-14 w-auto select-none object-contain" />
+              <img src="/images/cart-floating-products.webp" alt="" aria-hidden="true" className="art-warm h-14 w-auto select-none object-contain"  loading="lazy" decoding="async" />
             </div>
           </section>
 
@@ -264,7 +264,7 @@ export default function Cart() {
                 ))}
               </div>
               <div className="mt-4 flex items-center gap-3">
-                <img src="/images/cart-basket-receipt.png" alt="" aria-hidden="true" className="art-warm h-16 w-16 shrink-0 select-none object-contain" />
+                <img src="/images/cart-basket-receipt.webp" alt="" aria-hidden="true" className="art-warm h-16 w-16 shrink-0 select-none object-contain"  loading="lazy" decoding="async" />
                 <p className="font-DM-Sans text-[10px] leading-relaxed text-white/55">
                   Les fonds sont séquestrés jusqu’à la remise de l’article et la validation du code PIN par le vendeur.
                 </p>

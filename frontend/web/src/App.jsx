@@ -1,26 +1,30 @@
+import { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import { DashboardSkeleton } from './components/ui';
+import { RouteError } from './components/ErrorPages.jsx';
 import { useAuth } from './context/AuthContext';
 import AppShell from './layout/AppShell';
 import ParticulierLayout from './layout/ParticulierLayout';
 import ProLayout from './layout/ProLayout';
 import { RequireAuth, OnboardingGuard, ParticulierRoute, ProRoute } from './components/RouteGuards';
-import Feed from './pages/Feed';
-import ProductDetail from './pages/ProductDetail';
-import Cart from './pages/Cart';
-import BoutiquePage from './pages/BoutiquePage';
-import Souhaits from './pages/Souhaits';
-import Messages from './pages/Messages';
-import Publish from './pages/Publish';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import NotFound from './pages/NotFound';
-import ChoisirOffre from './pages/ChoisirOffre';
-import DashboardParticulier from './pages/particulier/DashboardParticulier';
-import DashboardPro from './pages/pro/DashboardPro';
-import MaBoutique from './pages/pro/MaBoutique';
-import TrocsPro from './pages/pro/TrocsPro';
-import AchatsPro from './pages/pro/AchatsPro';
-import FacturesPro from './pages/pro/FacturesPro';
+
+const Feed = lazy(() => import('./pages/Feed'));
+const ProductDetail = lazy(() => import('./pages/ProductDetail'));
+const Cart = lazy(() => import('./pages/Cart'));
+const BoutiquePage = lazy(() => import('./pages/BoutiquePage'));
+const Souhaits = lazy(() => import('./pages/Souhaits'));
+const Messages = lazy(() => import('./pages/Messages'));
+const Publish = lazy(() => import('./pages/Publish'));
+const Login = lazy(() => import('./pages/Login'));
+const Register = lazy(() => import('./pages/Register'));
+const NotFound = lazy(() => import('./pages/NotFound'));
+const ChoisirOffre = lazy(() => import('./pages/ChoisirOffre'));
+const DashboardParticulier = lazy(() => import('./pages/particulier/DashboardParticulier'));
+const DashboardPro = lazy(() => import('./pages/pro/DashboardPro'));
+const MaBoutique = lazy(() => import('./pages/pro/MaBoutique'));
+const TrocsPro = lazy(() => import('./pages/pro/TrocsPro'));
+const AchatsPro = lazy(() => import('./pages/pro/AchatsPro'));
+const FacturesPro = lazy(() => import('./pages/pro/FacturesPro'));
 
 /** Redirection de compatibilité pour les anciens liens /moi et /pro/dashboard. */
 function DashboardRedirect() {
@@ -34,7 +38,8 @@ function DashboardRedirect() {
 
 export default function App() {
   return (
-    <Routes>
+    <Suspense fallback={<DashboardSkeleton />}>
+    <Routes errorElement={<RouteError />}>
       {/* Anciennes URLs — conservées pour ne pas casser les favoris */}
       <Route path="/pro/dashboard" element={<Navigate to="/dashboard-pro" replace />} />
 
@@ -86,5 +91,6 @@ export default function App() {
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
+    </Suspense>
   );
 }

@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { lazy, memo, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useSearchParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import { gsap } from 'gsap';
@@ -12,7 +12,8 @@ import { useToast } from '../context/ToastContext';
 import ProductCardWide from '../components/ProductCardWide';
 import ProductGallery from '../components/ProductGallery';
 import MobileMenu from '../components/MobileMenu';
-import DjassaLogo3D from '../components/DjassaLogo3D';
+const DjassaLogo3D = lazy(() => import('../components/DjassaLogo3D'));
+const MemoProductCardWide = memo(ProductCardWide);
 import { CONDITION_LABELS, formatFCFA } from '../lib/format';
 import { ProductCardSkeleton, EmptyState, Spinner } from '../components/ui';
 
@@ -55,6 +56,19 @@ export default function Feed() {
     mutate(next);
     return next;
   });
+
+  // Debounce 300 ms sur la recherche (règle 3) — évite un appel API par frappe.
+  useEffect(() => {
+    if (searchInput === q) return undefined;
+    const timer = setTimeout(() => {
+      updateParams((next) => {
+        const value = searchInput.trim();
+        if (value) next.set('q', value);
+        else next.delete('q');
+      });
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchInput, q]);
 
   const submitSearch = (e) => {
     e.preventDefault();
@@ -352,10 +366,10 @@ export default function Feed() {
       <section ref={heroRef} className="relative overflow-hidden bg-[#121212] text-white" aria-label="Djassa Online">
         <img
           data-hero-bg
-          src="/images/hero-shopping-bags.jpg"
+          src="/images/hero-shopping-bags.webp"
           alt="Sacs de shopping rouges et noirs sur fond noir"
           className="absolute inset-0 h-full w-full select-none object-cover object-[50%_34%]"
-        />
+         loading="eager" decoding="async" fetchpriority="high" />
         {/* Scrim global doux + voile bas pour la lisibilité du texte centré */}
         <div className="absolute inset-0 bg-[#121212]/45" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#121212]/95 via-[#121212]/25 to-transparent" />
@@ -369,11 +383,13 @@ export default function Feed() {
           {/* Nav intégrée — logo gauche · liens centre · Se connecter droite */}
           <div data-hero-nav className="relative flex items-center justify-between gap-4 py-3 md:py-4">
             <Link to="/" className="flex items-center gap-2.5" aria-label="Djassa Online — accueil">
-              <DjassaLogo3D
-                svgUrl="/images/logo-mark.svg"
-                tiltDeg={-16}
-                className="h-12 w-12 shrink-0 md:h-14 md:w-14"
-              />
+              <Suspense fallback={<img src="/images/logo-mark.svg" alt="" className="h-12 w-12 animate-pulse" />}>
+                <DjassaLogo3D
+                  svgUrl="/images/logo-mark.svg"
+                  tiltDeg={-16}
+                  className="h-12 w-12 shrink-0 md:h-14 md:w-14"
+                />
+              </Suspense>
               <span className="font-spacegrotesk text-[15px] font-extrabold uppercase leading-none tracking-tight text-white sm:text-[17px]">
                 Djassa<span className="text-djassa-gray">&nbsp;Online</span>
               </span>
@@ -403,11 +419,11 @@ export default function Feed() {
 
           {/* Visuel e-commerce — mobile (au-dessus du titre) */}
           <img
-            src="/images/illustrations/hero-cart-3d.png"
+            src="/images/illustrations/hero-cart-3d.webp"
             alt="Panier Djassa sur mobile — achats en ligne et livraison"
             data-hero-visual
             className="art-warm pointer-events-none relative z-0 mx-auto -mb-1 mt-0 w-[150px] select-none object-contain opacity-95 drop-shadow-[0_18px_30px_rgba(0,0,0,0.55)] sm:w-[200px] lg:hidden"
-          />
+           loading="eager" decoding="async" fetchpriority="high" />
 
           {/* Headline centré */}
           <div className="relative z-10 flex flex-1 flex-col items-center justify-center pb-[224px] pt-2 text-center sm:pb-40 sm:pt-8 md:pb-44 md:pt-10">
@@ -427,14 +443,14 @@ export default function Feed() {
 
           {/* Visuels e-commerce — desktop (flottants + légendes) */}
           <div data-hero-visual className="pointer-events-none absolute right-[2%] top-[38%] z-0 hidden w-[clamp(300px,26vw,460px)] -translate-y-1/2 flex-col items-center xl:flex">
-            <img src="/images/illustrations/hero-cart-3d.png" alt="Panier Djassa sur mobile — achats en ligne et livraison" className="art-warm w-full select-none object-contain opacity-95 drop-shadow-[0_30px_60px_rgba(0,0,0,0.6)]" />
+            <img src="/images/illustrations/hero-cart-3d.webp" alt="Panier Djassa sur mobile — achats en ligne et livraison" className="art-warm w-full select-none object-contain opacity-95 drop-shadow-[0_30px_60px_rgba(0,0,0,0.6)]"  loading="eager" decoding="async" fetchpriority="high" />
             <div className="mt-1 rounded-[5px] bg-black/55 px-3.5 py-1.5 text-center shadow-card backdrop-blur-md">
               <p className="font-spacegrotesk text-[10px] font-extrabold uppercase tracking-[0.14em] text-white">Livré en confiance</p>
               <p className="font-DM-Sans text-[9px] text-white/65">Paiement sécurisé · Escrow + PIN</p>
             </div>
           </div>
           <div data-hero-visual className="pointer-events-none absolute left-[0%] top-[40%] z-0 hidden w-[clamp(280px,25vw,440px)] -translate-y-1/2 flex-col items-center xl:flex">
-            <img src="/images/hero-bags-burst.png" alt="Sacs de shopping et cadeaux Djassa" className="w-full select-none object-contain opacity-90 drop-shadow-[0_30px_60px_rgba(0,0,0,0.6)]" />
+            <img src="/images/hero-bags-burst.webp" alt="Sacs de shopping et cadeaux Djassa" className="w-full select-none object-contain opacity-90 drop-shadow-[0_30px_60px_rgba(0,0,0,0.6)]"  loading="eager" decoding="async" fetchpriority="high" />
             <div className="mt-1 rounded-[5px] bg-black/70 px-3.5 py-1.5 text-center shadow-card backdrop-blur-md">
               <p className="font-spacegrotesk text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#780000]">Occasion & Troc</p>
               <p className="font-DM-Sans text-[9px] text-white/65">Le bon plan seconde main</p>
@@ -499,13 +515,13 @@ export default function Feed() {
                   <span data-promo-badge className="inline-flex w-fit items-center gap-2 rounded-[5px] bg-djassa-red/10 px-3 py-1.5 text-[9px] font-spacegrotesk font-extrabold uppercase tracking-[0.22em] text-djassa-red">
                     <Zap size={20} strokeWidth={3} fill="currentColor" /> Offre spéciale
                   </span>
-                  <img data-promo-stamp src="/images/promo-stamp.jpg" alt="PROMO" aria-hidden="true" className="pointer-events-none h-12 w-auto shrink-0 -rotate-[10deg] select-none object-contain opacity-90 sm:h-14 lg:h-16" loading="lazy" />
+                  <img data-promo-stamp src="/images/promo-stamp.webp" alt="PROMO" aria-hidden="true" className="pointer-events-none h-12 w-auto shrink-0 -rotate-[10deg] select-none object-contain opacity-90 sm:h-14 lg:h-16" loading="lazy" />
                 </div>
 
                 <div className="flex min-h-0 flex-1 items-center justify-center py-1">
                   <div data-promo-illustration className="relative flex aspect-square h-full max-h-36 w-auto items-center justify-center sm:max-h-44 lg:max-h-44 xl:max-h-52">
                     <div className="absolute inset-0 rounded-[5px] bg-[#FFF1F2]" aria-hidden="true" />
-                    <img src="/images/promo-megaphone.jpg" alt="Mégaphone Special Promo illustrant les offres" className="relative h-[88%] w-[88%] object-contain mix-blend-multiply" />
+                    <img src="/images/promo-megaphone.webp" alt="Mégaphone Special Promo illustrant les offres" className="relative h-[88%] w-[88%] object-contain mix-blend-multiply"  loading="lazy" decoding="async" />
                   </div>
                 </div>
 
@@ -675,7 +691,7 @@ export default function Feed() {
             {/* Panier + compteur */}
             <div className="flex shrink-0 items-center gap-3">
               <Link to="/panier" className="group relative hidden h-24 w-24 items-center justify-center rounded-[5px] bg-djassa-red/5 transition hover:bg-djassa-red/10 md:flex" aria-label={`Mon panier — ${cartCount} article${cartCount > 1 ? 's' : ''}`}>
-                <img src="/images/cart-sale.png" alt="Panier Djassa" className="h-20 w-20 object-contain" />
+                <img src="/images/cart-sale.webp" alt="Panier Djassa" className="h-20 w-20 object-contain"  loading="lazy" decoding="async" />
                 {cartCount > 0 && (
                   <span key={cartCount} className="cart-badge-pop absolute -right-1 -top-1 flex h-6 min-w-6 items-center justify-center rounded-[5px] bg-[#780000] px-1.5 font-spacegrotesk text-[10px] font-extrabold text-white shadow-md ring-2">
                     {cartCount > 9 ? '9+' : cartCount}
@@ -771,7 +787,7 @@ export default function Feed() {
               <div ref={gridRef} className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 lg:gap-4">
                 {articles.map((article) => (
                   <div key={article.id} data-card>
-                    <ProductCardWide article={article} />
+                    <MemoProductCardWide article={article} />
                   </div>
                 ))}
               </div>

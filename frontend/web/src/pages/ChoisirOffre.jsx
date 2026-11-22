@@ -93,7 +93,7 @@ export default function ChoisirOffre() {
       <div className="pointer-events-none absolute -left-40 top-[-10%] h-[520px] w-[520px] rounded-[5px] bg-djassa-red/25 blur-[130px]" aria-hidden="true" />
       <div className="pointer-events-none absolute -right-32 bottom-[-15%] h-[460px] w-[460px] rounded-[5px] bg-djassa-red/15 blur-[120px]" aria-hidden="true" />
       <div className="pointer-events-none absolute inset-0 opacity-[0.035]" aria-hidden="true" style={{ backgroundImage: 'radial-gradient(#FFFFFF 0.7px, transparent 0.7px)', backgroundSize: '18px 18px' }} />
-      <img src="/images/illustrations/storefront-arrows.png" alt="" aria-hidden="true" className="art-warm pointer-events-none absolute right-2 top-20 hidden h-44 w-auto select-none object-contain opacity-25 lg:block" />
+      <img src="/images/illustrations/storefront-arrows.webp" alt="" aria-hidden="true" className="art-warm pointer-events-none absolute right-2 top-20 hidden h-44 w-auto select-none object-contain opacity-25 lg:block"  loading="lazy" decoding="async" />
 
       <header className="relative z-10 mx-auto flex h-20 max-w-7xl items-center gap-3 px-4 sm:px-6 lg:px-8">
         <Link to="/" className="flex items-center gap-2.5" aria-label="Djassa Online — accueil">

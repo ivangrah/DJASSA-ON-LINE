@@ -113,7 +113,7 @@ export default function BarterModal({ open, onClose, targetArticle, onSuccess })
       {/* Article cible */}
       {targetArticle && (
         <div className="mb-4 flex items-center gap-3 rounded-[5px] bg-djassa-gray/15 p-3">
-          <img src={targetArticle.image_principale} alt="" className="h-14 w-14 rounded-[5px] object-cover bg-djassa-cloud border-solid border-[0.5px] border-[rgba(18,18,18,0.08)]" onError={(e) => { e.currentTarget.style.visibility = 'hidden'; }} />
+          <img src={targetArticle.image_principale} alt="" className="h-14 w-14 rounded-[5px] object-cover bg-djassa-cloud border-solid border-[0.5px] border-[rgba(18,18,18,0.08)]" onError={(e) => { e.currentTarget.style.visibility = 'hidden'; }} loading="lazy" decoding="async" />
           <div className="min-w-0 flex-1">
             <p className="text-[10px] font-semibold uppercase tracking-wide text-djassa-black/70">Vous voulez obtenir</p>
             <p className="clamp-2 text-xs font-bold text-djassa-black">{targetArticle.titre}</p>
@@ -144,7 +144,7 @@ export default function BarterModal({ open, onClose, targetArticle, onSuccess })
                 aria-pressed={checked}
                 className={`flex w-full items-center gap-3 rounded-[5px]  p-2 text-left transition ${checked ? ' bg-djassa-red/5' : ' bg-white border-solid border-[0.5px] border-[rgba(18,18,18,0.08)] '}`}
               >
-                <img src={a.image_principale} alt="" className="h-16 w-16 rounded-[5px] object-cover bg-djassa-cloud border-solid border-[0.5px] border-[rgba(18,18,18,0.08)]" onError={(e) => { e.currentTarget.style.visibility = 'hidden'; }} />
+                <img src={a.image_principale} alt="" className="h-16 w-16 rounded-[5px] object-cover bg-djassa-cloud border-solid border-[0.5px] border-[rgba(18,18,18,0.08)]" onError={(e) => { e.currentTarget.style.visibility = 'hidden'; }} loading="lazy" decoding="async" />
                 <div className="min-w-0 flex-1">
                   <p className="text-[9px] font-semibold uppercase tracking-wider text-djassa-black/70">{CONDITION_LABELS[a.condition]}</p>
                   <p className="clamp-2 text-xs font-bold leading-snug text-djassa-black">{a.titre}</p>

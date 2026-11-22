@@ -170,7 +170,7 @@ export default function DashboardParticulier() {
         <Link to="/publier" className="inline-flex items-center gap-2 rounded-[5px] bg-djassa-red border-solid border-[0.5px] border-[rgba(255,255,255,0.12)] px-4 py-2.5 font-spacegrotesk text-[11px] font-extrabold uppercase tracking-wide text-white shadow-pop transition hover:bg-djassa-red-dark active:scale-95">
           <PlusCircle size={15} /> Publier une annonce
         </Link>
-        <img src="/images/illustrations/ecommerce-laptop-iso.png" alt="" aria-hidden="true" className="art-warm pointer-events-none hidden h-28 w-auto select-none object-contain lg:block" />
+        <img src="/images/illustrations/ecommerce-laptop-iso.webp" alt="" aria-hidden="true" className="art-warm pointer-events-none hidden h-28 w-auto select-none object-contain lg:block"  loading="lazy" decoding="async" />
       </div>
 
       {/* Statistiques */}

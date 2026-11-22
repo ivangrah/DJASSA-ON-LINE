@@ -112,7 +112,7 @@ export default function Register() {
           </div>
 
           <div className="relative z-10 mt-auto flex flex-1 items-end justify-center pt-2">
-            <img src="/images/auth-cart-floating.png" alt="Panier de shopping Djassa avec produits flottants" className="art-warm h-56 w-auto max-w-[85%] select-none object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.3)] sm:h-64 md:h-[360px]" />
+            <img src="/images/auth-cart-floating.webp" alt="Panier de shopping Djassa avec produits flottants" className="art-warm h-56 w-auto max-w-[85%] select-none object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.3)] sm:h-64 md:h-[360px]"  loading="lazy" decoding="async" />
           </div>
         </div>
 

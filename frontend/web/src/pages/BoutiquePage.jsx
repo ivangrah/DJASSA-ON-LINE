@@ -57,10 +57,10 @@ export default function BoutiquePage() {
         className="relative mt-2 overflow-hidden rounded-[5px] px-5 py-6 text-white shadow-card sm:px-8 sm:py-8"
         style={{ background: 'linear-gradient(135deg, #780000 0%, #4A0000 60%, #140505 100%)' }}
       >
-        <img src="/images/store-stripes.jpg" alt="" aria-hidden="true" className="pointer-events-none absolute -right-6 -top-6 h-44 w-auto select-none object-contain opacity-25 sm:h-56" />
+        <img src="/images/store-stripes.webp" alt="" aria-hidden="true" className="pointer-events-none absolute -right-6 -top-6 h-44 w-auto select-none object-contain opacity-25 sm:h-56"  loading="lazy" decoding="async" />
         <div className="relative z-10 flex flex-wrap items-center gap-4">
           <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-[5px] bg-white font-spacegrotesk text-3xl font-extrabold text-[#780000] shadow-card sm:h-24 sm:w-24">
-            {boutique.logo ? <img src={boutique.logo} alt="" className="h-full w-full object-cover" /> : boutique.nom_boutique.slice(0, 1).toUpperCase()}
+            {boutique.logo ? <img src={boutique.logo} alt="" className="h-full w-full object-cover"  loading="lazy" decoding="async" /> : boutique.nom_boutique.slice(0, 1).toUpperCase()}
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
@@ -73,7 +73,7 @@ export default function BoutiquePage() {
               <span className="flex items-center gap-1"><Store size={14} />{boutique.categorie ?? 'Boutique Pro'}</span>
             </p>
           </div>
-          <img src="/images/shop-open.png" alt="" aria-hidden="true" className="pointer-events-none hidden h-28 w-auto select-none object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.3)] lg:block" />
+          <img src="/images/shop-open.webp" alt="" aria-hidden="true" className="pointer-events-none hidden h-28 w-auto select-none object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.3)] lg:block"  loading="lazy" decoding="async" />
         </div>
       </section>
 
@@ -106,11 +106,11 @@ export default function BoutiquePage() {
                 <span className="font-spacegrotesk font-extrabold tabular-nums">{articles.length}</span>
               </div>
             </div>
-            <img src="/images/shop-open.png" alt="" aria-hidden="true" className="pointer-events-none mx-auto mt-3 h-20 w-auto select-none object-contain lg:hidden" />
+            <img src="/images/shop-open.webp" alt="" aria-hidden="true" className="pointer-events-none mx-auto mt-3 h-20 w-auto select-none object-contain lg:hidden"  loading="lazy" decoding="async" />
           </div>
 
           <div className="overflow-hidden rounded-[5px] bg-white border-solid border-[0.5px] border-[rgba(18,18,18,0.08)] shadow-card">
-            <img src="/images/bag-heart.jpg" alt="" aria-hidden="true" className="h-28 w-full object-cover" />
+            <img src="/images/bag-heart.webp" alt="" aria-hidden="true" className="h-28 w-full object-cover"  loading="lazy" decoding="async" />
             <p className="p-3 font-DM-Sans text-[10px] leading-relaxed text-djassa-black/65">
               Chaque achat est protégé par séquestre et code PIN sur Djassa Online.
             </p>
@@ -126,12 +126,12 @@ export default function BoutiquePage() {
               </h2>
               <p className="mt-0.5 font-DM-Sans text-[11px] text-djassa-black/55">{articles.length} article{articles.length > 1 ? 's' : ''} en ligne</p>
             </div>
-            <img src="/images/shoppers.png" alt="" aria-hidden="true" className="art-warm pointer-events-none hidden h-16 w-auto select-none object-contain sm:block" />
+            <img src="/images/shoppers.webp" alt="" aria-hidden="true" className="art-warm pointer-events-none hidden h-16 w-auto select-none object-contain sm:block"  loading="lazy" decoding="async" />
           </div>
 
           {articles.length === 0 ? (
             <div className="mt-3">
-              <img src="/images/wire-basket.png" alt="" aria-hidden="true" className="mx-auto h-40 w-auto object-contain opacity-70" />
+              <img src="/images/wire-basket.webp" alt="" aria-hidden="true" className="mx-auto h-40 w-auto object-contain opacity-70"  loading="lazy" decoding="async" />
               <EmptyState art="box" title="Aucun article en ligne" hint="Cette boutique n'a pas encore d'article publié." />
             </div>
           ) : (

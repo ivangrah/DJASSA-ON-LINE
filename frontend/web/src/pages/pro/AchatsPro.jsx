@@ -41,7 +41,7 @@ export default function AchatsPro() {
         }
       />
 
-      <img src="/images/illustrations/calendar-clock-basket.png" alt="" aria-hidden="true" className="art-warm pointer-events-none mx-auto -mb-1 hidden h-24 w-auto select-none object-contain sm:block" />
+      <img src="/images/illustrations/calendar-clock-basket.webp" alt="" aria-hidden="true" className="art-warm pointer-events-none mx-auto -mb-1 hidden h-24 w-auto select-none object-contain sm:block"  loading="lazy" decoding="async" />
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard icon={ShoppingBag} label="Achats" value={achats.length} hint="Toutes périodes" tone="dark" />

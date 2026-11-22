@@ -174,7 +174,7 @@ function Inbox({ conversations, isLoading, partnerId, articleId, onSelect }) {
           </div>
         ) : visible.length === 0 ? (
           <div className="px-4 py-10">
-            <img src="/images/illustrations/chat-bubbles.png" alt="" aria-hidden="true" className="art-warm pointer-events-none mx-auto mb-2 h-32 w-auto select-none object-contain opacity-80" />
+            <img src="/images/illustrations/chat-bubbles.webp" alt="" aria-hidden="true" className="art-warm pointer-events-none mx-auto mb-2 h-32 w-auto select-none object-contain opacity-80"  loading="lazy" decoding="async" />
             <EmptyState
               art={query ? 'search' : 'message'}
               title={query ? 'Aucun résultat' : onlyUnread ? 'Tout est lu' : 'Aucune conversation'}

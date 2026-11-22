@@ -30,7 +30,7 @@ export default function FlashBanner({ articles }) {
     <section className="relative overflow-hidden rounded-[5px] bg-gradient-to-r from-djassa-red via-djassa-red-strong to-[#780000] p-[1px] shadow-pop" aria-label="Vente flash en cours">
       {/* Shimmer balayant */}
       <div ref={shimmerRef} aria-hidden="true" className="pointer-events-none absolute inset-y-0 w-1/4 bg-white/25 blur-2xl" />
-      <img src="/images/illustrations/cart-rose-3d.png" alt="" aria-hidden="true" className="art-warm pointer-events-none absolute -right-2 bottom-0 hidden h-24 w-auto select-none object-contain opacity-40 sm:block" />
+      <img src="/images/illustrations/cart-rose-3d.webp" alt="" aria-hidden="true" className="art-warm pointer-events-none absolute -right-2 bottom-0 hidden h-24 w-auto select-none object-contain opacity-40 sm:block"  loading="lazy" decoding="async" />
 
       <div className="relative flex items-center gap-3 rounded-[5px] bg-gradient-to-r from-djassa-red via-djassa-red-strong to-djassa-red px-4 py-3">
         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[5px] bg-white/15">

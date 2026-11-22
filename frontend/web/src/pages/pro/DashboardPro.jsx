@@ -32,7 +32,7 @@ function OnboardingPro({ prenom }) {
 
       <div className="relative overflow-hidden rounded-[5px] bg-djassa-black border-solid border-[0.5px] border-[rgba(255,255,255,0.12)] p-5 text-white shadow-card sm:p-7">
         <div className="pointer-events-none absolute -right-20 -top-24 h-64 w-64 rounded-[5px] bg-djassa-red/30 blur-[90px]" aria-hidden="true" />
-        <img src="/images/illustrations/ecommerce-laptop-payment.png" alt="" aria-hidden="true" className="art-warm pointer-events-none absolute -right-10 bottom-0 hidden h-56 w-auto select-none object-contain opacity-70 xl:block" />
+        <img src="/images/illustrations/ecommerce-laptop-payment.webp" alt="" aria-hidden="true" className="art-warm pointer-events-none absolute -right-10 bottom-0 hidden h-56 w-auto select-none object-contain opacity-70 xl:block"  loading="lazy" decoding="async" />
         <div className="relative grid gap-6 lg:grid-cols-[1.15fr_1fr] lg:items-center">
           <div>
             <span className="inline-flex items-center gap-1.5 rounded-[5px] bg-white/15 px-3 py-1 font-spacegrotesk text-[9px] font-extrabold uppercase tracking-[0.18em] text-white">
@@ -271,7 +271,7 @@ export default function DashboardPro() {
         <div className="pointer-events-none absolute -right-24 -top-28 h-72 w-72 rounded-[5px] bg-white/10 blur-[80px]" aria-hidden="true" />
         <div className="pointer-events-none absolute -bottom-24 left-1/3 h-64 w-64 rounded-[5px] bg-[#ef4444]/15 blur-[90px]" aria-hidden="true" />
         <div className="pointer-events-none absolute inset-0 opacity-[0.06]" aria-hidden="true" style={{ backgroundImage: 'radial-gradient(#FFFFFF 0.7px, transparent 0.7px)', backgroundSize: '20px 20px' }} />
-        <img src="/images/illustrations/ecommerce-laptop-payment.png" alt="" aria-hidden="true" className="art-warm pointer-events-none absolute -bottom-6 right-0 hidden h-56 w-auto select-none object-contain opacity-25 xl:block" />
+        <img src="/images/illustrations/ecommerce-laptop-payment.webp" alt="" aria-hidden="true" className="art-warm pointer-events-none absolute -bottom-6 right-0 hidden h-56 w-auto select-none object-contain opacity-25 xl:block"  loading="lazy" decoding="async" />
 
         <div className="relative z-10 flex flex-wrap items-start justify-between gap-6">
           <div className="min-w-0 flex-1">

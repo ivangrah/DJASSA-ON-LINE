@@ -172,7 +172,7 @@ export default function Publish() {
               Moins de 60 secondes chrono — le mode Flash Djassa.
             </p>
           </div>
-          <img src="/images/publish-note.png" alt="" aria-hidden="true" className="art-warm pointer-events-none h-24 w-auto shrink-0 select-none object-contain drop-shadow-[0_12px_24px_rgba(0,0,0,0.3)] sm:h-32" />
+          <img src="/images/publish-note.webp" alt="" aria-hidden="true" className="art-warm pointer-events-none h-24 w-auto shrink-0 select-none object-contain drop-shadow-[0_12px_24px_rgba(0,0,0,0.3)] sm:h-32"  loading="lazy" decoding="async" />
         </div>
 
         {/* Stepper */}
@@ -198,7 +198,7 @@ export default function Publish() {
       {step === 0 && (
         <section className="mt-5">
           <label htmlFor="photos" className="group relative flex cursor-pointer flex-col items-center justify-center gap-2 overflow-hidden rounded-[5px] bg-djassa-cream px-6 py-10 text-center transition">
-            <img src="/images/publish-folder.png" alt="" aria-hidden="true" className="pointer-events-none absolute -right-4 -top-4 h-36 w-auto select-none object-contain opacity-40 sm:h-44" />
+            <img src="/images/publish-folder.webp" alt="" aria-hidden="true" className="pointer-events-none absolute -right-4 -top-4 h-36 w-auto select-none object-contain opacity-40 sm:h-44"  loading="lazy" decoding="async" />
             {compressing ? <Spinner size={34} /> : <CloudUpload size={38} className="relative text-djassa-red" />}
             <p className="relative font-spacegrotesk text-sm font-bold text-djassa-black">{compressing ? 'Compression WebP en cours…' : 'Ajoutez 4 photos du produit'}</p>
             <p className={`relative font-DM-Sans text-[10px] font-semibold ${images.length >= 4 ? 'text-emerald-600' : 'text-djassa-red'}`}>
@@ -213,7 +213,7 @@ export default function Publish() {
             <div className="mt-3 grid grid-cols-3 gap-2 sm:grid-cols-6">
               {images.map((img, i) => (
                 <div key={i} className="group relative aspect-square overflow-hidden rounded-[5px] bg-djassa-cloud border-solid border-[0.5px] border-[rgba(18,18,18,0.08)]">
-                  <img src={img.url} alt={`Photo ${i + 1}`} className="h-full w-full object-cover" />
+                  <img src={img.url} alt={`Photo ${i + 1}`} className="h-full w-full object-cover"  loading="lazy" decoding="async" />
                   <button onClick={() => removeImage(i)} className="absolute right-1 top-1 rounded-[5px] bg-black/60 p-1.5 text-white opacity-80 transition hover:bg-djassa-red" aria-label="Retirer la photo"><Trash2 size={12} /></button>
                   {i === 0 && <span className="absolute bottom-1 left-1 rounded-[5px] bg-djassa-black/70 px-2 py-0.5 text-[8px] font-bold uppercase text-white">Principale</span>}
                 </div>
@@ -266,7 +266,7 @@ export default function Publish() {
 
           {!isProVerified && (
             <div className="flex flex-wrap items-center gap-3 rounded-[5px] bg-djassa-red/5 px-3.5 py-3">
-              <img src="/images/illustrations/storefront-flat.png" alt="" aria-hidden="true" className="art-warm pointer-events-none hidden h-16 w-auto shrink-0 select-none object-contain sm:block" />
+              <img src="/images/illustrations/storefront-flat.webp" alt="" aria-hidden="true" className="art-warm pointer-events-none hidden h-16 w-auto shrink-0 select-none object-contain sm:block"  loading="lazy" decoding="async" />
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[5px] bg-djassa-red/10 text-djassa-red">
                 <Crown size={17} />
               </span>
