@@ -52,7 +52,8 @@ api.interceptors.response.use(
       _rejectDedupe?.(error);
       inFlight.delete(_dedupeKey);
     }
-    if (error.response?.data?.maintenance === true || error.response?.status === 503) {
+    // Ne rediriger que sur un vrai état maintenance explicite (pas n'importe quel 503).
+    if (error.response?.data?.maintenance === true) {
       const msg = encodeURIComponent(error.response?.data?.message ?? '');
       if (!window.location.pathname.startsWith('/maintenance')) {
         window.location.assign(`/maintenance${msg ? `?message=${msg}` : ''}`);
