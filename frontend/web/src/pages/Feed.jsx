@@ -16,6 +16,7 @@ const DjassaLogo3D = lazy(() => import('../components/DjassaLogo3D'));
 const MemoProductCardWide = memo(ProductCardWide);
 import { CONDITION_LABELS, formatFCFA } from '../lib/format';
 import { ProductCardSkeleton, EmptyState, Spinner } from '../components/ui';
+import { useFlyToCart } from '../hooks/useFlyToCart';
 
 export default function Feed() {
   const heroRef = useRef(null);
@@ -28,6 +29,7 @@ export default function Feed() {
   const { count: cartCount } = cart;
   const toast = useToast();
   const navigate = useNavigate();
+  const flyToCart = useFlyToCart();
   const q = searchParams.get('q') ?? '';
   const sort = searchParams.get('sort') ?? 'latest';
   const category = searchParams.get('category') ?? '';
@@ -83,7 +85,12 @@ export default function Feed() {
     e.preventDefault();
     e.stopPropagation();
     if (cart.has(offer.id)) { toast.info('Déjà dans votre panier.'); return; }
-    if (cart.add(offer)) toast.success('Article ajouté au panier.');
+    if (cart.add(offer)) {
+      const card = e.currentTarget.closest('article');
+      const img = card?.querySelector('img');
+      flyToCart(img, offer.image_principale || offer.images?.[0]?.url);
+      toast.success('Article ajouté au panier.');
+    }
   };
 
   const clearQuery = () => { setSearchInput(''); updateParams((next) => next.delete('q')); };

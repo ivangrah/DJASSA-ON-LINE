@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { usePageReveal } from '../hooks/usePageReveal';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSearchParams, Link } from 'react-router-dom';
+import { gsap } from 'gsap';
 import {
   ArrowLeftRight, BadgeCheck, CheckCheck, ChevronLeft, ExternalLink, Image as ImageIcon,
   LockKeyhole, MessageCircle, Search, SendHorizonal, ShieldCheck, ShoppingBag, Tag, X, Zap,
@@ -12,6 +13,7 @@ import { useToast } from '../context/ToastContext';
 import { BARTER_STATUS, CONDITION_LABELS, formatFCFA, timeAgo } from '../lib/format';
 import { Avatar, EmptyState, Spinner } from '../components/ui';
 import BarterModal from '../components/BarterModal';
+import { playMessageReceived, playMessageSent } from '../utils/soundEffects';
 
 export default function Messages() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -269,14 +271,38 @@ function Thread({ partnerId, articleId, conversation, onBack }) {
   const article = articleData?.data ?? conversation?.article;
   const messages = thread?.data ?? [];
   const partner = conversation?.with;
+  const knownMsgIdsRef = useRef(new Set());
+  const msgInitRef = useRef(false);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
   }, [messages.length]);
 
+  useEffect(() => {
+    if (!messages.length) return;
+    if (!msgInitRef.current) {
+      messages.forEach((m) => knownMsgIdsRef.current.add(m.id));
+      msgInitRef.current = true;
+      return;
+    }
+    const newIds = messages.filter((m) => !knownMsgIdsRef.current.has(m.id)).map((m) => m.id);
+    const hasNewIncoming = messages.some((m) => !knownMsgIdsRef.current.has(m.id) && m.expediteur_id !== user?.id);
+    messages.forEach((m) => knownMsgIdsRef.current.add(m.id));
+    if (hasNewIncoming) playMessageReceived();
+    if (newIds.length && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      requestAnimationFrame(() => {
+        newIds.forEach((id) => {
+          const el = document.querySelector(`[data-msg-id="${CSS.escape(String(id))}"]`);
+          if (el) gsap.fromTo(el, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: 0.32, ease: 'power2.out', clearProps: 'transform' });
+        });
+      });
+    }
+  }, [messages, user?.id]);
+
   const send = useMutation({
     mutationFn: async (payload) => (await api.post('/messages', payload)).data,
     onSuccess: () => {
+      playMessageSent();
       setText(''); setOfferAmount(''); setOfferMode(false);
       queryClient.invalidateQueries({ queryKey: ['messages'] });
     },
@@ -392,15 +418,17 @@ function Thread({ partnerId, articleId, conversation, onBack }) {
                 )}
                 {messages.map((m) => {
                   const mine = m.expediteur_id === user?.id;
-                  if (m.type === 'systeme') return <SystemNote key={m.id} message={m} />;
+                  const wrap = (node) => <div key={m.id} data-msg-id={m.id}>{node}</div>;
+                  if (m.type === 'systeme') return wrap(<SystemNote message={m} />);
                   if (m.type === 'carte_troc') {
-                    return <TrocCard key={m.id} message={m} mine={mine} onRespond={respondOffer} pending={respondOffer.isPending} />;
+                    return wrap(<TrocCard message={m} mine={mine} onRespond={respondOffer} pending={respondOffer.isPending} />);
                   }
-                  if (m.type === 'offre_prix') return <PriceCard key={m.id} message={m} mine={mine} />;
-                  return <TextBubble key={m.id} message={m} mine={mine} partnerName={partner?.nom} />;
+                  if (m.type === 'offre_prix') return wrap(<PriceCard message={m} mine={mine} />);
+                  return wrap(<TextBubble message={m} mine={mine} partnerName={partner?.nom} />);
                 })}
               </>
             )}
+            {(thread?.partner_typing || thread?.is_typing) && <TypingDots />}
             <div ref={endRef} />
           </div>
 
@@ -525,6 +553,28 @@ function Thread({ partnerId, articleId, conversation, onBack }) {
 }
 
 /* ================= Briques de fil ================= */
+
+function TypingDots() {
+  const dotsRef = useRef(null);
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
+    const dots = dotsRef.current?.querySelectorAll('[data-dot]');
+    if (!dots?.length) return undefined;
+    const tl = gsap.timeline({ repeat: -1 });
+    dots.forEach((dot, i) => {
+      tl.to(dot, { y: -5, opacity: 1, duration: 0.22, ease: 'power2.out' }, i * 0.12)
+        .to(dot, { y: 0, opacity: 0.45, duration: 0.22, ease: 'power2.in' }, i * 0.12 + 0.22);
+    });
+    return () => tl.kill();
+  }, []);
+  return (
+    <div className="flex items-end gap-2 justify-start" aria-live="polite" aria-label="En train d’écrire">
+      <div ref={dotsRef} className="inline-flex items-center gap-1.5 rounded-[5px] bg-white px-3.5 py-3 shadow-sm">
+        {[0, 1, 2].map((i) => <span key={i} data-dot className="h-2 w-2 rounded-full bg-djassa-red/60 opacity-45" />)}
+      </div>
+    </div>
+  );
+}
 
 function ArticleThumb({ article, className = 'h-12 w-12' }) {
   return (

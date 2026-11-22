@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeftRight, BadgeCheck, Heart, MapPin, MessageCircle, Zap } from 'lucide-react';
 import { CONDITION_LABELS, formatFCFA } from '../lib/format';
+import { burstParticles, pulseHeart } from '../utils/microInteractions';
 
 /**
  * Carte produit Djassa — épurée, avec actions rapides (Troc / Message).
@@ -73,8 +74,8 @@ export default function ProductCard({ article }) {
           type="button"
           aria-pressed={faved}
           aria-label={faved ? 'Retirer des favoris' : 'Ajouter aux favoris'}
-          onClick={(e) => { e.preventDefault(); setFaved((v) => !v); }}
-          className="absolute right-2.5 top-2.5 rounded-[5px] bg-white/92 p-2 shadow-md backdrop-blur transition hover:scale-110 active:scale-95"
+          onClick={(e) => { e.preventDefault(); const next = !faved; setFaved(next); if (next) { pulseHeart(e.currentTarget); burstParticles(e.currentTarget, '#780000'); } }}
+          className="absolute right-2.5 top-2.5 rounded-[5px] bg-white/92 p-2 shadow-md backdrop-blur transition hover:scale-110 active:scale-[0.98]"
         >
           <Heart size={20} strokeWidth={2.4} className={faved ? 'fill-djassa-red text-djassa-red heart-pop' : 'text-djassa-black'} />
         </button>

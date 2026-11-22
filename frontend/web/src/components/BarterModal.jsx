@@ -1,10 +1,12 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ArrowLeftRight, BadgeCheck, Check, ChevronRight, Info, PackageOpen } from 'lucide-react';
+import { gsap } from 'gsap';
 import { api } from '../lib/api';
 import { formatFCFA, CONDITION_LABELS } from '../lib/format';
 import { Modal, Spinner } from './ui';
 import { useToast } from '../context/ToastContext';
+import { playSuccessChord } from '../utils/soundEffects';
 
 /**
  * Modale « Proposer un troc » (PRD §3.3, App Flow §5).
@@ -32,6 +34,8 @@ export default function BarterModal({ open, onClose, targetArticle, onSuccess })
   const toggle = (id) =>
     setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
 
+  const successRef = useRef(null);
+
   const propose = useMutation({
     mutationFn: async () => {
       const body = {
@@ -45,6 +49,7 @@ export default function BarterModal({ open, onClose, targetArticle, onSuccess })
     },
     onSuccess: (data) => {
       setSent(data?.data ?? data);
+      playSuccessChord();
       queryClient.invalidateQueries({ queryKey: ['barter-offers'] });
       queryClient.invalidateQueries({ queryKey: ['messages', 'conversations'] });
       toast.success('Proposition de troc envoyée au vendeur.');
@@ -53,6 +58,15 @@ export default function BarterModal({ open, onClose, targetArticle, onSuccess })
       toast.error(error.response?.data?.message ?? 'Impossible d’envoyer la proposition.');
     },
   });
+
+  useEffect(() => {
+    if (!sent || !successRef.current || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const cards = successRef.current.querySelectorAll('[data-troc-card]');
+    if (cards.length === 2) {
+      gsap.fromTo(cards[0], { x: -28, opacity: 0.7 }, { x: 0, opacity: 1, duration: 0.55, ease: 'power3.out' });
+      gsap.fromTo(cards[1], { x: 28, opacity: 0.7 }, { x: 0, opacity: 1, duration: 0.55, ease: 'power3.out' });
+    }
+  }, [sent]);
 
   const selectedTotal = myArticles.filter((a) => selected.includes(a.id))
     .reduce((acc, a) => acc + Number(a.prix), 0);
@@ -67,14 +81,19 @@ export default function BarterModal({ open, onClose, targetArticle, onSuccess })
   if (sent) {
     return (
       <Modal open={open} onClose={reset} title="Proposition envoyée">
-        <div className="flex flex-col items-center py-2 text-center">
-          <div className="flex h-28 w-28 items-center justify-center">
+        <div ref={successRef} className="flex flex-col items-center py-2 text-center">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <div data-troc-card className="h-14 w-20 rounded-[5px] bg-djassa-cloud border border-[rgba(18,18,18,0.08)] shadow-sm flex items-center justify-center"><ArrowLeftRight size={20} className="text-djassa-red" /></div>
+            <div className="h-8 w-8 rounded-full bg-djassa-red text-white flex items-center justify-center shadow-pop"><Check size={16} strokeWidth={3} /></div>
+            <div data-troc-card className="h-14 w-20 rounded-[5px] bg-djassa-cloud border border-[rgba(18,18,18,0.08)] shadow-sm flex items-center justify-center"><ArrowLeftRight size={20} className="text-djassa-red scale-x-[-1]" /></div>
+          </div>
+          <div className="flex h-20 w-20 items-center justify-center">
             <svg viewBox="0 0 120 120" className="h-full w-full" role="img" aria-label="Proposition envoyée">
               <circle className="circle-draw" cx="60" cy="60" r="52" fill="none" stroke="#780000" strokeWidth="9" strokeLinecap="round" pathLength="100" />
               <path className="check-draw" d="M38 63 L54 79 L86 45" fill="none" stroke="#121212" strokeWidth="10" strokeLinecap="round" strokeLinejoin="round" pathLength="100" />
             </svg>
           </div>
-          <h4 className="mt-4 font-spacegrotesk text-lg font-extrabold text-djassa-black">C'est envoyé !</h4>
+          <h4 className="mt-3 font-spacegrotesk text-lg font-extrabold text-djassa-black">C'est envoyé !</h4>
           <p className="mt-1 max-w-xs text-sm text-djassa-black/70">
             Le vendeur reçoit votre offre dans la messagerie avec une carte interactive. Vous serez notifié dès sa réponse.
           </p>

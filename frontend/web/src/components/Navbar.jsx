@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { gsap } from 'gsap';
 import {
   ArrowLeftRight, Heart, LayoutGrid, MessageCircle, Package, Plus,
   Search, ShoppingCart, Store, UserRound, X,
@@ -8,7 +9,9 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { Avatar } from './ui';
+import SoundToggle from './SoundToggle';
 import { api } from '../lib/api';
+import { playNotificationChime } from '../utils/soundEffects';
 
 const LINKS = [
   { to: '/#feed', label: 'Catalogue', icon: LayoutGrid },
@@ -30,6 +33,8 @@ export default function Navbar() {
   const [query, setQuery] = useState('');
   const [unread, setUnread] = useState(0);
   const [drawer, setDrawer] = useState(false);
+  const prevUnreadRef = useRef(0);
+  const unreadInitRef = useRef(false);
 
   useEffect(() => {
     if (!isAuthenticated) return undefined;
@@ -37,7 +42,18 @@ export default function Navbar() {
     const poll = async () => {
       try {
         const { data } = await api.get('/messages/unread-count');
-        if (alive) setUnread(data.unread ?? 0);
+        if (!alive) return;
+        const next = data.unread ?? 0;
+        if (unreadInitRef.current && next > prevUnreadRef.current) {
+          playNotificationChime();
+          const bells = document.querySelectorAll('[data-notification-bell]');
+          if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            bells.forEach((bell) => gsap.fromTo(bell, { rotation: -18 }, { rotation: 0, duration: 0.7, ease: 'elastic.out(1, 0.3)', overwrite: 'auto', transformOrigin: 'top center' }));
+          }
+        }
+        unreadInitRef.current = true;
+        prevUnreadRef.current = next;
+        setUnread(next);
       } catch { /* silencieux */ }
     };
     poll();
@@ -103,16 +119,17 @@ export default function Navbar() {
 
         {/* Actions */}
         <div className={`flex shrink-0 items-center gap-1.5 ${query || !isAuthenticated ? 'ml-auto md:ml-0' : ''}`}>
-          <Link to="/publier" className="hidden items-center gap-1.5 rounded-[5px] bg-white px-3 py-2 font-spacegrotesk text-[10px] font-extrabold uppercase tracking-wide text-[#780000] shadow-card transition hover:bg-white/85 sm:inline-flex">
+          <Link to="/publier" className="hidden items-center gap-1.5 rounded-[5px] bg-white px-3 py-2 font-spacegrotesk text-[10px] font-extrabold uppercase tracking-wide text-[#780000] shadow-card transition hover:bg-white/85 active:scale-[0.98] sm:inline-flex">
             <Plus size={16} /> Publier
           </Link>
-          <Link to="/panier" className="relative flex h-9 w-9 items-center justify-center rounded-[5px] bg-white/10 transition hover:bg-white/20" aria-label={`Mon panier — ${cartCount} article${cartCount > 1 ? 's' : ''}`}>
+          <SoundToggle className="bg-white/10 text-white/85 hover:bg-white/20 hover:text-white" />
+          <Link to="/panier" data-cart-target className="relative flex h-9 w-9 items-center justify-center rounded-[5px] bg-white/10 transition hover:bg-white/20 active:scale-[0.98]" aria-label={`Mon panier — ${cartCount} article${cartCount > 1 ? 's' : ''}`}>
             <ShoppingCart size={19} />
-            {cartCount > 0 && <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-[5px] bg-white px-1 font-spacegrotesk text-[9px] font-extrabold tabular-nums text-[#780000]">{cartCount > 9 ? '9+' : cartCount}</span>}
+            {cartCount > 0 && <span data-cart-badge className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-[5px] bg-white px-1 font-spacegrotesk text-[9px] font-extrabold tabular-nums text-[#780000]">{cartCount > 9 ? '9+' : cartCount}</span>}
           </Link>
           {isAuthenticated ? (
             <>
-              <Link to="/messages" className="relative flex h-9 w-9 items-center justify-center rounded-[5px] bg-white/10 transition hover:bg-white/20" aria-label="Messages">
+              <Link to="/messages" data-notification-bell className="relative flex h-9 w-9 items-center justify-center rounded-[5px] bg-white/10 transition hover:bg-white/20" aria-label="Messages">
                 <MessageCircle size={19} />
                 {unread > 0 && <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-[5px] bg-white px-1 font-spacegrotesk text-[9px] font-extrabold tabular-nums text-[#780000]">{unread > 9 ? '9+' : unread}</span>}
               </Link>

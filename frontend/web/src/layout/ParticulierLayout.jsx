@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Avatar } from '../components/ui';
+import SoundToggle from '../components/SoundToggle';
 
 const TABS = [
   { key: 'articles', label: 'Mes articles à troquer', short: 'Articles', icon: LayoutList },
@@ -47,15 +48,16 @@ export default function ParticulierLayout() {
             <Link to="/souhaits" className="rounded-[5px] px-3 py-2 text-[13px] font-semibold text-white/75 transition hover:bg-white/10 hover:text-white">
               Mur des souhaits
             </Link>
-            <Link to="/messages" className="rounded-[5px] p-2 text-white/80 transition hover:bg-white/10 hover:text-white" aria-label="Messages">
+            <Link to="/messages" data-notification-bell className="rounded-[5px] p-2 text-white/80 transition hover:bg-white/10 hover:text-white active:scale-[0.98]" aria-label="Messages">
               <MessageCircle size={24} />
             </Link>
-            <Link to="/publier" className="ml-1 inline-flex items-center gap-1.5 rounded-[5px] bg-white px-3.5 py-2 font-spacegrotesk text-[12px] font-extrabold text-[#780000] shadow-card transition hover:bg-white/85 active:scale-95">
+            <Link to="/publier" className="ml-1 inline-flex items-center gap-1.5 rounded-[5px] bg-white px-3.5 py-2 font-spacegrotesk text-[12px] font-extrabold text-[#780000] shadow-card transition hover:bg-white/85 active:scale-[0.98]">
               <PlusCircle size={20} /> Publier
             </Link>
           </nav>
 
-          <Link to="/messages" className="ml-auto rounded-[5px] p-2 text-white/80 md:hidden" aria-label="Messages">
+          <SoundToggle className="ml-auto bg-white/10 text-white/85 hover:bg-white/20 hover:text-white md:ml-0" />
+          <Link to="/messages" data-notification-bell className="rounded-[5px] p-2 text-white/80 md:hidden active:scale-[0.98]" aria-label="Messages">
             <Bell size={20} />
           </Link>
           <Link to="/publier" className="inline-flex items-center gap-1 rounded-[5px] bg-white px-3 py-2 font-spacegrotesk text-[11px] font-extrabold text-[#780000] md:hidden">

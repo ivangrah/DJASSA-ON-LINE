@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
+import { gsap } from 'gsap';
+import { playErrorThud } from '../utils/soundEffects';
 
 /* ---------- Spinner ---------- */
 export function Spinner({ size = 22, className = '' }) {
@@ -227,9 +229,10 @@ export function FlashCountdown({ targetIso, className = '' }) {
 }
 
 /* ---------- Saisie PIN à 4 chiffres (remise physique) ---------- */
-export function PinInput({ onComplete, autoFocus = true }) {
+export function PinInput({ onComplete, autoFocus = true, error = false }) {
   const [digits, setDigits] = useState(['', '', '', '']);
   const refs = [useRef(null), useRef(null), useRef(null), useRef(null)];
+  const wrapRef = useRef(null);
 
   const handle = (idx, value) => {
     if (!/^\d?$/.test(value)) return;
@@ -249,8 +252,19 @@ export function PinInput({ onComplete, autoFocus = true }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [autoFocus]);
 
+  useEffect(() => {
+    if (!error) return;
+    playErrorThud();
+    setDigits(['', '', '', '']);
+    if (wrapRef.current && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      gsap.fromTo(wrapRef.current, { x: -10 }, { x: 0, duration: 0.45, ease: 'elastic.out(1, 0.3)', clearProps: 'transform' });
+    }
+    refs[0].current?.focus();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [error]);
+
   return (
-    <div className="flex items-center justify-center gap-3">
+    <div ref={wrapRef} className="flex items-center justify-center gap-3">
       {digits.map((d, i) => (
         <input
           key={i}
@@ -261,7 +275,7 @@ export function PinInput({ onComplete, autoFocus = true }) {
           value={d}
           onChange={(e) => handle(i, e.target.value)}
           onKeyDown={(e) => handleKey(i, e)}
-          className="h-16 w-14 rounded-[5px] bg-djassa-gray/15 text-center font-spacegrotesk text-2xl font-extrabold text-djassa-black outline-none transition focus:ring-2 focus:ring-djassa-red/25"
+          className={`h-16 w-14 rounded-[5px] bg-djassa-gray/15 text-center font-spacegrotesk text-2xl font-extrabold text-djassa-black outline-none transition focus:ring-2 ${error ? 'ring-2 ring-djassa-red/40' : 'focus:ring-djassa-red/25'}`}
           aria-label={`Chiffre ${i + 1}`}
         />
       ))}

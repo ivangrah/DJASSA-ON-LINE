@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeftRight, BadgeCheck, Check, Heart, ShoppingCart, Star, Zap } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import ProductGallery from './ProductGallery';
 import { useToast } from '../context/ToastContext';
 import { CONDITION_LABELS, formatFCFA } from '../lib/format';
+import { useFlyToCart } from '../hooks/useFlyToCart';
+import { burstParticles, pulseHeart } from '../utils/microInteractions';
 
 /**
  * Carte produit compacte — conteneur div cliquable (pas de <a> imbriqué).
@@ -14,6 +16,8 @@ export default function ProductCardWide({ article }) {
   const navigate = useNavigate();
   const cart = useCart();
   const toast = useToast();
+  const flyToCart = useFlyToCart();
+  const mediaRef = useRef(null);
   const [faved, setFaved] = useState(false);
   const [justAdded, setJustAdded] = useState(false);
   const inCart = cart.has(article.id);
@@ -30,7 +34,11 @@ export default function ProductCardWide({ article }) {
     e.preventDefault();
     e.stopPropagation();
     if (!inCart) {
-      if (cart.add(article)) toast.success('Article ajouté au panier.');
+      if (cart.add(article)) {
+        const img = mediaRef.current?.querySelector('img') ?? mediaRef.current;
+        flyToCart(img, article.image_principale || article.images?.[0]?.url);
+        toast.success('Article ajouté au panier.');
+      }
     } else {
       toast.info('Déjà dans votre panier.');
     }
@@ -60,7 +68,7 @@ export default function ProductCardWide({ article }) {
       aria-label={`${article.titre} — ${formatFCFA(prixActuel)}`}
     >
       {/* Image */}
-      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[5px] bg-djassa-cloud border-solid border-[0.5px] border-[rgba(18,18,18,0.08)]">
+      <div ref={mediaRef} className="relative aspect-[4/3] w-full overflow-hidden rounded-[5px] bg-djassa-cloud border-solid border-[0.5px] border-[rgba(18,18,18,0.08)]">
         <Link to={`/article/${article.id}`} className="block h-full w-full" aria-label={`Voir ${article.titre}`} tabIndex={-1}>
           <ProductGallery article={article} images={article.images} />
         </Link>
@@ -83,8 +91,12 @@ export default function ProductCardWide({ article }) {
           type="button"
           aria-pressed={faved}
           aria-label={faved ? 'Retirer des favoris' : 'Ajouter aux favoris'}
-          onClick={() => setFaved((v) => !v)}
-          className="absolute right-2 top-2 rounded-[5px] bg-white/92 p-1.5 shadow-sm transition hover:scale-110 active:scale-95"
+          onClick={(e) => {
+            const next = !faved;
+            setFaved(next);
+            if (next) { pulseHeart(e.currentTarget); burstParticles(e.currentTarget, '#780000'); }
+          }}
+          className="absolute right-2 top-2 rounded-[5px] bg-white/92 p-1.5 shadow-sm transition hover:scale-110 active:scale-[0.98]"
         >
           <Heart size={20} strokeWidth={2.6} className={faved ? 'fill-djassa-red text-djassa-red heart-pop' : 'text-djassa-black'} />
         </button>

@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Avatar } from '../components/ui';
+import SoundToggle from '../components/SoundToggle';
 import { api } from '../lib/api';
 
 const NAV = [
@@ -267,7 +268,8 @@ export default function ProLayout() {
             </div>
 
             <div className="ml-auto flex items-center gap-2">
-              <Link to="/messages" className="hidden rounded-[5px] p-2 text-djassa-black/60 transition hover:bg-djassa-cloud hover:text-djassa-black sm:inline-flex" aria-label="Notifications — mes messages">
+              <SoundToggle className="text-djassa-black/60 hover:bg-djassa-cloud hover:text-djassa-black" />
+              <Link to="/messages" data-notification-bell className="hidden rounded-[5px] p-2 text-djassa-black/60 transition hover:bg-djassa-cloud hover:text-djassa-black sm:inline-flex active:scale-[0.98]" aria-label="Notifications — mes messages">
                 <Bell size={24} />
               </Link>
               <Link to="/" className="hidden rounded-[5px] px-3 py-2 font-sans text-[0.875rem] font-extrabold text-djassa-black/70 transition hover:text-djassa-red sm:inline-flex">

@@ -13,6 +13,7 @@ import { useToast } from '../context/ToastContext';
 import { useCart } from '../context/CartContext';
 import { CONDITION_LABELS, CONDITION_STYLES, formatFCFA, timeAgo } from '../lib/format';
 import { Avatar, EmptyState } from '../components/ui';
+import { useFlyToCart } from '../hooks/useFlyToCart';
 import BarterModal from '../components/BarterModal';
 import CheckoutModal from '../components/CheckoutModal';
 import ProductCardWide from '../components/ProductCardWide';
@@ -151,10 +152,15 @@ export default function ProductDetail() {
     return true;
   };
 
+  const flyToCart = useFlyToCart();
+  const galleryRef = useRef(null);
   const addToCart = () => {
     if (!requireAuth()) return;
-    if (cart.add(article)) toast.success('Article ajouté au panier.');
-    else toast.info('Cet article est déjà dans votre panier.');
+    if (cart.add(article)) {
+      const img = galleryRef.current?.querySelector('img');
+      flyToCart(img, images[activeImage] || article.image_principale);
+      toast.success('Article ajouté au panier.');
+    } else toast.info('Cet article est déjà dans votre panier.');
   };
 
   const ready = !isLoading && !isError && Boolean(article);
@@ -230,7 +236,7 @@ export default function ProductDetail() {
       <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,44%)_minmax(0,1fr)] lg:gap-6">
         {/* Galerie + confiance */}
         <div className="self-start lg:sticky lg:top-20">
-          <div className="relative overflow-hidden rounded-[5px] bg-djassa-cloud border-solid border-[0.5px] border-[rgba(18,18,18,0.08)]">
+          <div ref={galleryRef} className="relative overflow-hidden rounded-[5px] bg-djassa-cloud border-solid border-[0.5px] border-[rgba(18,18,18,0.08)]">
             {images[activeImage] ? (
               <img src={images[activeImage]} alt={article.titre} width={800} height={800} fetchPriority="high" className="aspect-square w-full object-cover"  loading="lazy" decoding="async" />
             ) : (

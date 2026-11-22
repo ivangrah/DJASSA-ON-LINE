@@ -1,6 +1,7 @@
 import { Component, useEffect, useState } from 'react';
 import { Rive } from '@rive-app/react-canvas';
 import { X } from 'lucide-react';
+import { playSuccessChord } from '../utils/soundEffects';
 
 const RIV_URL = '/animations/djassa-pin-success.riv';
 
@@ -43,6 +44,7 @@ export default function PinSuccess({ amount, onClose }) {
   const [hasRive, setHasRive] = useState(null); // null = chargement, true/false = décision
 
   useEffect(() => {
+    playSuccessChord();
     let alive = true;
     fetch(RIV_URL, { method: 'HEAD' })
       .then((res) => {
