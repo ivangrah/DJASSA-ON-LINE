@@ -21,5 +21,7 @@ export const adminApi = {
   updateBoutique: (id, payload) => api.put(`/admin/catalog/boutiques/${id}`, payload),
   deleteBoutique: (id) => api.delete(`/admin/catalog/boutiques/${id}`),
   finances: () => api.get('/admin/catalog/boutiques/finances'),
+  campaigns: (params) => api.get('/admin/campaigns', { params }),
+  estimateCampaign: (payload) => api.post('/admin/campaigns/estimate', payload),
   broadcast: (payload) => api.post('/admin/campaigns', payload),
 };

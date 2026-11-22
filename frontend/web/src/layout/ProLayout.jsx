@@ -99,8 +99,8 @@ function SidebarContent({ onNavigate, counts }) {
       </div>
 
       {/* ===== NAVIGATION ===== */}
-      <nav className="mt-6 flex-1 space-y-1 overflow-y-auto px-3" aria-label="Navigation espace Pro">
-        <p className="mb-2 px-3 font-spacegrotesk text-[8px] font-extrabold uppercase tracking-[0.24em] text-white/50">Pilotage</p>
+      <nav className={`mt-5 flex-1 px-3 ${isAdmin ? 'space-y-0.5 overflow-y-hidden' : 'space-y-1 overflow-y-auto'}`} aria-label="Navigation espace Pro">
+        <p className={`px-3 font-spacegrotesk text-[8px] font-extrabold uppercase tracking-[0.24em] text-white/50 ${isAdmin ? 'mb-1' : 'mb-2'}`}>Pilotage</p>
 
         {nav.map(({ to, end, label, icon: Icon, key, tab }) => {
           const active = isAdmin ? activeTab === tab : undefined;
@@ -112,7 +112,7 @@ function SidebarContent({ onNavigate, counts }) {
               onClick={onNavigate}
               className={({ isActive }) => {
                 const isItemActive = isAdmin ? active : isActive;
-                return `group flex items-center gap-3 rounded-[5px] px-3 py-2.5 text-[12px] font-bold transition-all duration-200 ${
+                return `group flex items-center gap-3 rounded-[5px] px-3 ${isAdmin ? 'py-2 text-[11.5px]' : 'py-2.5 text-[12px]'} font-bold transition-all duration-200 ${
                   isItemActive
                     ? 'bg-[#0A0A0A] text-white shadow-[0_8px_22px_rgba(0,0,0,0.35)]'
                     : 'text-white/70 hover:bg-black/20 hover:text-white'
@@ -123,12 +123,12 @@ function SidebarContent({ onNavigate, counts }) {
                 const isItemActive = isAdmin ? active : isActive;
                 return (
                   <>
-                    <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-[5px] transition ${
+                    <span className={`flex shrink-0 items-center justify-center rounded-[5px] transition ${isAdmin ? 'h-7 w-7' : 'h-8 w-8'} ${
                       isItemActive
                         ? 'bg-white/15 text-white'
                         : 'bg-white/10 text-white/80 group-hover:bg-white/20'
                     }`}>
-                      <Icon size={18} strokeWidth={isItemActive ? 2.6 : 2} />
+                      <Icon size={isAdmin ? 16 : 18} strokeWidth={isItemActive ? 2.6 : 2} />
                     </span>
                     <span className="min-w-0 flex-1 leading-tight">{label}</span>
                     {key && counts[key] > 0 && (

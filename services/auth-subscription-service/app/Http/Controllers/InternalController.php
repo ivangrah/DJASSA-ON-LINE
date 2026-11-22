@@ -75,6 +75,26 @@ class InternalController extends Controller
         return response()->json($user->toArray());
     }
 
+    /** Compte de destinataires pour campagnes admin (HMAC interne). */
+    public function countUsers(Request $request): JsonResponse
+    {
+        $this->verify($request);
+        $audience = (string) $request->query('audience', 'all');
+        $target = trim((string) $request->query('user_id', ''));
+        $q = User::query()->where('statut', 'actif');
+        if ($audience === 'vendeur_pro') $q->where('role', 'vendeur_pro');
+        elseif ($audience === 'particulier') $q->where('role', 'particulier');
+        elseif ($audience === 'user' && $target !== '') {
+            $q->where(function ($x) use ($target) {
+                $x->where('email', $target);
+                if (preg_match('/^[0-9a-fA-F-]{36}$/', $target)) $x->orWhereKey($target);
+            });
+        } elseif ($audience === 'user') {
+            return response()->json(['count' => 0]);
+        }
+        return response()->json(['count' => $q->count()]);
+    }
+
     public function creditWallet(Request $request, string $id): JsonResponse
     {
         $this->verify($request);

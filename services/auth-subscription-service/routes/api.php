@@ -12,6 +12,7 @@ Route::get('/api/v1/maintenance', [\App\Http\Controllers\AdminController::class,
 Route::post('/api/v1/auth/register', [AuthController::class, 'register']);
 Route::post('/api/v1/auth/login', [AuthController::class, 'login']);
 Route::post('/api/v1/auth/google', [AuthController::class, 'google']);
+Route::get('/api/v1/offres', [\App\Http\Controllers\AdminOffreController::class, 'publicIndex']);
 
 // Routes Administration — protégées par X-User-Role === 'admin' (injecté par la gateway).
 Route::middleware(['auth:sanctum', 'admin'])->prefix('/api/v1/admin')->group(function () {

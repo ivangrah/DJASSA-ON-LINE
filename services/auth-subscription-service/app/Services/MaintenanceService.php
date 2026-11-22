@@ -17,7 +17,7 @@ class MaintenanceService
         private readonly int $port,
     ) {}
 
-    public function enable(string $message, ?int $durationMinutes = null): array
+    public function enable(string $message, ?int $durationMinutes = null, ?string $updatedBy = null): array
     {
         $state = [
             'enabled' => true,
@@ -26,14 +26,25 @@ class MaintenanceService
             'started_at' => now()->toIso8601String(),
             'ends_at' => $durationMinutes ? now()->addMinutes($durationMinutes)->toIso8601String() : null,
             'updated_at' => now()->toIso8601String(),
+            'updated_by' => $updatedBy,
         ];
         $this->command(['SET', self::KEY, json_encode($state, JSON_UNESCAPED_UNICODE)]);
         return $state;
     }
 
-    public function disable(): array
+    public function disable(?string $updatedBy = null): array
     {
-        $state = ['enabled' => false, 'message' => '', 'updated_at' => now()->toIso8601String()];
+        $previous = $this->state();
+        $state = [
+            'enabled' => false,
+            'message' => '',
+            'duration_minutes' => null,
+            'started_at' => null,
+            'ends_at' => null,
+            'updated_at' => now()->toIso8601String(),
+            'updated_by' => $updatedBy,
+            'last_enabled_at' => $previous['started_at'] ?? null,
+        ];
         $this->command(['SET', self::KEY, json_encode($state, JSON_UNESCAPED_UNICODE)]);
         return $state;
     }
@@ -45,7 +56,7 @@ class MaintenanceService
             $data = json_decode($raw, true);
             if (is_array($data)) return $data;
         }
-        return ['enabled' => false, 'message' => '', 'duration_minutes' => null, 'started_at' => null, 'ends_at' => null, 'updated_at' => null];
+        return ['enabled' => false, 'message' => '', 'duration_minutes' => null, 'started_at' => null, 'ends_at' => null, 'updated_at' => null, 'updated_by' => null];
     }
 
     public function isEnabled(): bool

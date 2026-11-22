@@ -2,7 +2,7 @@ import { Download, Inbox } from 'lucide-react';
 import { exportAdminPdf } from '../../lib/adminPdf';
 
 /** Tableau admin générique avec bouton d'export PDF (lazy import). */
-export default function AdminTable({ title, columns, rows, renderRow, totalLabel, onExportReady }) {
+export default function AdminTable({ title, columns, rows, renderRow, totalLabel, onExportReady, action }) {
   const headers = columns.map((c) => c.label);
   const pdfRows = rows.map((r) => columns.map((c) => {
     const v = r[c.key];
@@ -19,13 +19,16 @@ export default function AdminTable({ title, columns, rows, renderRow, totalLabel
     <div>
       <div className="mb-3 flex items-center justify-between gap-2">
         <p className="font-spacegrotesk text-[13px] font-extrabold text-djassa-black">{title} <span className="text-djassa-black/40">({rows.length})</span></p>
-        <button
-          type="button"
-          onClick={handleExport}
-          className="inline-flex items-center gap-1.5 rounded-[5px] bg-djassa-red px-3 py-1.5 font-spacegrotesk text-[10px] font-extrabold text-white transition hover:bg-[#9b0000] active:scale-95"
-        >
-          <Download size={14} /> Exporter en PDF
-        </button>
+        <div className="flex items-center gap-2">
+          {action}
+          <button
+            type="button"
+            onClick={handleExport}
+            className="inline-flex items-center gap-1.5 rounded-[5px] bg-djassa-red px-3 py-1.5 font-spacegrotesk text-[10px] font-extrabold text-white transition hover:bg-[#9b0000] active:scale-95"
+          >
+            <Download size={14} /> Exporter en PDF
+          </button>
+        </div>
       </div>
       <div className="overflow-x-auto rounded-[5px] border-none bg-white shadow-card">
         <table className="w-full text-left font-DM-Sans text-[11px]">

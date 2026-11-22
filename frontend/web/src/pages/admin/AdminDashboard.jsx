@@ -30,6 +30,25 @@ const TABS = [
 ];
 const TAB_IDS = new Set(TABS.map((t) => t.id));
 
+function ToggleSwitch({ checked, onChange, label, compact = false }) {
+  return (
+    <label className={`inline-flex cursor-pointer items-center gap-2 ${compact ? '' : 'font-DM-Sans text-[11px] font-semibold text-djassa-black/75'}`}>
+      <button
+        type="button"
+        role="switch"
+        aria-checked={checked}
+        aria-label={label}
+        onClick={() => onChange(!checked)}
+        className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full border-none transition-colors duration-200 ${checked ? 'bg-djassa-red' : 'bg-djassa-black/20'}`}
+      >
+        <span className={`inline-block h-4 w-4 rounded-full bg-white shadow transition-transform duration-200 ${checked ? 'translate-x-6' : 'translate-x-1'}`} />
+      </button>
+      {!compact && <span>{label}</span>}
+      {compact && <span className={`text-[9px] font-bold ${checked ? 'text-emerald-700' : 'text-djassa-black/45'}`}>{label}</span>}
+    </label>
+  );
+}
+
 function AnimatedNumber({ value, prefix = '', suffix = '' }) {
   const el = useRef(null);
   const prev = useRef(null);
@@ -77,6 +96,7 @@ export default function AdminDashboard() {
   const { data: boutiquesData } = useQuery({ queryKey: ['admin', 'boutiques'], queryFn: () => adminApi.boutiques(), enabled: canFetch, retry: false, staleTime: 30_000 });
   const { data: offresData } = useQuery({ queryKey: ['admin', 'offres'], queryFn: () => adminApi.offres(), enabled: canFetch, retry: false, staleTime: 30_000 });
   const { data: maintenanceData } = useQuery({ queryKey: ['admin', 'maintenance'], queryFn: () => adminApi.maintenance(), enabled: canFetch, retry: false, staleTime: 10_000 });
+  const { data: campaignsData } = useQuery({ queryKey: ['admin', 'campaigns'], queryFn: () => adminApi.campaigns(), enabled: canFetch && tab === 'notifications', retry: false, staleTime: 15_000 });
 
   const users = Array.isArray(usersData?.data?.data) ? usersData.data.data : (Array.isArray(usersData?.data) ? usersData.data : []);
   const audit = Array.isArray(auditData?.data?.data) ? auditData.data.data : (Array.isArray(auditData?.data) ? auditData.data : []);
@@ -86,21 +106,27 @@ export default function AdminDashboard() {
   const usersTotal = Number(usersData?.data?.meta?.total ?? users.length);
   const boutiquesTotal = Number(boutiquesData?.data?.meta?.total ?? boutiques.length);
 
-  const [maintenanceOn, setMaintenanceOn] = useState(false);
+  const maintenance = maintenanceData?.data?.data ?? maintenanceData?.data ?? {};
+  const maintenanceOn = Boolean(maintenance.enabled);
   const [maintenanceMsg, setMaintenanceMsg] = useState('');
   const [maintenanceDuration, setMaintenanceDuration] = useState(60);
 
   useEffect(() => {
-    const state = maintenanceData?.data?.data ?? maintenanceData?.data;
-    if (!state) return;
-    setMaintenanceOn(Boolean(state.enabled));
-    setMaintenanceMsg(state.message ?? '');
-    setMaintenanceDuration(state.duration_minutes ?? 60);
-  }, [maintenanceData]);
-  const [campaign, setCampaign] = useState({ audience: 'all', titre: '', corps: '', email: false });
+    if (maintenance.message != null && maintenance.message !== '') setMaintenanceMsg(maintenance.message);
+    if (maintenance.duration_minutes != null) setMaintenanceDuration(maintenance.duration_minutes);
+  }, [maintenance.enabled, maintenance.message, maintenance.duration_minutes, maintenance.updated_at]);
+  const [campaign, setCampaign] = useState({ audience: 'all', user_id: '', titre: '', corps: '', email: false, priorite: 'info' });
+  const [campaignEstimate, setCampaignEstimate] = useState(null);
   const [newUser, setNewUser] = useState({ nom: '', email: '', telephone: '', role: 'particulier', password: '' });
-  const [profile, setProfile] = useState({ nom: user?.nom ?? '', email: user?.email ?? '', telephone: user?.telephone ?? '' });
-  const [newOffre, setNewOffre] = useState({ code: '', nom: '', montant_fcfa: '', duree_jours: 30, actif: true });
+  const [profile, setProfile] = useState({ nom: user?.nom ?? '', email: user?.email ?? '', telephone: user?.telephone ?? '', password: '', password_confirmation: '' });
+  const campaigns = Array.isArray(campaignsData?.data?.data) ? campaignsData.data.data : (Array.isArray(campaignsData?.data) ? campaignsData.data : []);
+  const campaignTemplates = [
+    { key: 'maintenance', titre: 'Maintenance imminente', corps: 'Une maintenance de la plateforme Djassa est prévue prochainement. Certains services pourront être temporairement indisponibles. Merci de votre compréhension.', priorite: 'warning' },
+    { key: 'security', titre: 'Alerte sécurité', corps: 'Par mesure de sécurité, nous vous recommandons de vérifier votre compte et de mettre à jour votre mot de passe. N\'hésitez pas à contacter le support en cas d\'activité suspecte.', priorite: 'urgent' },
+    { key: 'feature', titre: 'Nouvelle fonctionnalité', corps: 'Djassa évolue ! Découvrez notre nouvelle fonctionnalité dès maintenant sur votre tableau de bord. Merci de faire partie de la communauté.', priorite: 'info' },
+  ];
+  const emptyOffre = { code: '', nom: '', role_cible: 'tous', description: '', montant_fcfa: '', duree_jours: 30, max_articles: '', avantagesText: '', actif: true, is_featured: false };
+  const [newOffre, setNewOffre] = useState(emptyOffre);
   const [editingOffreId, setEditingOffreId] = useState(null);
   const [newBoutique, setNewBoutique] = useState({ utilisateur_id: '', nom_boutique: '', telephone: '', categorie: 'general', ville: 'Abidjan' });
 
@@ -111,32 +137,78 @@ export default function AdminDashboard() {
   };
 
   const toggleMaintenance = async (enabled) => {
+    const duration = Number(maintenanceDuration) || 60;
+    if (enabled && !maintenanceOn) {
+      const ok = window.confirm(`Activer le mode maintenance ?\n\nDurée estimée : ${duration} min.\nLes utilisateurs non-admin verront une page 503/maintenance et l'accès public sera coupé.`);
+      if (!ok) return;
+    }
     try {
-      await adminApi.setMaintenance({ enabled, message: enabled ? maintenanceMsg : '', duration_minutes: enabled ? Number(maintenanceDuration) : null });
-      setMaintenanceOn(enabled);
+      await adminApi.setMaintenance({ enabled, message: maintenanceMsg, duration_minutes: duration });
       qc.invalidateQueries({ queryKey: ['admin', 'maintenance'] });
-      toast.success(enabled ? 'Mode maintenance activé.' : 'Mode maintenance désactivé.');
+      toast.success(enabled ? (maintenanceOn ? 'Maintenance mise à jour.' : 'Mode maintenance activé.') : 'Mode maintenance désactivé.');
     } catch (err) { toast.error(apiError(err, 'Impossible de basculer la maintenance.')); }
+  };
+
+  const estimateCampaign = async () => {
+    try {
+      const res = await adminApi.estimateCampaign({ audience: campaign.audience, user_id: campaign.audience === 'user' ? campaign.user_id : undefined });
+      setCampaignEstimate(Number(res.data?.count ?? 0));
+      return Number(res.data?.count ?? 0);
+    } catch (err) { toast.error(apiError(err, 'Impossible d’estimer les destinataires.')); return null; }
   };
 
   const sendCampaign = async (e) => {
     e.preventDefault();
+    let count = campaignEstimate;
+    if (count == null) count = await estimateCampaign();
+    if (count == null) return;
+    if (campaign.audience === 'all') {
+      const ok = window.confirm(`Envoyer cette campagne à TOUS les utilisateurs (${count} destinataire(s)) ? Cette action est massive.`);
+      if (!ok) return;
+    }
     try {
-      const res = await adminApi.broadcast(campaign);
-      toast.success(res.data?.message ?? 'Campagne envoyée.');
+      const res = await adminApi.broadcast({ ...campaign, user_id: campaign.audience === 'user' ? campaign.user_id : undefined, confirm_mass: campaign.audience === 'all' });
+      toast.success(res.data?.message ?? 'Campagne mise en file d’attente.', { description: `${res.data?.destinataires_count ?? count} destinataire(s) ciblé(s).` });
       if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         import('canvas-confetti').then(({ default: confetti }) => confetti({
-          particleCount: 60, spread: 60, origin: { y: 0.7 }, colors: ['#780000', '#9E2A2B', '#E5E5E5'],
+          particleCount: 80, spread: 70, origin: { y: 0.7 }, colors: ['#780000', '#121212', '#E5E5E5'],
         })).catch(() => {});
       }
-      setCampaign({ audience: 'all', titre: '', corps: '', email: false });
+      setCampaign({ audience: 'all', user_id: '', titre: '', corps: '', email: false, priorite: 'info' });
+      setCampaignEstimate(null);
+      qc.invalidateQueries({ queryKey: ['admin', 'campaigns'] });
     } catch (err) { toast.error(apiError(err, 'Échec de l’envoi de la campagne.')); }
+  };
+
+  const exportCampaignsPdf = async () => {
+    const { jsPDF } = await import('jspdf');
+    const doc = new jsPDF();
+    doc.setFont('helvetica', 'bold'); doc.setTextColor(120, 0, 0); doc.text('Djassa — Historique campagnes', 14, 16);
+    doc.setFont('helvetica', 'normal'); doc.setTextColor(18, 18, 18); doc.setFontSize(10);
+    let y = 28;
+    campaigns.forEach((c, i) => {
+      const line = `${i + 1}. [${(c.priorite || 'info').toUpperCase()}] ${c.titre} — ${c.audience} — ${c.destinataires_count ?? 0} dest. — ${c.send_email ? 'Email+InApp' : 'In-App'} — ${new Date(c.created_at).toLocaleString('fr-FR')}`;
+      const split = doc.splitTextToSize(line, 180);
+      if (y > 275) { doc.addPage(); y = 16; }
+      doc.text(split, 14, y); y += split.length * 5 + 2;
+    });
+    doc.save('djassa-campagnes.pdf');
+    toast.success('Export PDF généré.');
   };
 
   const saveProfile = async (e) => {
     e.preventDefault();
-    try { await adminApi.updateProfile(profile); toast.success('Profil admin mis à jour.'); }
-    catch (err) { toast.error(apiError(err, 'Échec de la mise à jour du profil.')); }
+    if (profile.password && profile.password !== profile.password_confirmation) {
+      toast.error('La confirmation du mot de passe ne correspond pas.');
+      return;
+    }
+    const payload = { nom: profile.nom, email: profile.email, telephone: profile.telephone };
+    if (profile.password) payload.password = profile.password;
+    try {
+      await adminApi.updateProfile(payload);
+      setProfile((p) => ({ ...p, password: '', password_confirmation: '' }));
+      toast.success('Profil admin mis à jour.', { description: payload.password ? 'Mot de passe modifié.' : undefined });
+    } catch (err) { toast.error(apiError(err, 'Échec de la mise à jour du profil.')); }
   };
 
   const resetPwd = async (id) => {
@@ -165,25 +237,57 @@ export default function AdminDashboard() {
     } catch (err) { toast.error(apiError(err, 'Suppression utilisateur impossible.')); }
   };
 
+  const normalizeOffrePayload = (o) => ({
+    code: o.code.trim(),
+    nom: o.nom.trim(),
+    role_cible: o.role_cible || 'tous',
+    description: o.description?.trim() || null,
+    montant_fcfa: Number(o.montant_fcfa || 0),
+    duree_jours: Number(o.duree_jours || 30),
+    max_articles: o.max_articles === '' || o.max_articles === null ? null : Number(o.max_articles),
+    avantages: String(o.avantagesText || '').split('\n').map((s) => s.trim()).filter(Boolean),
+    actif: Boolean(o.actif),
+    is_featured: Boolean(o.is_featured),
+  });
+
+  const editOffre = (o) => {
+    setEditingOffreId(o.id);
+    setNewOffre({
+      code: o.code ?? '', nom: o.nom ?? '', role_cible: o.role_cible ?? 'tous',
+      description: o.description ?? '', montant_fcfa: o.montant_fcfa ?? 0, duree_jours: o.duree_jours ?? 30,
+      max_articles: o.max_articles ?? '', avantagesText: Array.isArray(o.avantages) ? o.avantages.join('\n') : '',
+      actif: Boolean(o.actif), is_featured: Boolean(o.is_featured),
+    });
+  };
+
   const saveOffre = async (e) => {
     e.preventDefault();
-    const payload = { ...newOffre, montant_fcfa: Number(newOffre.montant_fcfa), duree_jours: Number(newOffre.duree_jours) };
+    const payload = normalizeOffrePayload(newOffre);
     try {
       if (editingOffreId) {
-        await adminApi.updateOffre(editingOffreId, payload);
-        toast.success('Offre mise à jour.');
+        const { code, ...patch } = payload;
+        await adminApi.updateOffre(editingOffreId, patch);
+        toast.success(`Offre « ${payload.nom} » mise à jour.`);
       } else {
         await adminApi.createOffre(payload);
-        toast.success('Offre créée.');
+        toast.success(`Offre « ${payload.nom} » créée.`);
       }
-      setNewOffre({ code: '', nom: '', montant_fcfa: '', duree_jours: 30, actif: true });
+      setNewOffre(emptyOffre);
       setEditingOffreId(null);
       qc.invalidateQueries({ queryKey: ['admin', 'offres'] });
     } catch (err) { toast.error(apiError(err, 'Enregistrement offre impossible.')); }
   };
 
+  const toggleOffreActif = async (o) => {
+    try {
+      await adminApi.updateOffre(o.id, { actif: !o.actif });
+      toast.success(!o.actif ? `Offre « ${o.nom} » activée.` : `Offre « ${o.nom} » désactivée.`);
+      qc.invalidateQueries({ queryKey: ['admin', 'offres'] });
+    } catch (err) { toast.error(apiError(err, 'Impossible de changer le statut de l’offre.')); }
+  };
+
   const deleteOffre = async (id) => {
-    if (!window.confirm('Supprimer cette offre ?')) return;
+    if (!window.confirm('Supprimer cette offre ? Cette action est irréversible.')) return;
     try {
       await adminApi.deleteOffre(id);
       toast.success('Offre supprimée.');
@@ -423,41 +527,73 @@ export default function AdminDashboard() {
       {/* ===== OFFRES & PLANS ===== */}
       {tab === 'offres' && (
         <div className="space-y-5">
-          <Panel title={editingOffreId ? 'Modifier l’offre' : 'Créer une offre'} subtitle="CRUD admin offres d’abonnement">
+          <Panel title={editingOffreId ? 'Modifier l’offre' : 'Créer une offre'} subtitle="Catalogue d’abonnement administrable (affiché à l’inscription/onboarding)">
             <form onSubmit={saveOffre} className="grid gap-3 sm:grid-cols-2">
               <label className="block text-[10px] font-bold text-djassa-black/60">Code
-                <input required disabled={Boolean(editingOffreId)} value={newOffre.code} onChange={(e) => setNewOffre({ ...newOffre, code: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 text-[12px] disabled:opacity-60" />
+                <input required disabled={Boolean(editingOffreId)} value={newOffre.code} onChange={(e) => setNewOffre({ ...newOffre, code: e.target.value.toUpperCase() })} placeholder="PRO_MENSUEL" className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 font-DM-Sans text-[12px] disabled:opacity-60" />
               </label>
               <label className="block text-[10px] font-bold text-djassa-black/60">Nom
-                <input required value={newOffre.nom} onChange={(e) => setNewOffre({ ...newOffre, nom: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 text-[12px]" />
+                <input required value={newOffre.nom} onChange={(e) => setNewOffre({ ...newOffre, nom: e.target.value })} placeholder="Pack Boutique Pro" className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 font-DM-Sans text-[12px]" />
+              </label>
+              <label className="block text-[10px] font-bold text-djassa-black/60">Cible / Rôle
+                <select value={newOffre.role_cible} onChange={(e) => setNewOffre({ ...newOffre, role_cible: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 font-DM-Sans text-[12px]">
+                  <option value="vendeur_pro">Vendeur Pro — Boutique Pro Neuf</option>
+                  <option value="particulier">Particulier — Occasion/Troc</option>
+                  <option value="tous">Tous</option>
+                </select>
               </label>
               <label className="block text-[10px] font-bold text-djassa-black/60">Montant (FCFA)
-                <input required type="number" min={0} value={newOffre.montant_fcfa} onChange={(e) => setNewOffre({ ...newOffre, montant_fcfa: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 text-[12px]" />
+                <input required type="number" min={0} value={newOffre.montant_fcfa} onChange={(e) => setNewOffre({ ...newOffre, montant_fcfa: e.target.value })} placeholder="15000" className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 font-DM-Sans text-[12px]" />
               </label>
               <label className="block text-[10px] font-bold text-djassa-black/60">Durée (jours)
-                <input required type="number" min={1} value={newOffre.duree_jours} onChange={(e) => setNewOffre({ ...newOffre, duree_jours: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 text-[12px]" />
+                <input required type="number" min={1} value={newOffre.duree_jours} onChange={(e) => setNewOffre({ ...newOffre, duree_jours: e.target.value })} placeholder="30" className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 font-DM-Sans text-[12px]" />
               </label>
-              <label className="flex items-center gap-2 text-[11px] font-semibold text-djassa-black/70"><input type="checkbox" checked={newOffre.actif} onChange={(e) => setNewOffre({ ...newOffre, actif: e.target.checked })} /> Offre active</label>
+              <label className="block text-[10px] font-bold text-djassa-black/60">Limite d’articles (vide = illimité)
+                <input type="number" min={1} value={newOffre.max_articles} onChange={(e) => setNewOffre({ ...newOffre, max_articles: e.target.value })} placeholder="Illimité" className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 font-DM-Sans text-[12px]" />
+              </label>
+              <label className="block text-[10px] font-bold text-djassa-black/60 sm:col-span-2">Description courte
+                <textarea rows={2} value={newOffre.description} onChange={(e) => setNewOffre({ ...newOffre, description: e.target.value })} placeholder="Idéal pour lancer votre boutique et vendre en toute confiance." className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 font-DM-Sans text-[12px]" />
+              </label>
+              <label className="block text-[10px] font-bold text-djassa-black/60 sm:col-span-2">Avantages inclus (un par ligne)
+                <textarea rows={4} value={newOffre.avantagesText} onChange={(e) => setNewOffre({ ...newOffre, avantagesText: e.target.value })} placeholder={"Boutique vérifiée\nArticles neufs illimités\nStatistiques de vente"} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 font-DM-Sans text-[12px]" />
+              </label>
+              <div className="flex flex-wrap items-center gap-6 sm:col-span-2">
+                <ToggleSwitch checked={newOffre.actif} onChange={(v) => setNewOffre({ ...newOffre, actif: v })} label="Offre active" />
+                <ToggleSwitch checked={newOffre.is_featured} onChange={(v) => setNewOffre({ ...newOffre, is_featured: v })} label="Mise en avant (Populaire)" />
+              </div>
               <div className="flex gap-2 sm:col-span-2">
-                <button type="submit" className="inline-flex items-center gap-2 rounded-[5px] bg-djassa-red px-4 py-2 font-spacegrotesk text-[11px] font-extrabold text-white"><Plus size={15} /> {editingOffreId ? 'Mettre à jour' : 'Créer l’offre'}</button>
-                {editingOffreId && <button type="button" onClick={() => { setEditingOffreId(null); setNewOffre({ code: '', nom: '', montant_fcfa: '', duree_jours: 30, actif: true }); }} className="rounded-[5px] bg-djassa-cloud px-4 py-2 font-spacegrotesk text-[11px] font-extrabold text-djassa-black">Annuler</button>}
+                <button type="submit" className="inline-flex items-center gap-2 rounded-[5px] bg-djassa-red px-4 py-2 font-spacegrotesk text-[11px] font-extrabold text-white active:scale-95"><Plus size={15} /> {editingOffreId ? 'Mettre à jour' : 'Créer l’offre'}</button>
+                {editingOffreId && <button type="button" onClick={() => { setEditingOffreId(null); setNewOffre(emptyOffre); }} className="rounded-[5px] bg-djassa-cloud px-4 py-2 font-spacegrotesk text-[11px] font-extrabold text-djassa-black">Annuler</button>}
               </div>
             </form>
           </Panel>
           <AdminTable
             title="Offres & plans d'abonnement" totalLabel={`${offres.length} offres`}
-            columns={[{ key: 'code', label: 'Code' }, { key: 'nom', label: 'Nom' }, { key: 'montant_fcfa', label: 'Tarif (FCFA)' }, { key: 'duree_jours', label: 'Durée (j)' }, { key: 'actif', label: 'Actif' }, { key: 'actions', label: 'Actions' }]}
+            columns={[{ key: 'code', label: 'Offre' }, { key: 'cible', label: 'Cible' }, { key: 'montant_fcfa', label: 'Tarif' }, { key: 'duree_jours', label: 'Durée' }, { key: 'avantages', label: 'Avantages' }, { key: 'actif', label: 'Actif' }, { key: 'actions', label: 'Actions' }]}
             rows={offres}
             renderRow={(o) => (
               <>
-                <td className="px-3 py-2.5 font-mono text-[10px]">{o.code}</td>
-                <td className="px-3 py-2.5 font-semibold">{o.nom}</td>
-                <td className="px-3 py-2.5 text-djassa-red">{formatFCFA(o.montant_fcfa)}</td>
-                <td className="px-3 py-2.5">{o.duree_jours}</td>
-                <td className="px-3 py-2.5">{o.actif ? <CheckCircle2 size={15} className="text-emerald-600" /> : <XCircle size={15} className="text-djassa-red" />}</td>
+                <td className="px-3 py-2.5">
+                  <div className="flex items-center gap-2">
+                    <p className="font-spacegrotesk text-[11px] font-extrabold text-djassa-black">{o.nom}</p>
+                    {o.is_featured && <span className="rounded-[5px] bg-djassa-red/10 px-1.5 py-0.5 text-[9px] font-bold text-djassa-red">Populaire</span>}
+                  </div>
+                  <p className="font-mono text-[9px] text-djassa-black/45">{o.code}</p>
+                  {o.description && <p className="mt-0.5 max-w-[220px] text-[10px] text-djassa-black/55">{o.description}</p>}
+                </td>
+                <td className="px-3 py-2.5"><span className="rounded-[5px] bg-djassa-cloud px-2 py-0.5 text-[9px] font-bold text-djassa-black">{o.role_cible === 'vendeur_pro' ? 'Vendeur Pro' : o.role_cible === 'particulier' ? 'Particulier' : 'Tous'}</span></td>
+                <td className="px-3 py-2.5 font-bold text-djassa-red">{formatFCFA(o.montant_fcfa)}</td>
+                <td className="px-3 py-2.5 text-[11px]">{o.duree_jours} j{o.max_articles ? ` · ${o.max_articles} art.` : ' · illimité'}</td>
+                <td className="px-3 py-2.5">
+                  <div className="flex max-w-[260px] flex-wrap gap-1">
+                    {(Array.isArray(o.avantages) ? o.avantages : []).slice(0, 3).map((a) => <span key={a} className="rounded-[5px] bg-djassa-cloud px-1.5 py-0.5 text-[9px] text-djassa-black/70">{a}</span>)}
+                    {Array.isArray(o.avantages) && o.avantages.length > 3 && <span className="text-[9px] text-djassa-black/45">+{o.avantages.length - 3}</span>}
+                  </div>
+                </td>
+                <td className="px-3 py-2.5"><ToggleSwitch checked={Boolean(o.actif)} onChange={() => toggleOffreActif(o)} label={o.actif ? 'Actif' : 'Inactif'} compact /></td>
                 <td className="px-3 py-2.5">
                   <div className="flex gap-2">
-                    <button type="button" onClick={() => { setEditingOffreId(o.id); setNewOffre({ code: o.code ?? '', nom: o.nom ?? '', montant_fcfa: o.montant_fcfa ?? 0, duree_jours: o.duree_jours ?? 30, actif: Boolean(o.actif) }); }} className="text-[10px] font-bold text-djassa-black hover:underline">Modifier</button>
+                    <button type="button" onClick={() => editOffre(o)} className="text-[10px] font-bold text-djassa-black hover:underline">Modifier</button>
                     <button type="button" onClick={() => deleteOffre(o.id)} className="text-[10px] font-bold text-djassa-red hover:underline">Supprimer</button>
                   </div>
                 </td>
@@ -469,63 +605,169 @@ export default function AdminDashboard() {
 
       {/* ===== NOTIFICATIONS & EMAIL ===== */}
       {tab === 'notifications' && (
-        <div className="grid gap-4 lg:grid-cols-2">
-          <Panel title="Campagne d'envoi" subtitle="Notifications in-app + emails via file Brevo">
-            <form onSubmit={sendCampaign} className="space-y-3">
-              <label className="block text-[10px] font-bold text-djassa-black/60">Audience
-                <select value={campaign.audience} onChange={(e) => setCampaign({ ...campaign, audience: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 text-[12px]">
-                  <option value="all">Tous les utilisateurs</option><option value="vendeur_pro">Vendeurs Pro</option><option value="particulier">Particuliers</option><option value="user">Un utilisateur précis</option>
-                </select>
-              </label>
-              {campaign.audience === 'user' && (
-                <input type="text" placeholder="UUID utilisateur" value={campaign.user_id ?? ''} onChange={(e) => setCampaign({ ...campaign, user_id: e.target.value })} className="w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 text-[12px]" />
-              )}
-              <input type="text" placeholder="Titre" required value={campaign.titre} onChange={(e) => setCampaign({ ...campaign, titre: e.target.value })} className="w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 text-[12px]" />
-              <textarea placeholder="Message" required rows={4} value={campaign.corps} onChange={(e) => setCampaign({ ...campaign, corps: e.target.value })} className="w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 text-[12px]" />
-              <label className="flex items-center gap-2 text-[11px]"><input type="checkbox" checked={campaign.email} onChange={(e) => setCampaign({ ...campaign, email: e.target.checked })} /> Envoyer aussi par email</label>
-              <button type="submit" className="inline-flex items-center gap-2 rounded-[5px] bg-djassa-red px-4 py-2 font-spacegrotesk text-[11px] font-extrabold text-white active:scale-95"><Send size={15} /> Envoyer la campagne</button>
-            </form>
-          </Panel>
-          <Panel title="Centre de notifications" subtitle="File d'attente Redis">
-            <img src="/images/admin-analytics.webp" alt="" aria-hidden="true" className="mx-auto h-56 w-auto object-contain" />
-            <p className="mt-2 text-center text-[11px] text-djassa-black/55">Les campagnes sont traitées de façon asynchrone par la file Redis Brevo.</p>
-          </Panel>
+        <div className="space-y-5">
+          <div className="grid gap-4 xl:grid-cols-[1.1fr_0.9fr]">
+            <Panel title="Campagne d'envoi" subtitle="Notifications in-app + emails via file Redis/Brevo">
+              <div className="mb-3 flex flex-wrap gap-2">
+                {campaignTemplates.map((tpl) => (
+                  <button key={tpl.key} type="button"
+                    onClick={() => { setCampaign((c) => ({ ...c, titre: tpl.titre, corps: tpl.corps, priorite: tpl.priorite })); setCampaignEstimate(null); }}
+                    className="rounded-[5px] bg-djassa-cloud px-3 py-1.5 font-spacegrotesk text-[10px] font-extrabold text-djassa-black hover:bg-djassa-red/10 hover:text-djassa-red">
+                    {tpl.titre}
+                  </button>
+                ))}
+              </div>
+              <form onSubmit={sendCampaign} className="space-y-3">
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <label className="block text-[10px] font-bold text-djassa-black/60">Audience
+                    <select value={campaign.audience} onChange={(e) => { setCampaign({ ...campaign, audience: e.target.value, user_id: '' }); setCampaignEstimate(null); }} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 text-[12px]">
+                      <option value="all">Tous les utilisateurs</option>
+                      <option value="vendeur_pro">Vendeurs Pro</option>
+                      <option value="particulier">Particuliers</option>
+                      <option value="user">Utilisateur spécifique</option>
+                    </select>
+                  </label>
+                  <label className="block text-[10px] font-bold text-djassa-black/60">Priorité
+                    <select value={campaign.priorite} onChange={(e) => setCampaign({ ...campaign, priorite: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 text-[12px]">
+                      <option value="info">Info — Information</option>
+                      <option value="warning">Warning — Important</option>
+                      <option value="urgent">Urgent — Urgence</option>
+                    </select>
+                  </label>
+                </div>
+                {campaign.audience === 'user' && (
+                  <label className="block text-[10px] font-bold text-djassa-black/60">Email ou ID utilisateur
+                    <input type="text" placeholder="uuid-utilisateur ou email@djassa.ci" value={campaign.user_id ?? ''} onChange={(e) => { setCampaign({ ...campaign, user_id: e.target.value }); setCampaignEstimate(null); }} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 text-[12px]" />
+                  </label>
+                )}
+                <label className="block text-[10px] font-bold text-djassa-black/60">Titre
+                  <input type="text" placeholder="Titre de la notification" required value={campaign.titre} onChange={(e) => setCampaign({ ...campaign, titre: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 text-[12px]" />
+                </label>
+                <label className="block text-[10px] font-bold text-djassa-black/60">Message
+                  <textarea placeholder="Votre message aux utilisateurs..." required rows={4} value={campaign.corps} onChange={(e) => setCampaign({ ...campaign, corps: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 text-[12px]" />
+                </label>
+                <div className="flex flex-wrap items-center gap-4 rounded-[5px] bg-djassa-cloud px-3 py-3">
+                  <ToggleSwitch checked={campaign.email} onChange={(v) => setCampaign({ ...campaign, email: v })} label="Envoyer aussi par email Brevo" />
+                  <button type="button" onClick={estimateCampaign} className="font-spacegrotesk text-[10px] font-extrabold text-djassa-red underline">Estimer les destinataires</button>
+                </div>
+                <div className="rounded-[5px] border-l-4 border-djassa-red bg-djassa-red/5 px-3 py-2 text-[11px] text-djassa-black/75">
+                  {campaignEstimate != null ? (
+                    <span><strong>{campaignEstimate}</strong> destinataire(s) ciblé(s). {campaign.audience === 'all' && <span className="font-bold text-djassa-red">Confirmation obligatoire avant envoi massif.</span>}</span>
+                  ) : (
+                    <span>Estimez les destinataires avant l’envoi pour sécuriser la campagne.</span>
+                  )}
+                </div>
+                <button type="submit" className="inline-flex items-center gap-2 rounded-[5px] bg-djassa-red px-4 py-2.5 font-spacegrotesk text-[11px] font-extrabold text-white active:scale-95"><Send size={15} /> Envoyer la campagne</button>
+              </form>
+            </Panel>
+            <Panel title="Centre de notifications" subtitle="Aperçu sécurité & file Redis">
+              <div className="space-y-3">
+                <div className="rounded-[5px] bg-djassa-cloud p-3">
+                  <p className="font-spacegrotesk text-[10px] font-extrabold uppercase tracking-[0.12em] text-djassa-red">Aperçu</p>
+                  <p className="mt-1 font-spacegrotesk text-[13px] font-extrabold text-djassa-black">{campaign.titre || 'Titre de la campagne'}</p>
+                  <p className="mt-1 text-[11px] text-djassa-black/65">{campaign.corps || 'Le message apparaîtra ici avant envoi.'}</p>
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    <span className={`rounded-[5px] px-2 py-0.5 text-[9px] font-bold ${campaign.priorite === 'urgent' ? 'bg-red-100 text-red-700' : campaign.priorite === 'warning' ? 'bg-amber-100 text-amber-700' : 'bg-sky-100 text-sky-700'}`}>{campaign.priorite}</span>
+                    <span className="rounded-[5px] bg-white px-2 py-0.5 text-[9px] font-bold text-djassa-black/70">{campaign.email ? 'In-App + Email Brevo' : 'In-App'}</span>
+                  </div>
+                </div>
+                <div className="rounded-[5px] bg-emerald-50 p-3 text-[11px] text-emerald-900">
+                  <p className="font-bold">File Redis asynchrone</p>
+                  <p className="mt-1 text-emerald-800/80">Les campagnes sont mises en file et traitées en arrière-plan. Le succès d’envoi affiche un toast + confettis.</p>
+                </div>
+              </div>
+            </Panel>
+          </div>
+
+          <AdminTable
+            title="Historique des campagnes" totalLabel={`${campaigns.length} campagnes`}
+            action={<button type="button" onClick={exportCampaignsPdf} className="rounded-[5px] bg-djassa-black px-3 py-2 font-spacegrotesk text-[10px] font-extrabold text-white">Exporter en PDF</button>}
+            columns={[{ key: 'date', label: 'Date' }, { key: 'titre', label: 'Campagne' }, { key: 'priorite', label: 'Priorité' }, { key: 'audience', label: 'Audience' }, { key: 'canal', label: 'Canal' }, { key: 'dest', label: 'Destinataires' }, { key: 'statut', label: 'Statut' }]}
+            rows={campaigns}
+            renderRow={(c) => (
+              <>
+                <td className="px-3 py-2.5 text-[10px] text-djassa-black/60">{c.created_at ? new Date(c.created_at).toLocaleString('fr-FR') : '—'}</td>
+                <td className="px-3 py-2.5"><p className="font-spacegrotesk text-[11px] font-extrabold text-djassa-black">{c.titre}</p><p className="max-w-[280px] truncate text-[10px] text-djassa-black/50">{c.message}</p></td>
+                <td className="px-3 py-2.5"><span className={`rounded-[5px] px-2 py-0.5 text-[9px] font-bold ${c.priorite === 'urgent' ? 'bg-red-100 text-red-700' : c.priorite === 'warning' ? 'bg-amber-100 text-amber-700' : 'bg-sky-100 text-sky-700'}`}>{c.priorite || 'info'}</span></td>
+                <td className="px-3 py-2.5 text-[10px] font-bold text-djassa-black/70">{c.audience}</td>
+                <td className="px-3 py-2.5 text-[10px]">{c.send_email ? 'In-App + Email Brevo' : 'In-App'}</td>
+                <td className="px-3 py-2.5 font-bold text-djassa-black">{c.destinataires_count ?? 0}</td>
+                <td className="px-3 py-2.5"><span className={`rounded-[5px] px-2 py-0.5 text-[9px] font-bold ${c.statut === 'failed' ? 'bg-red-100 text-red-700' : c.statut === 'queued' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}`}>{c.statut}</span></td>
+              </>
+            )}
+          />
         </div>
       )}
 
       {/* ===== MAINTENANCE & PROFIL ===== */}
       {tab === 'system' && (
         <div className="grid gap-4 lg:grid-cols-2">
-          <Panel title="Mode Maintenance" subtitle="Bloque les non-admins avec un message personnalisé">
-            <div className="flex items-center justify-between rounded-[5px] bg-djassa-cloud px-3 py-3">
+          <Panel title="Mode Maintenance" subtitle="Coupez l’accès public en toute sécurité (503/maintenance)">
+            <div className={`flex items-center justify-between rounded-[5px] px-3 py-3 ${maintenanceOn ? 'bg-red-50' : 'bg-emerald-50'}`}>
               <div className="flex items-center gap-2">
                 {maintenanceOn ? <Lock size={18} className="text-djassa-red" /> : <Unlock size={18} className="text-emerald-600" />}
-                <span className="font-spacegrotesk text-[12px] font-extrabold">{maintenanceOn ? 'Activé' : 'Désactivé'}</span>
+                <div>
+                  <span className="font-spacegrotesk text-[12px] font-extrabold">{maintenanceOn ? 'Maintenance activée' : 'Plateforme opérationnelle'}</span>
+                  <p className="text-[10px] text-djassa-black/55">{maintenanceOn ? 'Les non-admins sont redirigés vers /maintenance.' : 'Aucune coupure publique en cours.'}</p>
+                </div>
               </div>
               <button type="button" onClick={() => toggleMaintenance(!maintenanceOn)}
                 className={`rounded-[5px] px-4 py-2 font-spacegrotesk text-[10px] font-extrabold text-white active:scale-95 ${maintenanceOn ? 'bg-djassa-black' : 'bg-djassa-red'}`}>
                 {maintenanceOn ? 'Désactiver' : 'Activer'}
               </button>
             </div>
-            <textarea rows={3} placeholder="Message affiché aux utilisateurs" value={maintenanceMsg} onChange={(e) => setMaintenanceMsg(e.target.value)} className="mt-3 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 text-[12px]" />
+
+            <div className="mt-3 grid gap-3 rounded-[5px] bg-djassa-cloud p-3 sm:grid-cols-2">
+              <div>
+                <p className="font-spacegrotesk text-[9px] font-extrabold uppercase tracking-[0.12em] text-djassa-black/45">État Redis</p>
+                <p className="mt-1 text-[11px] font-bold text-djassa-black">{maintenanceOn ? 'Verrou maintenance actif' : 'Aucun verrou actif'}</p>
+              </div>
+              <div>
+                <p className="font-spacegrotesk text-[9px] font-extrabold uppercase tracking-[0.12em] text-djassa-black/45">Dernière bascule</p>
+                <p className="mt-1 text-[11px] font-bold text-djassa-black">{maintenance.updated_at ? new Date(maintenance.updated_at).toLocaleString('fr-FR') : '—'}</p>
+                <p className="text-[10px] text-djassa-black/50">{maintenance.updated_by ? `Par ${maintenance.updated_by}` : 'Auteur non renseigné'}</p>
+              </div>
+              <div>
+                <p className="font-spacegrotesk text-[9px] font-extrabold uppercase tracking-[0.12em] text-djassa-black/45">Début</p>
+                <p className="mt-1 text-[11px] text-djassa-black">{maintenance.started_at ? new Date(maintenance.started_at).toLocaleString('fr-FR') : '—'}</p>
+              </div>
+              <div>
+                <p className="font-spacegrotesk text-[9px] font-extrabold uppercase tracking-[0.12em] text-djassa-black/45">Reprise estimée</p>
+                <p className="mt-1 text-[11px] font-bold text-djassa-red">{maintenance.ends_at ? new Date(maintenance.ends_at).toLocaleString('fr-FR') : '—'}</p>
+              </div>
+            </div>
+
+            <label className="mt-3 block font-DM-Sans text-[10px] font-bold text-djassa-black/60">Message affiché aux utilisateurs
+              <textarea rows={3} placeholder="Nous effectuons une maintenance. Merci de revenir bientôt." value={maintenanceMsg} onChange={(e) => setMaintenanceMsg(e.target.value)} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 text-[12px]" />
+            </label>
             <label className="mt-3 block font-DM-Sans text-[10px] font-bold text-djassa-black/60">Durée estimée (minutes)
               <input type="number" min={1} max={10080} value={maintenanceDuration} onChange={(e) => setMaintenanceDuration(e.target.value)}
                 className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 text-[12px]" />
             </label>
-            {maintenanceData?.data?.ends_at && (
-              <p className="mt-2 font-DM-Sans text-[10px] text-djassa-black/55">
-                Fin prévue : {new Date(maintenanceData.data.ends_at).toLocaleString('fr-FR')}
-              </p>
-            )}
-            <img src="/images/admin-gears.webp" alt="" aria-hidden="true" className="mx-auto mt-3 h-24 w-auto object-contain" />
+            <div className="mt-3 flex flex-wrap gap-2">
+              <button type="button" onClick={() => toggleMaintenance(true)} className="rounded-[5px] bg-djassa-red px-4 py-2 font-spacegrotesk text-[10px] font-extrabold text-white active:scale-95">{maintenanceOn ? 'Sauvegarder le message/durée' : 'Activer avec confirmation'}</button>
+              <a href="/maintenance" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-[5px] bg-djassa-black px-4 py-2 font-spacegrotesk text-[10px] font-extrabold text-white"><Eye size={14} /> Prévisualiser la page /maintenance</a>
+            </div>
+            <p className="mt-2 text-[10px] text-djassa-black/50">L’activation coupe l’accès public (503). La sauvegarde à chaud met à jour message/durée sans désactiver.</p>
           </Panel>
-          <Panel title="Mon profil admin" subtitle="Modifier mes informations">
+          <Panel title="Mon profil admin" subtitle="Nom, email, téléphone et mot de passe optionnel">
             <form onSubmit={saveProfile} className="space-y-3">
-              {['nom', 'email', 'telephone'].map((k) => (
-                <label key={k} className="block text-[10px] font-bold capitalize text-djassa-black/60">{k}
-                  <input type="text" value={profile[k] ?? ''} onChange={(e) => setProfile({ ...profile, [k]: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 text-[12px]" />
-                </label>
-              ))}
+              <label className="block text-[10px] font-bold text-djassa-black/60">Nom
+                <input type="text" value={profile.nom ?? ''} onChange={(e) => setProfile({ ...profile, nom: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 text-[12px]" />
+              </label>
+              <label className="block text-[10px] font-bold text-djassa-black/60">Email
+                <input type="email" value={profile.email ?? ''} onChange={(e) => setProfile({ ...profile, email: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 text-[12px]" />
+              </label>
+              <label className="block text-[10px] font-bold text-djassa-black/60">Téléphone
+                <input type="text" value={profile.telephone ?? ''} onChange={(e) => setProfile({ ...profile, telephone: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 text-[12px]" />
+              </label>
+              <div className="rounded-[5px] bg-djassa-cloud p-3">
+                <p className="font-spacegrotesk text-[10px] font-extrabold text-djassa-black/70">Changer le mot de passe (optionnel)</p>
+                <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                  <input type="password" autoComplete="new-password" placeholder="Nouveau mot de passe" value={profile.password ?? ''} onChange={(e) => setProfile({ ...profile, password: e.target.value })} className="w-full rounded-[5px] border-none bg-white px-3 py-2 text-[12px]" />
+                  <input type="password" autoComplete="new-password" placeholder="Confirmer" value={profile.password_confirmation ?? ''} onChange={(e) => setProfile({ ...profile, password_confirmation: e.target.value })} className="w-full rounded-[5px] border-none bg-white px-3 py-2 text-[12px]" />
+                </div>
+              </div>
               <button type="submit" className="rounded-[5px] bg-djassa-red px-4 py-2 font-spacegrotesk text-[11px] font-extrabold text-white active:scale-95">Enregistrer</button>
             </form>
           </Panel>
