@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
-import { Spinner } from '../components/ui';
+import { ConfirmModal, Spinner } from '../components/ui';
 
 const FREE_FEATURES = [
   { icon: ShoppingBag, text: 'Acheter des articles d’occasion près de chez vous' },
@@ -43,6 +43,7 @@ export default function ChoisirOffre() {
   const location = useLocation();
   const root = useRef(null);
   const [pending, setPending] = useState(null);
+  const [confirmDowngrade, setConfirmDowngrade] = useState(false);
 
   useLayoutEffect(() => {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
@@ -53,6 +54,20 @@ export default function ChoisirOffre() {
     }, root);
     return () => ctx.revert();
   }, []);
+
+  const doChoose = async (plan) => {
+    const destination = plan === 'pro' ? '/dashboard-pro' : '/dashboard';
+    setPending(plan);
+    try {
+      const data = await selectPlan(plan);
+      toast.success(data.message);
+      navigate(data.redirect_to ?? destination, { replace: true });
+    } catch (error) {
+      toast.error(error.response?.data?.message ?? 'Impossible d’activer cette offre.');
+    } finally {
+      setPending(null);
+    }
+  };
 
   const choose = async (plan) => {
     if (isAdmin) {
@@ -67,22 +82,11 @@ export default function ChoisirOffre() {
     }
 
     if (plan === 'gratuit' && user?.role === 'vendeur_pro') {
-      const ok = window.confirm(
-        'Revenir à l’offre gratuite fermera l’accès aux outils Pro (boutique, neuf, factures). Continuer ?'
-      );
-      if (!ok) return;
+      setConfirmDowngrade(true);
+      return;
     }
 
-    setPending(plan);
-    try {
-      const data = await selectPlan(plan);
-      toast.success(data.message);
-      navigate(data.redirect_to ?? destination, { replace: true });
-    } catch (error) {
-      toast.error(error.response?.data?.message ?? 'Impossible d’activer cette offre.');
-    } finally {
-      setPending(null);
-    }
+    await doChoose(plan);
   };
 
   const current = user?.plan_abonnement;
@@ -293,6 +297,15 @@ export default function ChoisirOffre() {
           </p>
         </div>
       </main>
+
+      <ConfirmModal
+        open={confirmDowngrade}
+        title="Revenir à l’offre gratuite"
+        message="Revenir à l’offre gratuite fermera l’accès aux outils Pro (boutique, neuf, factures). Continuer ?"
+        confirmLabel="Continuer"
+        onCancel={() => setConfirmDowngrade(false)}
+        onConfirm={async () => { setConfirmDowngrade(false); await doChoose('gratuit'); }}
+      />
     </div>
   );
 }

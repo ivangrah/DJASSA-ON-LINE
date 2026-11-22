@@ -13,6 +13,7 @@ import { useToast } from '../../context/ToastContext';
 import { formatFCFA } from '../../lib/format';
 import { usePageReveal } from '../../hooks/usePageReveal';
 import AdminTable from '../../components/admin/AdminTable';
+import { ConfirmModal } from '../../components/ui';
 import { PageHead, Panel, StatCard } from '../pro/ui';
 
 const EvolutionChart = lazy(() => import('../../components/admin/AdminCharts').then((m) => ({ default: m.EvolutionChart })));
@@ -119,6 +120,7 @@ export default function AdminDashboard() {
   const [campaignEstimate, setCampaignEstimate] = useState(null);
   const [newUser, setNewUser] = useState({ nom: '', email: '', telephone: '', role: 'particulier', password: '' });
   const [profile, setProfile] = useState({ nom: user?.nom ?? '', email: user?.email ?? '', telephone: user?.telephone ?? '', password: '', password_confirmation: '' });
+  const [confirmState, setConfirmState] = useState(null);
   const campaigns = Array.isArray(campaignsData?.data?.data) ? campaignsData.data.data : (Array.isArray(campaignsData?.data) ? campaignsData.data : []);
   const campaignTemplates = [
     { key: 'maintenance', titre: 'Maintenance imminente', corps: 'Une maintenance de la plateforme Djassa est prévue prochainement. Certains services pourront être temporairement indisponibles. Merci de votre compréhension.', priorite: 'warning' },
@@ -136,17 +138,27 @@ export default function AdminDashboard() {
     return data?.message ?? fallback;
   };
 
-  const toggleMaintenance = async (enabled) => {
+  const doToggleMaintenance = async (enabled) => {
     const duration = Number(maintenanceDuration) || 60;
-    if (enabled && !maintenanceOn) {
-      const ok = window.confirm(`Activer le mode maintenance ?\n\nDurée estimée : ${duration} min.\nLes utilisateurs non-admin verront une page 503/maintenance et l'accès public sera coupé.`);
-      if (!ok) return;
-    }
     try {
       await adminApi.setMaintenance({ enabled, message: maintenanceMsg, duration_minutes: duration });
       qc.invalidateQueries({ queryKey: ['admin', 'maintenance'] });
       toast.success(enabled ? (maintenanceOn ? 'Maintenance mise à jour.' : 'Mode maintenance activé.') : 'Mode maintenance désactivé.');
     } catch (err) { toast.error(apiError(err, 'Impossible de basculer la maintenance.')); }
+  };
+
+  const toggleMaintenance = (enabled) => {
+    const duration = Number(maintenanceDuration) || 60;
+    if (enabled && !maintenanceOn) {
+      setConfirmState({
+        title: 'Activer le mode maintenance',
+        message: `Durée estimée : ${duration} min.\n\nLes utilisateurs non-admin verront une page 503/maintenance et l'accès public sera coupé.`,
+        confirmLabel: 'Activer la maintenance',
+        onConfirm: () => doToggleMaintenance(enabled),
+      });
+      return;
+    }
+    doToggleMaintenance(enabled);
   };
 
   const estimateCampaign = async () => {
@@ -157,15 +169,7 @@ export default function AdminDashboard() {
     } catch (err) { toast.error(apiError(err, 'Impossible d’estimer les destinataires.')); return null; }
   };
 
-  const sendCampaign = async (e) => {
-    e.preventDefault();
-    let count = campaignEstimate;
-    if (count == null) count = await estimateCampaign();
-    if (count == null) return;
-    if (campaign.audience === 'all') {
-      const ok = window.confirm(`Envoyer cette campagne à TOUS les utilisateurs (${count} destinataire(s)) ? Cette action est massive.`);
-      if (!ok) return;
-    }
+  const doSendCampaign = async (count) => {
     try {
       const res = await adminApi.broadcast({ ...campaign, user_id: campaign.audience === 'user' ? campaign.user_id : undefined, confirm_mass: campaign.audience === 'all' });
       toast.success(res.data?.message ?? 'Campagne mise en file d’attente.', { description: `${res.data?.destinataires_count ?? count} destinataire(s) ciblé(s).` });
@@ -178,6 +182,23 @@ export default function AdminDashboard() {
       setCampaignEstimate(null);
       qc.invalidateQueries({ queryKey: ['admin', 'campaigns'] });
     } catch (err) { toast.error(apiError(err, 'Échec de l’envoi de la campagne.')); }
+  };
+
+  const sendCampaign = async (e) => {
+    e.preventDefault();
+    let count = campaignEstimate;
+    if (count == null) count = await estimateCampaign();
+    if (count == null) return;
+    if (campaign.audience === 'all') {
+      setConfirmState({
+        title: 'Confirmer l’envoi massif',
+        message: `Envoyer cette campagne à TOUS les utilisateurs (${count} destinataire(s)) ?\n\nCette action est massive et sera traitée via la file Redis/Brevo.`,
+        confirmLabel: 'Envoyer à tous',
+        onConfirm: () => doSendCampaign(count),
+      });
+      return;
+    }
+    await doSendCampaign(count);
   };
 
   const exportCampaignsPdf = async () => {
@@ -228,13 +249,19 @@ export default function AdminDashboard() {
     } catch (err) { toast.error(apiError(err, 'Création utilisateur impossible.')); }
   };
 
-  const deleteUser = async (id) => {
-    if (!window.confirm('Supprimer cet utilisateur ?')) return;
-    try {
-      const res = await adminApi.deleteUser(id);
-      toast.success(res.data?.deleted ? 'Utilisateur supprimé.' : 'Utilisateur supprimé.');
-      qc.invalidateQueries({ queryKey: ['admin', 'users'] });
-    } catch (err) { toast.error(apiError(err, 'Suppression utilisateur impossible.')); }
+  const deleteUser = (id) => {
+    setConfirmState({
+      title: 'Supprimer l’utilisateur',
+      message: 'Supprimer cet utilisateur ? Cette action est irréversible.',
+      confirmLabel: 'Supprimer',
+      onConfirm: async () => {
+        try {
+          const res = await adminApi.deleteUser(id);
+          toast.success(res.data?.deleted ? 'Utilisateur supprimé.' : 'Utilisateur supprimé.');
+          qc.invalidateQueries({ queryKey: ['admin', 'users'] });
+        } catch (err) { toast.error(apiError(err, 'Suppression utilisateur impossible.')); }
+      },
+    });
   };
 
   const normalizeOffrePayload = (o) => ({
@@ -286,13 +313,19 @@ export default function AdminDashboard() {
     } catch (err) { toast.error(apiError(err, 'Impossible de changer le statut de l’offre.')); }
   };
 
-  const deleteOffre = async (id) => {
-    if (!window.confirm('Supprimer cette offre ? Cette action est irréversible.')) return;
-    try {
-      await adminApi.deleteOffre(id);
-      toast.success('Offre supprimée.');
-      qc.invalidateQueries({ queryKey: ['admin', 'offres'] });
-    } catch (err) { toast.error(apiError(err, 'Suppression offre impossible.')); }
+  const deleteOffre = (id) => {
+    setConfirmState({
+      title: 'Supprimer l’offre',
+      message: 'Supprimer cette offre ? Cette action est irréversible.',
+      confirmLabel: 'Supprimer',
+      onConfirm: async () => {
+        try {
+          await adminApi.deleteOffre(id);
+          toast.success('Offre supprimée.');
+          qc.invalidateQueries({ queryKey: ['admin', 'offres'] });
+        } catch (err) { toast.error(apiError(err, 'Suppression offre impossible.')); }
+      },
+    });
   };
 
   const createBoutique = async (e) => {
@@ -306,14 +339,20 @@ export default function AdminDashboard() {
     } catch (err) { toast.error(apiError(err, 'Création boutique impossible.')); }
   };
 
-  const deleteBoutique = async (id) => {
-    if (!window.confirm('Supprimer cette boutique ?')) return;
-    try {
-      await adminApi.deleteBoutique(id);
-      toast.success('Boutique supprimée.');
-      qc.invalidateQueries({ queryKey: ['admin', 'boutiques'] });
-      qc.invalidateQueries({ queryKey: ['admin', 'finances'] });
-    } catch (err) { toast.error(apiError(err, 'Suppression boutique impossible.')); }
+  const deleteBoutique = (id) => {
+    setConfirmState({
+      title: 'Supprimer la boutique',
+      message: 'Supprimer cette boutique ? Cette action est irréversible.',
+      confirmLabel: 'Supprimer',
+      onConfirm: async () => {
+        try {
+          await adminApi.deleteBoutique(id);
+          toast.success('Boutique supprimée.');
+          qc.invalidateQueries({ queryKey: ['admin', 'boutiques'] });
+          qc.invalidateQueries({ queryKey: ['admin', 'finances'] });
+        } catch (err) { toast.error(apiError(err, 'Suppression boutique impossible.')); }
+      },
+    });
   };
 
   const financesTotals = finances?.data?.totaux ?? finances?.totaux ?? finances?.data?.meta?.totaux ?? {};
@@ -773,6 +812,19 @@ export default function AdminDashboard() {
           </Panel>
         </div>
       )}
+
+      <ConfirmModal
+        open={Boolean(confirmState)}
+        title={confirmState?.title}
+        message={confirmState?.message}
+        confirmLabel={confirmState?.confirmLabel}
+        onCancel={() => setConfirmState(null)}
+        onConfirm={async () => {
+          const action = confirmState?.onConfirm;
+          setConfirmState(null);
+          if (action) await action();
+        }}
+      />
     </div>
   );
 }

@@ -161,11 +161,11 @@ export function Modal({ open, onClose, title, children, wide = false, footer }) 
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[90] flex items-end justify-center sm:items-center" role="dialog" aria-modal="true" aria-label={title ?? 'Boîte de dialogue'}>
+    <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 sm:p-6" role="dialog" aria-modal="true" aria-label={title ?? 'Boîte de dialogue'}>
       <button className="absolute inset-0 bg-djassa-black/60 backdrop-blur-[2px]" onClick={onClose} aria-label="Fermer" />
       <div
         ref={panelRef}
-        className={`relative w-full ${wide ? 'sm:max-w-xl' : 'sm:max-w-md'} max-h-[92vh] overflow-y-auto rounded-[5px] bg-white border-solid border-[0.5px] border-[rgba(18,18,18,0.08)] shadow-2xl animate-[sheetIn_.32s_cubic-bezier(.22,1,.36,1)]`}
+        className={`relative w-full ${wide ? 'max-w-xl' : 'max-w-md'} max-h-[calc(100vh-2rem)] overflow-y-auto rounded-[5px] bg-white border-solid border-[0.5px] border-[rgba(18,18,18,0.08)] shadow-2xl animate-[sheetIn_.28s_cubic-bezier(.22,1,.36,1)] sm:max-h-[calc(100vh-3rem)]`}
       >
         <div className="sticky top-0 z-10 flex items-center justify-between gap-3 bg-white/95 px-5 py-4 backdrop-blur">
           <h3 className="font-spacegrotesk font-extrabold text-djassa-black">{title}</h3>
@@ -176,8 +176,31 @@ export function Modal({ open, onClose, title, children, wide = false, footer }) 
         <div className="px-5 py-4">{children}</div>
         {footer && <div className="sticky bottom-0 bg-white/95 px-5 py-3 backdrop-blur">{footer}</div>}
       </div>
-      <style>{`@keyframes sheetIn { from { transform: translateY(48px); opacity: 0 } to { transform: translateY(0); opacity: 1 } }`}</style>
+      <style>{`@keyframes sheetIn { from { transform: translateY(20px) scale(.98); opacity: 0 } to { transform: translateY(0) scale(1); opacity: 1 } }`}</style>
     </div>
+  );
+}
+
+/** Modale de confirmation centrée — remplace window.confirm pour un rendu cohérent. */
+export function ConfirmModal({ open, title = 'Confirmation', message, confirmLabel = 'Confirmer', cancelLabel = 'Annuler', tone = 'danger', onConfirm, onCancel, loading = false }) {
+  return (
+    <Modal
+      open={open}
+      onClose={onCancel}
+      title={title}
+      footer={(
+        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+          <button type="button" onClick={onCancel} className="min-h-[2.875rem] rounded-[5px] bg-djassa-cloud px-4 py-2.5 font-spacegrotesk text-[0.9375rem] font-extrabold text-djassa-black">
+            {cancelLabel}
+          </button>
+          <button type="button" onClick={onConfirm} disabled={loading} className={`min-h-[2.875rem] rounded-[5px] px-4 py-2.5 font-spacegrotesk text-[0.9375rem] font-extrabold text-white disabled:opacity-60 ${tone === 'danger' ? 'bg-djassa-red' : 'bg-djassa-black'}`}>
+            {confirmLabel}
+          </button>
+        </div>
+      )}
+    >
+      <p className="text-[0.9375rem] leading-relaxed text-djassa-black/75 whitespace-pre-line">{message}</p>
+    </Modal>
   );
 }
 
