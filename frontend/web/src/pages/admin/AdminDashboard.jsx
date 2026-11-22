@@ -85,6 +85,11 @@ export default function AdminDashboard() {
     try {
       const res = await adminApi.broadcast(campaign);
       toast.success(res.data?.message ?? 'Campagne envoyée.');
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        import('canvas-confetti').then(({ default: confetti }) => confetti({
+          particleCount: 60, spread: 60, origin: { y: 0.7 }, colors: ['#780000', '#9E2A2B', '#E5E5E5'],
+        }));
+      }
       setCampaign({ audience: 'all', titre: '', corps: '', email: false });
     } catch (err) { toast.error(err.response?.data?.message ?? 'Échec de l’envoi.'); }
   };
