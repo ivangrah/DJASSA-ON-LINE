@@ -14,7 +14,7 @@ class ContractTest extends TestCase
 
     private function schema(string $name): array
     {
-        $path = (is_dir('/repo/models/schemas') ? '/repo/models/schemas' : dirname(__DIR__, 3).'/models/schemas').'/'.$name;
+        $path = (is_dir('/repo/models/schemas') ? '/repo/models/schemas' : dirname(__DIR__, 4).'/models/schemas').'/'.$name;
         $this->assertFileExists($path);
 
         return json_decode(file_get_contents($path), true, 512, JSON_THROW_ON_ERROR);
