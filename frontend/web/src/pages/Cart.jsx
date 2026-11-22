@@ -11,6 +11,7 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { formatFCFA } from '../lib/format';
+import { animateDeleteExit } from '../utils/actionFeedback';
 
 const REASSURANCE = [
   { icon: ShieldCheck, title: 'Paiement sécurisé', text: 'Fonds bloqués en séquestre jusqu’à la remise.' },
@@ -207,7 +208,7 @@ export default function Cart() {
 
             <div className="space-y-3 p-4 pt-0 sm:p-5 sm:pt-0">
               {items.map((item, index) => (
-                <article key={item.id} className="flex flex-wrap items-center gap-3 rounded-[5px] bg-djassa-cream p-3">
+                <article key={item.id} data-cart-item={item.id} className="flex flex-wrap items-center gap-3 rounded-[5px] bg-djassa-cream p-3 transition-colors">
                   <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-[5px] bg-white font-spacegrotesk text-[10px] font-extrabold tabular-nums text-djassa-red">
                     {String(index + 1).padStart(2, '0')}
                   </span>
@@ -235,9 +236,13 @@ export default function Cart() {
                     </span>
                     <button
                       type="button"
-                      onClick={() => remove(item.id)}
+                      onClick={async () => {
+                        const el = document.querySelector(`[data-cart-item="${CSS.escape(String(item.id))}"]`);
+                        await animateDeleteExit(el);
+                        remove(item.id);
+                      }}
                       aria-label={`Retirer ${item.titre}`}
-                      className="rounded-[5px] p-2 text-djassa-black/45 transition hover:bg-white hover:text-djassa-red"
+                      className="rounded-[5px] p-2 text-djassa-black/45 transition hover:bg-white hover:text-djassa-red active:scale-[0.98]"
                     >
                       <Trash2 size={16} />
                     </button>

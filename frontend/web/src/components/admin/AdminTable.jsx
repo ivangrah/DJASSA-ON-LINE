@@ -51,7 +51,7 @@ export default function AdminTable({ title, columns, rows, renderRow, totalLabel
                 </td>
               </tr>
             ) : rows.map((r, i) => (
-              <tr key={r.id ?? i} className="border-t border-djassa-black/5 hover:bg-djassa-cloud/60">
+              <tr key={r.id ?? i} data-row-id={r.id ?? i} className="border-t border-djassa-black/5 transition-colors hover:bg-djassa-cloud/60">
                 {renderRow
                   ? renderRow(r)
                   : columns.map((c) => <td key={c.key} className="whitespace-nowrap px-4 py-3.5">{String(r[c.key] ?? '—')}</td>)}

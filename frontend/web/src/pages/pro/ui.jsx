@@ -105,9 +105,9 @@ export function ProductThumb({ article, className = 'h-14 w-14' }) {
 }
 
 /** Panneau blanc standard du dashboard. */
-export function Panel({ title, hint, action, children, className = '' }) {
+export function Panel({ title, hint, action, children, className = '', ...props }) {
   return (
-    <section className={`rounded-[5px]   bg-white border-solid border-[0.5px] border-[rgba(18,18,18,0.08)] p-4 shadow-card sm:p-5 ${className}`}>
+    <section {...props} className={`rounded-[5px]   bg-white border-solid border-[0.5px] border-[rgba(18,18,18,0.08)] p-4 shadow-card sm:p-5 ${className}`}>
       {(title || action) && (
         <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
           <div>

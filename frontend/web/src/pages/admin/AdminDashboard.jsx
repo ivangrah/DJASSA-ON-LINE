@@ -12,6 +12,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { formatFCFA } from '../../lib/format';
 import { usePageReveal } from '../../hooks/usePageReveal';
+import { animateDeleteExit, highlightUpdatedRow } from '../../utils/actionFeedback';
 import AdminTable from '../../components/admin/AdminTable';
 import { ConfirmModal } from '../../components/ui';
 import { PageHead, Panel, StatCard } from '../pro/ui';
@@ -126,6 +127,8 @@ export default function AdminDashboard() {
   const [campaignEstimate, setCampaignEstimate] = useState(null);
   const [newUser, setNewUser] = useState({ nom: '', email: '', telephone: '', role: 'particulier', password: '' });
   const [profile, setProfile] = useState({ nom: user?.nom ?? '', email: user?.email ?? '', telephone: user?.telephone ?? '', password: '', password_confirmation: '' });
+  const [profileSave, setProfileSave] = useState('idle'); // idle | saving | saved
+  const [maintenanceSave, setMaintenanceSave] = useState('idle');
   const [confirmState, setConfirmState] = useState(null);
   const campaigns = Array.isArray(campaignsData?.data?.data) ? campaignsData.data.data : (Array.isArray(campaignsData?.data) ? campaignsData.data : []);
   const campaignTemplates = [
@@ -146,11 +149,15 @@ export default function AdminDashboard() {
 
   const doToggleMaintenance = async (enabled) => {
     const duration = Number(maintenanceDuration) || 60;
+    const isSave = enabled && maintenanceOn;
+    if (isSave) setMaintenanceSave('saving');
     try {
       await adminApi.setMaintenance({ enabled, message: maintenanceMsg, duration_minutes: duration });
-      qc.invalidateQueries({ queryKey: ['admin', 'maintenance'] });
+      await qc.invalidateQueries({ queryKey: ['admin', 'maintenance'] });
+      highlightUpdatedRow(document.querySelector('[data-admin-panel="maintenance"]'));
       toast.success(enabled ? (maintenanceOn ? 'Maintenance mise à jour.' : 'Mode maintenance activé.') : 'Mode maintenance désactivé.');
-    } catch (err) { toast.error(apiError(err, 'Impossible de basculer la maintenance.')); }
+      if (isSave) { setMaintenanceSave('saved'); setTimeout(() => setMaintenanceSave('idle'), 1500); }
+    } catch (err) { if (isSave) setMaintenanceSave('idle'); toast.error(apiError(err, 'Impossible de basculer la maintenance.')); }
   };
 
   const toggleMaintenance = (enabled) => {
@@ -231,11 +238,15 @@ export default function AdminDashboard() {
     }
     const payload = { nom: profile.nom, email: profile.email, telephone: profile.telephone };
     if (profile.password) payload.password = profile.password;
+    setProfileSave('saving');
     try {
       await adminApi.updateProfile(payload);
       setProfile((p) => ({ ...p, password: '', password_confirmation: '' }));
+      setProfileSave('saved');
+      highlightUpdatedRow(document.querySelector('[data-admin-panel="profile"]'));
       toast.success('Profil admin mis à jour.', { description: payload.password ? 'Mot de passe modifié.' : undefined });
-    } catch (err) { toast.error(apiError(err, 'Échec de la mise à jour du profil.')); }
+      setTimeout(() => setProfileSave('idle'), 1500);
+    } catch (err) { setProfileSave('idle'); toast.error(apiError(err, 'Échec de la mise à jour du profil.')); }
   };
 
   const resetPwd = async (id) => {
@@ -262,8 +273,10 @@ export default function AdminDashboard() {
       confirmLabel: 'Supprimer',
       onConfirm: async () => {
         try {
-          const res = await adminApi.deleteUser(id);
-          toast.success(res.data?.deleted ? 'Utilisateur supprimé.' : 'Utilisateur supprimé.');
+          await adminApi.deleteUser(id);
+          const row = document.querySelector(`[data-row-id="${CSS.escape(String(id))}"]`);
+          await animateDeleteExit(row);
+          toast.success('Utilisateur supprimé.');
           qc.invalidateQueries({ queryKey: ['admin', 'users'] });
         } catch (err) { toast.error(apiError(err, 'Suppression utilisateur impossible.')); }
       },
@@ -297,9 +310,11 @@ export default function AdminDashboard() {
     e.preventDefault();
     const payload = normalizeOffrePayload(newOffre);
     try {
+      let updatedId = null;
       if (editingOffreId) {
         const { code, ...patch } = payload;
         await adminApi.updateOffre(editingOffreId, patch);
+        updatedId = editingOffreId;
         toast.success(`Offre « ${payload.nom} » mise à jour.`);
       } else {
         await adminApi.createOffre(payload);
@@ -307,7 +322,8 @@ export default function AdminDashboard() {
       }
       setNewOffre(emptyOffre);
       setEditingOffreId(null);
-      qc.invalidateQueries({ queryKey: ['admin', 'offres'] });
+      await qc.invalidateQueries({ queryKey: ['admin', 'offres'] });
+      if (updatedId) requestAnimationFrame(() => highlightUpdatedRow(document.querySelector(`[data-row-id="${CSS.escape(String(updatedId))}"]`)));
     } catch (err) { toast.error(apiError(err, 'Enregistrement offre impossible.')); }
   };
 
@@ -315,7 +331,8 @@ export default function AdminDashboard() {
     try {
       await adminApi.updateOffre(o.id, { actif: !o.actif });
       toast.success(!o.actif ? `Offre « ${o.nom} » activée.` : `Offre « ${o.nom} » désactivée.`);
-      qc.invalidateQueries({ queryKey: ['admin', 'offres'] });
+      await qc.invalidateQueries({ queryKey: ['admin', 'offres'] });
+      requestAnimationFrame(() => highlightUpdatedRow(document.querySelector(`[data-row-id="${CSS.escape(String(o.id))}"]`)));
     } catch (err) { toast.error(apiError(err, 'Impossible de changer le statut de l’offre.')); }
   };
 
@@ -327,6 +344,8 @@ export default function AdminDashboard() {
       onConfirm: async () => {
         try {
           await adminApi.deleteOffre(id);
+          const row = document.querySelector(`[data-row-id="${CSS.escape(String(id))}"]`);
+          await animateDeleteExit(row);
           toast.success('Offre supprimée.');
           qc.invalidateQueries({ queryKey: ['admin', 'offres'] });
         } catch (err) { toast.error(apiError(err, 'Suppression offre impossible.')); }
@@ -353,6 +372,8 @@ export default function AdminDashboard() {
       onConfirm: async () => {
         try {
           await adminApi.deleteBoutique(id);
+          const row = document.querySelector(`[data-row-id="${CSS.escape(String(id))}"]`);
+          await animateDeleteExit(row);
           toast.success('Boutique supprimée.');
           qc.invalidateQueries({ queryKey: ['admin', 'boutiques'] });
           qc.invalidateQueries({ queryKey: ['admin', 'finances'] });
@@ -747,7 +768,7 @@ export default function AdminDashboard() {
       {/* ===== MAINTENANCE & PROFIL ===== */}
       {tab === 'system' && (
         <div className="grid gap-4 lg:grid-cols-2">
-          <Panel title="Mode Maintenance" subtitle="Coupez l’accès public en toute sécurité (503/maintenance)">
+          <Panel title="Mode Maintenance" subtitle="Coupez l’accès public en toute sécurité (503/maintenance)" data-admin-panel="maintenance">
             <div className={`flex items-center justify-between rounded-[5px] px-4 py-3.5 ${maintenanceOn ? 'bg-red-50' : 'bg-emerald-50'}`}>
               <div className="flex items-center gap-2">
                 {maintenanceOn ? <Lock size={18} className="text-djassa-red" /> : <Unlock size={18} className="text-emerald-600" />}
@@ -790,12 +811,14 @@ export default function AdminDashboard() {
                 className="mt-1.5 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-sm font-sans" />
             </label>
             <div className="mt-3 flex flex-wrap gap-2">
-              <button type="button" onClick={() => toggleMaintenance(true)} className="rounded-[5px] bg-djassa-red min-h-[2.875rem] px-4 py-2.5 font-sans text-[0.8125rem] font-extrabold text-white active:scale-95">{maintenanceOn ? 'Sauvegarder le message/durée' : 'Activer avec confirmation'}</button>
+              <button type="button" disabled={maintenanceSave === 'saving'} onClick={() => toggleMaintenance(true)} className="rounded-[5px] bg-djassa-red min-h-[2.875rem] px-4 py-2.5 font-sans text-[0.8125rem] font-extrabold text-white active:scale-[0.98] transition disabled:opacity-70">
+                {maintenanceSave === 'saving' ? 'Enregistrement…' : maintenanceSave === 'saved' ? '✓ Enregistré' : maintenanceOn ? 'Sauvegarder le message/durée' : 'Activer avec confirmation'}
+              </button>
               <a href="/maintenance" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-[5px] bg-djassa-black min-h-[2.875rem] px-4 py-2.5 font-sans text-[0.8125rem] font-extrabold text-white"><Eye size={14} /> Prévisualiser la page /maintenance</a>
             </div>
             <p className="mt-2 text-[0.8125rem] text-djassa-black/50">L’activation coupe l’accès public (503). La sauvegarde à chaud met à jour message/durée sans désactiver.</p>
           </Panel>
-          <Panel title="Mon profil admin" subtitle="Nom, email, téléphone et mot de passe optionnel">
+          <Panel title="Mon profil admin" subtitle="Nom, email, téléphone et mot de passe optionnel" data-admin-panel="profile">
             <form onSubmit={saveProfile} className="space-y-3">
               <label className="block text-xs font-semibold text-neutral-700 mb-1.5">Nom
                 <input type="text" value={profile.nom ?? ''} onChange={(e) => setProfile({ ...profile, nom: e.target.value })} className="mt-1.5 w-full rounded-[5px] border-none bg-djassa-cloud min-h-[2.875rem] px-4 py-2.5 text-sm font-sans" />
@@ -813,7 +836,9 @@ export default function AdminDashboard() {
                   <input type="password" autoComplete="new-password" placeholder="Confirmer" value={profile.password_confirmation ?? ''} onChange={(e) => setProfile({ ...profile, password_confirmation: e.target.value })} className="w-full rounded-[5px] border-none bg-white min-h-[2.875rem] px-4 py-2.5 text-sm font-sans" />
                 </div>
               </div>
-              <button type="submit" className="rounded-[5px] bg-djassa-red min-h-[2.875rem] px-4 py-2.5 font-sans text-[0.9375rem] font-extrabold text-white active:scale-95">Enregistrer</button>
+              <button type="submit" disabled={profileSave === 'saving'} className="rounded-[5px] bg-djassa-red min-h-[2.875rem] px-4 py-2.5 font-sans text-[0.9375rem] font-extrabold text-white active:scale-[0.98] transition disabled:opacity-70">
+                {profileSave === 'saving' ? 'Enregistrement…' : profileSave === 'saved' ? '✓ Enregistré' : 'Enregistrer'}
+              </button>
             </form>
           </Panel>
         </div>

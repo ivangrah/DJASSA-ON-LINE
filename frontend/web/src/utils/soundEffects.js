@@ -103,3 +103,13 @@ export function playErrorThud() {
   tone({ freq: 160, freqEnd: 70, type: 'sine', attack: 0.005, decay: 0.18, peak: 0.08 });
   tone({ freq: 110, freqEnd: 55, type: 'triangle', start: 0.06, attack: 0.005, decay: 0.22, peak: 0.055 });
 }
+
+export function playDeleteWhoosh() {
+  tone({ freq: 420, freqEnd: 120, type: 'triangle', attack: 0.004, decay: 0.22, peak: 0.045 });
+  tone({ freq: 260, freqEnd: 90, type: 'sine', start: 0.02, attack: 0.006, decay: 0.2, peak: 0.035 });
+}
+
+export function playUpdateTick() {
+  tone({ freq: 1046.5, freqEnd: 1200, type: 'sine', attack: 0.003, decay: 0.09, peak: 0.04 });
+  tone({ freq: 1568, freqEnd: 1760, type: 'triangle', start: 0.055, attack: 0.003, decay: 0.11, peak: 0.028 });
+}

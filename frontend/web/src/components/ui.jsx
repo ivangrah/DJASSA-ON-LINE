@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { X } from 'lucide-react';
+import { AlertTriangle, X } from 'lucide-react';
 import { gsap } from 'gsap';
 import { playErrorThud } from '../utils/soundEffects';
 
@@ -146,7 +146,7 @@ function MessageArt() {
 }
 
 /* ---------- Modal / Bottom sheet (mobile-first) ---------- */
-export function Modal({ open, onClose, title, children, wide = false, footer }) {
+export function Modal({ open, onClose, title, children, wide = false, footer, panelRef: panelRefProp }) {
   const panelRef = useRef(null);
 
   useEffect(() => {
@@ -166,8 +166,8 @@ export function Modal({ open, onClose, title, children, wide = false, footer }) 
     <div className="fixed inset-0 z-[90] flex items-center justify-center p-4 sm:p-6" role="dialog" aria-modal="true" aria-label={title ?? 'Boîte de dialogue'}>
       <button className="absolute inset-0 bg-djassa-black/60 backdrop-blur-[2px]" onClick={onClose} aria-label="Fermer" />
       <div
-        ref={panelRef}
-        className={`relative w-full ${wide ? 'max-w-xl' : 'max-w-md'} max-h-[calc(100vh-2rem)] overflow-y-auto rounded-[5px] bg-white border-solid border-[0.5px] border-[rgba(18,18,18,0.08)] shadow-2xl animate-[sheetIn_.28s_cubic-bezier(.22,1,.36,1)] sm:max-h-[calc(100vh-3rem)]`}
+        ref={(node) => { panelRef.current = node; if (panelRefProp) panelRefProp.current = node; }}
+        className={`relative w-full ${wide ? 'max-w-xl' : 'max-w-md'} max-h-[calc(100vh-2rem)] overflow-y-auto rounded-[5px] bg-white border-solid border-[0.5px] border-[rgba(18,18,18,0.08)] shadow-2xl ${panelRefProp ? '' : 'animate-[sheetIn_.28s_cubic-bezier(.22,1,.36,1)]'} sm:max-h-[calc(100vh-3rem)]`}
       >
         <div className="sticky top-0 z-10 flex items-center justify-between gap-3 bg-white/95 px-5 py-4 backdrop-blur">
           <h3 className="font-spacegrotesk font-extrabold text-djassa-black">{title}</h3>
@@ -185,23 +185,40 @@ export function Modal({ open, onClose, title, children, wide = false, footer }) 
 
 /** Modale de confirmation centrée — remplace window.confirm pour un rendu cohérent. */
 export function ConfirmModal({ open, title = 'Confirmation', message, confirmLabel = 'Confirmer', cancelLabel = 'Annuler', tone = 'danger', onConfirm, onCancel, loading = false }) {
+  const panelRef = useRef(null);
+  const iconRef = useRef(null);
+
+  useEffect(() => {
+    if (!open || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (panelRef.current) gsap.fromTo(panelRef.current, { opacity: 0, scale: 0.94 }, { opacity: 1, scale: 1, duration: 0.22, ease: 'power2.out', clearProps: 'transform' });
+    if (iconRef.current && tone === 'danger') gsap.fromTo(iconRef.current, { rotation: -8 }, { rotation: 0, duration: 0.5, ease: 'elastic.out(1, 0.35)', transformOrigin: '50% 50%' });
+  }, [open, tone]);
+
   return (
     <Modal
       open={open}
       onClose={onCancel}
+      panelRef={panelRef}
       title={title}
       footer={(
         <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-          <button type="button" onClick={onCancel} className="min-h-[2.875rem] rounded-[5px] bg-djassa-cloud px-4 py-2.5 font-spacegrotesk text-[0.9375rem] font-extrabold text-djassa-black">
+          <button type="button" onClick={onCancel} className="min-h-[2.875rem] rounded-[5px] bg-djassa-cloud px-4 py-2.5 font-spacegrotesk text-[0.9375rem] font-extrabold text-djassa-black active:scale-[0.98] transition">
             {cancelLabel}
           </button>
-          <button type="button" onClick={onConfirm} disabled={loading} className={`min-h-[2.875rem] rounded-[5px] px-4 py-2.5 font-spacegrotesk text-[0.9375rem] font-extrabold text-white disabled:opacity-60 ${tone === 'danger' ? 'bg-djassa-red' : 'bg-djassa-black'}`}>
+          <button type="button" onClick={onConfirm} disabled={loading} className={`min-h-[2.875rem] rounded-[5px] px-4 py-2.5 font-spacegrotesk text-[0.9375rem] font-extrabold text-white disabled:opacity-60 active:scale-[0.98] transition ${tone === 'danger' ? 'bg-djassa-red' : 'bg-djassa-black'}`}>
             {confirmLabel}
           </button>
         </div>
       )}
     >
-      <p className="text-[0.9375rem] leading-relaxed text-djassa-black/75 whitespace-pre-line">{message}</p>
+      <div className="flex items-start gap-3">
+        {tone === 'danger' && (
+          <span ref={iconRef} className="mt-0.5 inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[5px] bg-djassa-red/10 text-[#780000]">
+            <AlertTriangle size={18} strokeWidth={2.2} />
+          </span>
+        )}
+        <p className="text-[0.9375rem] leading-relaxed text-djassa-black/75 whitespace-pre-line">{message}</p>
+      </div>
     </Modal>
   );
 }
