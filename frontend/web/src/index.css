@@ -464,32 +464,32 @@
 }
 
 /* ---------- Tactile bouton global (press/ripple/shine) ---------- */
+/* Le feedback de pression ne doit pas déformer le bouton (surtout les
+   boutons larges avec du texte) : on utilise une teinte + une ombre interne
+   plutôt qu'un scale, et un relâchement sans dépassement. */
 @media (prefers-reduced-motion: no-preference) {
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]) {
-    transition-property: transform, box-shadow, background-color, color, border-color, opacity;
-    transition-duration: 220ms;
-    transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+    transition-property: box-shadow, background-color, color, border-color, opacity, filter;
+    transition-duration: 200ms;
+    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
   }
   button:not(:disabled).djassa-pressed,
   [role="button"]:not([aria-disabled="true"]).djassa-pressed {
-    transform: scale(0.965) !important;
+    filter: brightness(0.93);
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.18);
     transition-duration: 90ms !important;
     transition-timing-function: ease-out !important;
   }
 }
 
-.djassa-ripple-host {
-  position: relative;
-  overflow: hidden;
-}
-.djassa-ripple-host .djassa-ripple {
+.djassa-ripple {
   position: absolute;
   border-radius: 9999px;
   pointer-events: none;
   transform: scale(0);
   opacity: 1;
-  animation: djassaRipple 450ms ease-out forwards;
+  animation: djassaRipple 380ms ease-out forwards;
 }
 @keyframes djassaRipple {
   to { transform: scale(1); opacity: 0; }
@@ -520,5 +520,5 @@
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .djassa-ripple-host .djassa-ripple { display: none !important; }
+  .djassa-ripple { display: none !important; }
 }

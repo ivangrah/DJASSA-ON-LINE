@@ -34,10 +34,10 @@ function rippleColor(el) {
     if (m) {
       const [r, g, b] = [Number(m[1]), Number(m[2]), Number(m[3])];
       const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
-      if (luminance < 0.55) return 'rgba(255, 255, 255, 0.28)';
+      if (luminance < 0.55) return 'rgba(255, 255, 255, 0.18)';
     }
   } catch {}
-  return 'rgba(120, 0, 0, 0.14)';
+  return 'rgba(120, 0, 0, 0.10)';
 }
 
 function addRipple(el, event) {
@@ -54,16 +54,20 @@ function addRipple(el, event) {
   ripple.style.left = `${x}px`;
   ripple.style.top = `${y}px`;
   ripple.style.background = rippleColor(el);
-  const prevPos = window.getComputedStyle(el).position;
-  if (prevPos === 'static') el.style.position = 'relative';
+  const prevPos = el.style.position;
+  if (window.getComputedStyle(el).position === 'static') el.style.position = 'relative';
   const prevOverflow = el.style.overflow;
   if (window.getComputedStyle(el).overflow === 'visible') el.style.overflow = 'hidden';
   el.appendChild(ripple);
-  ripple.addEventListener('animationend', () => {
+  const cleanup = () => {
     ripple.remove();
-    if (prevPos === 'static') el.style.position = '';
-    if (prevOverflow === '') el.style.overflow = '';
-  }, { once: true });
+    el.style.position = prevPos;
+    el.style.overflow = prevOverflow;
+  };
+  ripple.addEventListener('animationend', cleanup, { once: true });
+  // Sécurité : si l'animation n'a pas lieu (onglet masqué, reduced-motion
+  // basculé en direct), on ne laisse pas de styles inline résiduels.
+  setTimeout(cleanup, 500);
 }
 
 export default function ButtonRipple() {
