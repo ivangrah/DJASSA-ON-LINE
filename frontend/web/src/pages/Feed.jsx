@@ -370,7 +370,7 @@ export default function Feed() {
           src="/images/hero-shopping-bags.webp"
           alt="Sacs de shopping rouges et noirs sur fond noir"
           className="absolute inset-0 h-full w-full select-none object-cover object-[50%_34%]"
-         loading="eager" decoding="async" fetchpriority="high" />
+         loading="eager" decoding="async" fetchPriority="high" />
         {/* Scrim global doux + voile bas pour la lisibilité du texte centré */}
         <div className="absolute inset-0 bg-[#121212]/45" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#121212]/95 via-[#121212]/25 to-transparent" />
@@ -424,7 +424,7 @@ export default function Feed() {
             alt="Panier Djassa sur mobile — achats en ligne et livraison"
             data-hero-visual
             className="art-warm pointer-events-none relative z-0 mx-auto -mb-1 mt-0 w-[150px] select-none object-contain opacity-95 drop-shadow-[0_18px_30px_rgba(0,0,0,0.55)] sm:w-[200px] lg:hidden"
-           loading="eager" decoding="async" fetchpriority="high" />
+           loading="eager" decoding="async" fetchPriority="high" />
 
           {/* Headline centré */}
           <div className="relative z-10 flex flex-1 flex-col items-center justify-center pb-[224px] pt-2 text-center sm:pb-40 sm:pt-8 md:pb-44 md:pt-10">
@@ -444,14 +444,14 @@ export default function Feed() {
 
           {/* Visuels e-commerce — desktop (flottants + légendes) */}
           <div data-hero-visual className="pointer-events-none absolute right-[2%] top-[38%] z-0 hidden w-[clamp(300px,26vw,460px)] -translate-y-1/2 flex-col items-center xl:flex">
-            <img src="/images/illustrations/hero-cart-3d.webp" alt="Panier Djassa sur mobile — achats en ligne et livraison" className="art-warm w-full select-none object-contain opacity-95 drop-shadow-[0_30px_60px_rgba(0,0,0,0.6)]"  loading="eager" decoding="async" fetchpriority="high" />
+            <img src="/images/illustrations/hero-cart-3d.webp" alt="Panier Djassa sur mobile — achats en ligne et livraison" className="art-warm w-full select-none object-contain opacity-95 drop-shadow-[0_30px_60px_rgba(0,0,0,0.6)]"  loading="eager" decoding="async" fetchPriority="high" />
             <div className="mt-1 rounded-[5px] bg-black/55 px-3.5 py-1.5 text-center shadow-card backdrop-blur-md">
               <p className="font-spacegrotesk text-[10px] font-extrabold uppercase tracking-[0.14em] text-white">Livré en confiance</p>
               <p className="font-DM-Sans text-[9px] text-white/65">Paiement sécurisé · Escrow + PIN</p>
             </div>
           </div>
           <div data-hero-visual className="pointer-events-none absolute left-[0%] top-[40%] z-0 hidden w-[clamp(280px,25vw,440px)] -translate-y-1/2 flex-col items-center xl:flex">
-            <img src="/images/hero-bags-burst.webp" alt="Sacs de shopping et cadeaux Djassa" className="w-full select-none object-contain opacity-90 drop-shadow-[0_30px_60px_rgba(0,0,0,0.6)]"  loading="eager" decoding="async" fetchpriority="high" />
+            <img src="/images/hero-bags-burst.webp" alt="Sacs de shopping et cadeaux Djassa" className="w-full select-none object-contain opacity-90 drop-shadow-[0_30px_60px_rgba(0,0,0,0.6)]"  loading="eager" decoding="async" fetchPriority="high" />
             <div className="mt-1 rounded-[5px] bg-black/70 px-3.5 py-1.5 text-center shadow-card backdrop-blur-md">
               <p className="font-spacegrotesk text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#780000]">Occasion & Troc</p>
               <p className="font-DM-Sans text-[9px] text-white/65">Le bon plan seconde main</p>
