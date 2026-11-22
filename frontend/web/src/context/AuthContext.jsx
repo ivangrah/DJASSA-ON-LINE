@@ -113,9 +113,14 @@ export function AuthProvider({ children }) {
       }
       setAuthResolved(true);
       return null;
-    } catch {
+    } catch (err) {
       // Pas de session valide (401) ou erreur transitoire : on résout comme non connecté, sans requête en quarantaine.
       setAuthResolved(true);
+      if (err?.response?.status === 401) {
+        // Session expirée/corrompue : purge complète du hint + user stockés côté client.
+        localStorage.removeItem('djassa_user');
+        localStorage.removeItem('djassa_session_hint');
+      }
       return null;
     }
   }, [persist]);

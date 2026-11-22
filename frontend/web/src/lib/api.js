@@ -62,6 +62,7 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem('djassa_token');
       localStorage.removeItem('djassa_user');
+      localStorage.removeItem('djassa_session_hint');
       if (!window.location.pathname.startsWith('/login') && !window.location.pathname.startsWith('/register')) {
         window.location.assign('/login');
       }

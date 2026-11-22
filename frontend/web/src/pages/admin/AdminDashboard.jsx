@@ -56,12 +56,12 @@ export default function AdminDashboard() {
 
   // Aucune requête protégée tant que l'utilisateur n'est pas authentifié et résolu.
   const canFetch = Boolean(user && authResolved);
-  const { data: usersData, isLoading: loadingUsers } = useQuery({ queryKey: ['admin', 'users'], queryFn: () => adminApi.users(), enabled: canFetch, staleTime: 30_000 });
-  const { data: auditData } = useQuery({ queryKey: ['admin', 'audit'], queryFn: () => adminApi.audit(), enabled: canFetch, staleTime: 30_000 });
-  const { data: finances } = useQuery({ queryKey: ['admin', 'finances'], queryFn: () => adminApi.finances(), enabled: canFetch, staleTime: 30_000 });
-  const { data: boutiquesData } = useQuery({ queryKey: ['admin', 'boutiques'], queryFn: () => adminApi.boutiques(), enabled: canFetch, staleTime: 30_000 });
-  const { data: offresData } = useQuery({ queryKey: ['admin', 'offres'], queryFn: () => adminApi.offres(), enabled: canFetch, staleTime: 30_000 });
-  const { data: maintenanceData } = useQuery({ queryKey: ['admin', 'maintenance'], queryFn: () => adminApi.maintenance(), enabled: canFetch, staleTime: 10_000 });
+  const { data: usersData, isLoading: loadingUsers } = useQuery({ queryKey: ['admin', 'users'], queryFn: () => adminApi.users(), enabled: canFetch, retry: false, staleTime: 30_000 });
+  const { data: auditData } = useQuery({ queryKey: ['admin', 'audit'], queryFn: () => adminApi.audit(), enabled: canFetch, retry: false, staleTime: 30_000 });
+  const { data: finances } = useQuery({ queryKey: ['admin', 'finances'], queryFn: () => adminApi.finances(), enabled: canFetch, retry: false, staleTime: 30_000 });
+  const { data: boutiquesData } = useQuery({ queryKey: ['admin', 'boutiques'], queryFn: () => adminApi.boutiques(), enabled: canFetch, retry: false, staleTime: 30_000 });
+  const { data: offresData } = useQuery({ queryKey: ['admin', 'offres'], queryFn: () => adminApi.offres(), enabled: canFetch, retry: false, staleTime: 30_000 });
+  const { data: maintenanceData } = useQuery({ queryKey: ['admin', 'maintenance'], queryFn: () => adminApi.maintenance(), enabled: canFetch, retry: false, staleTime: 10_000 });
 
   const users = usersData?.data ?? [];
   const audit = auditData?.data ?? [];

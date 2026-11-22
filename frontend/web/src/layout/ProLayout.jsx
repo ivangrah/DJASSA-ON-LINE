@@ -175,12 +175,14 @@ export default function ProLayout() {
     queryKey: ['transactions', 'pro', 'sidebar'],
     queryFn: async () => (await api.get('/transactions')).data,
     enabled: Boolean(user && authResolved),
+    retry: false,
     staleTime: 30_000,
   });
   const { data: trocData } = useQuery({
     queryKey: ['barter-offers', 'sidebar'],
     queryFn: async () => (await api.get('/barter-offers')).data,
     enabled: Boolean(user && authResolved),
+    retry: false,
     staleTime: 30_000,
   });
 
