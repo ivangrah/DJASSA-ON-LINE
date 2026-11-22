@@ -3,6 +3,7 @@ import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import DjassaPageLoader from './components/DjassaPageLoader.jsx';
 import { RouteError } from './components/ErrorPages.jsx';
 import TopProgressBar from './components/TopProgressBar.jsx';
+import ButtonRipple from './components/ButtonRipple.jsx';
 import { useAuth } from './context/AuthContext';
 import AppShell from './layout/AppShell';
 import ParticulierLayout from './layout/ParticulierLayout';
@@ -53,6 +54,7 @@ export default function App() {
   return (
     <>
     <TopProgressBar />
+    <ButtonRipple />
     <Suspense fallback={<DjassaPageLoader />}>
     <Routes errorElement={<RouteError />}>
       {/* Anciennes URLs — conservées pour ne pas casser les favoris */}

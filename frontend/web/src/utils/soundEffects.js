@@ -113,3 +113,7 @@ export function playUpdateTick() {
   tone({ freq: 1046.5, freqEnd: 1200, type: 'sine', attack: 0.003, decay: 0.09, peak: 0.04 });
   tone({ freq: 1568, freqEnd: 1760, type: 'triangle', start: 0.055, attack: 0.003, decay: 0.11, peak: 0.028 });
 }
+
+export function playButtonClick() {
+  tone({ freq: 320, freqEnd: 220, type: 'triangle', attack: 0.002, decay: 0.028, peak: 0.03 });
+}
