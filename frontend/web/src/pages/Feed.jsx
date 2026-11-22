@@ -196,12 +196,19 @@ export default function Feed() {
     return () => window.clearTimeout(t);
   }, [category, marche]);
 
-  // GSAP — entrée en cascade des cartes
+  // GSAP — entrée en cascade des cartes (uniquement les nouvelles, pour ne pas re-animer les déjà affichées)
+  const animatedCountRef = useRef(0);
   useEffect(() => {
     if (isLoading || !gridRef.current) return;
-    const cards = gridRef.current.querySelectorAll('[data-card]');
-    if (cards.length) {
-      gsap.fromTo(cards, { y: 26, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, stagger: 0.05, ease: 'power3.out', clearProps: 'all' });
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      animatedCountRef.current = gridRef.current.querySelectorAll('[data-card]').length;
+      return;
+    }
+    const cards = Array.from(gridRef.current.querySelectorAll('[data-card]'));
+    const newCards = cards.slice(animatedCountRef.current);
+    if (newCards.length) {
+      gsap.fromTo(newCards, { y: 26, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, stagger: 0.05, ease: 'power3.out', clearProps: 'all' });
+      animatedCountRef.current = cards.length;
     }
   }, [isLoading, articles.length]);
 
