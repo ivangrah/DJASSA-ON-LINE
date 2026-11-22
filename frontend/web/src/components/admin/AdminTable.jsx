@@ -1,4 +1,4 @@
-import { Download } from 'lucide-react';
+import { Download, Inbox } from 'lucide-react';
 import { exportAdminPdf } from '../../lib/adminPdf';
 
 /** Tableau admin générique avec bouton d'export PDF (lazy import). */
@@ -36,7 +36,17 @@ export default function AdminTable({ title, columns, rows, renderRow, totalLabel
           </thead>
           <tbody>
             {rows.length === 0 ? (
-              <tr><td colSpan={columns.length} className="px-3 py-8 text-center text-djassa-black/45">Aucune donnée.</td></tr>
+              <tr>
+                <td colSpan={columns.length} className="px-3 py-10">
+                  <div className="flex flex-col items-center justify-center gap-2 text-center">
+                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-djassa-cloud text-djassa-red/70">
+                      <Inbox size={22} strokeWidth={1.8} aria-hidden="true" />
+                    </span>
+                    <p className="font-spacegrotesk text-[12px] font-bold text-djassa-black/70">Aucune donnée pour le moment</p>
+                    <p className="text-[11px] text-djassa-black/45">Les éléments apparaîtront ici dès qu’ils seront disponibles.</p>
+                  </div>
+                </td>
+              </tr>
             ) : rows.map((r, i) => (
               <tr key={r.id ?? i} className="border-t border-djassa-black/5 hover:bg-djassa-cloud/60">
                 {renderRow

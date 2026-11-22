@@ -195,7 +195,13 @@ export default function AdminDashboard() {
                     <span className="text-djassa-black/50">{a.created_at ? new Date(a.created_at).toLocaleDateString('fr-FR') : '—'}</span>
                   </li>
                 ))}
-                {audit.length === 0 && <li className="text-[11px] text-djassa-black/45">Aucune activité.</li>}
+                {audit.length === 0 && (
+                  <li className="flex flex-col items-center gap-2 rounded-[5px] bg-djassa-cloud px-3 py-6 text-center">
+                    <Activity size={20} className="text-djassa-red/60" aria-hidden="true" />
+                    <span className="text-[11px] font-semibold text-djassa-black/60">Aucune activité récente</span>
+                    <span className="text-[10px] text-djassa-black/45">Les actions d’administration s’afficheront ici.</span>
+                  </li>
+                )}
               </ul>
             </Panel>
             <Panel title="Santé plateforme" subtitle="Services microservices">

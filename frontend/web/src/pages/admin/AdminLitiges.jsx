@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { ShieldCheck } from 'lucide-react';
 import { api } from '../../lib/api';
 import { EmptyState } from '../../components/ui';
 import { PageHead, Panel } from '../pro/ui';
@@ -16,7 +17,11 @@ export default function AdminLitiges() {
       <PageHead eyebrow="Administration" title="Litiges & Escrow" subtitle="Transactions bloquées en séquestre à traiter." />
       <Panel title="Séquestres actifs" subtitle={`${held.length} litige(s) en cours`}>
         {held.length === 0 ? (
-          <p className="text-[12px] text-djassa-black/55">Aucun litige en cours. 🎉</p>
+          <EmptyState
+            icon={ShieldCheck}
+            title="Aucun litige en cours"
+            hint="Toutes les transactions en séquestre sont sous contrôle. Les nouveaux litiges apparaîtront ici."
+          />
         ) : (
           <ul className="space-y-2">
             {held.map((t) => (

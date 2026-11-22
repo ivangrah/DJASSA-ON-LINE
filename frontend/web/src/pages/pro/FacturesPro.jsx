@@ -97,7 +97,7 @@ export default function FacturesPro() {
           <div className="flex justify-center py-12"><Spinner /></div>
         ) : visible.length === 0 ? (
           <EmptyState
-            art="box"
+            icon={FileText}
             title="Aucun document disponible"
             hint="Vos factures et reçus apparaîtront ici dès votre première transaction."
             action={<Link to="/dashboard-pro" className="btn-outline btn-sm">Retour au dashboard <ArrowRight size={13} /></Link>}

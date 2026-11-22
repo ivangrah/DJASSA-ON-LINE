@@ -541,9 +541,12 @@ export default function DashboardPro() {
               ))}
             </div>
           ) : (
-            <div className="flex items-center gap-3 rounded-[5px] bg-white border-solid border-[0.5px] border-[rgba(18,18,18,0.08)] p-3 shadow-card">
-              <Zap size={20} className="text-djassa-red" />
-              <p className="text-[11px] text-djassa-black/50">Aucune vente flash en cours. Lancez-en une pour gagner en visibilité.</p>
+            <div className="flex flex-col items-center justify-center gap-2 rounded-[5px] bg-djassa-cloud/70 px-3 py-6 text-center">
+              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-djassa-red shadow-card">
+                <Zap size={20} aria-hidden="true" />
+              </span>
+              <p className="font-spacegrotesk text-[12px] font-bold text-djassa-black">Aucune vente flash en cours</p>
+              <p className="max-w-xs text-[10.5px] text-djassa-black/55">Lancez une promotion éclair sur un article neuf pour gagner en visibilité.</p>
             </div>
           )}
         </Panel>

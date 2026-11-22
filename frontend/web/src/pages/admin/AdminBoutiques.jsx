@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
+import { Store } from 'lucide-react';
 import { api } from '../../lib/api';
 import { EmptyState } from '../../components/ui';
 import { PageHead, Panel } from '../pro/ui';
@@ -17,7 +18,11 @@ export default function AdminBoutiques() {
       <PageHead eyebrow="Administration" title="Boutiques & Modération" subtitle="Supervision des boutiques Pro de la plateforme." />
       <Panel title="Boutiques" subtitle={`${boutiques.length} boutique(s)`}>
         {boutiques.length === 0 ? (
-          <p className="text-[12px] text-djassa-black/55">Aucune boutique pour le moment.</p>
+          <EmptyState
+            icon={Store}
+            title="Aucune boutique pour le moment"
+            hint="Les boutiques Pro apparaîtront ici dès leur création sur la plateforme."
+          />
         ) : (
           <ul className="space-y-2">
             {boutiques.map((b) => (

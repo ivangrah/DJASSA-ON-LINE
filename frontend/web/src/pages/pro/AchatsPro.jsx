@@ -68,7 +68,7 @@ export default function AchatsPro() {
           <div className="flex justify-center py-12"><Spinner /></div>
         ) : achats.length === 0 ? (
           <EmptyState
-            art="box"
+            icon={ShoppingBag}
             title="Aucun achat pour le moment"
             hint="Vos commandes sécurisées et leurs codes PIN apparaîtront ici."
             action={<Link to="/" className="btn-red btn-sm">Explorer le marché <ArrowRight size={13} /></Link>}

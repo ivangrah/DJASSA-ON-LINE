@@ -105,7 +105,7 @@ export default function TrocsPro() {
           <div className="flex justify-center py-12"><Spinner /></div>
         ) : offers.length === 0 ? (
           <EmptyState
-            art="message"
+            icon={Repeat2}
             title={sens === 'recues' ? 'Aucune proposition reçue' : 'Aucune proposition envoyée'}
             hint={sens === 'recues' ? 'Les offres de troc sur vos articles apparaîtront ici.' : 'Ouvrez un article trocable et proposez un échange.'}
             action={<Link to="/" className="btn-outline btn-sm">Explorer le marché <ArrowRight size={13} /></Link>}

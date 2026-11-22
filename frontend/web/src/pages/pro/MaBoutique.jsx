@@ -372,7 +372,7 @@ export default function MaBoutique() {
           <div className="flex justify-center py-10"><Spinner /></div>
         ) : visibleProducts.length === 0 ? (
           <EmptyState
-            art="box"
+            icon={Store}
             title={productFilter === 'neuf' ? 'Aucun article neuf en stock' : 'Aucun article d’occasion'}
             hint={productFilter === 'neuf' ? 'Publiez un article neuf avec une quantité en stock pour alimenter votre boutique.' : 'Vous pouvez aussi publier des articles d’occasion et trocables.'}
             action={<Link to="/publier" className="btn-red btn-sm"><PlusCircle size={14} /> Publier un article</Link>}
