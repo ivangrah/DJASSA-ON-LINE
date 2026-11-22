@@ -11,9 +11,11 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
+    ->withCommands([\App\Console\Commands\ConsumeDomainEvents::class])
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'role' => \App\Http\Middleware\EnsureUserRole::class,
+            'internal' => \App\Http\Middleware\VerifyInternalSignature::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

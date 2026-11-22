@@ -51,6 +51,16 @@ return [
         'frais_escrow_pct' => (float) env('GENIUSPAY_FRAIS_ESCROW_PCT', 3), // % frais de sécurisation Djassa
     ],
 
+    'redis' => [
+        'host' => env('REDIS_HOST', '127.0.0.1'),
+        'port' => (int) env('REDIS_PORT', 6379),
+        'stream' => env('REDIS_EVENTS_STREAM', 'djassa.events'),
+    ],
+
+    'internal' => [
+        'signing_key' => env('DJASSA_INTERNAL_SIGNING_KEY'),
+    ],
+
     'brevo' => [
         'api_key' => env('BREVO_API_KEY'),
         'sender_email' => env('BREVO_SENDER_EMAIL', 'no-reply@djassaonline.ci'),

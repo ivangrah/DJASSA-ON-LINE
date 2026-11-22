@@ -21,6 +21,7 @@ class PaymentController extends Controller
     {
         $type = $request->validated('type');
         $userId = (string) $request->header('X-User-Id');
+        abort_unless($userId !== '', 401, 'Identité manquante.');
 
         if ($type === Transaction::TYPE_ACHAT) {
             $article = $this->internal->getArticle((string) $request->validated('article_id'));

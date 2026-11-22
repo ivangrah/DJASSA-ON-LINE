@@ -24,7 +24,7 @@ class InternalApiClient
         }
 
         $body = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
-        $signature = hash_hmac('sha256', $method."\n".$path."\n".$body, $this->signingKey);
+        $signature = hash_hmac("sha256", strtoupper($method)."\n/internal".$path."\n".$body, $this->signingKey);
 
         $response = Http::withHeaders([
             'Content-Type' => 'application/json',

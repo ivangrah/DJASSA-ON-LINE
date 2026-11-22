@@ -8,6 +8,7 @@ use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use RuntimeException;
+use App\Services\RedisEventConsumer;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -19,6 +20,11 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->app->singleton(GeniusPayService::class);
         $this->app->singleton(BrevoNotificationService::class);
+        $this->app->singleton(RedisEventConsumer::class, fn () => new RedisEventConsumer(
+            (string) config('services.redis.host', '127.0.0.1'),
+            (int) config('services.redis.port', 6379),
+            (string) config('services.redis.stream', 'djassa.events'),
+        ));
     }
 
     /**
@@ -26,6 +32,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        require base_path('routes/internal.php');
+
         // B5 : refuser de démarrer en production avec une configuration de paiement incomplète.
         if (config('app.env') === 'production' && (
             empty(config('services.geniuspay.api_key')) ||

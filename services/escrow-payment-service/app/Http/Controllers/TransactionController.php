@@ -22,7 +22,7 @@ class TransactionController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $userId = (string) $request->header('X-User-Id');
+        $userId = $this->userId($request);
         $transactions = Transaction::query()
             ->where('acheteur_id', $userId)->orWhere('vendeur_id', $userId)
             ->latest()->paginate(20);
@@ -63,8 +63,17 @@ class TransactionController extends Controller
 
     private function isParty(Request $request, Transaction $transaction): bool
     {
-        $id = (string) $request->header('X-User-Id');
+        $id = $this->userId($request);
 
-        return $id !== '' && ($id === $transaction->acheteur_id || $id === $transaction->vendeur_id);
+        return $id === $transaction->acheteur_id || $id === $transaction->vendeur_id;
+    }
+
+    /** Le gateway doit injecter une identité valide ; sinon 401 (jamais de SQL avec ''). */
+    private function userId(Request $request): string
+    {
+        $id = (string) $request->header('X-User-Id');
+        abort_unless($id !== '', 401, 'Identité manquante.');
+
+        return $id;
     }
 }
