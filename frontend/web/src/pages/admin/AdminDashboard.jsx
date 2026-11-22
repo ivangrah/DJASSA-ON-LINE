@@ -63,11 +63,11 @@ export default function AdminDashboard() {
   const { data: offresData } = useQuery({ queryKey: ['admin', 'offres'], queryFn: () => adminApi.offres(), enabled: canFetch, retry: false, staleTime: 30_000 });
   const { data: maintenanceData } = useQuery({ queryKey: ['admin', 'maintenance'], queryFn: () => adminApi.maintenance(), enabled: canFetch, retry: false, staleTime: 10_000 });
 
-  const users = usersData?.data ?? [];
-  const audit = auditData?.data ?? [];
-  const financesRows = finances?.data ?? [];
-  const boutiques = boutiquesData?.data ?? [];
-  const offres = offresData?.data ?? [];
+  const users = Array.isArray(usersData?.data) ? usersData.data : [];
+  const audit = Array.isArray(auditData?.data) ? auditData.data : [];
+  const financesRows = Array.isArray(finances?.data) ? financesData.data : [];
+  const boutiques = Array.isArray(boutiquesData?.data) ? boutiquesData.data : [];
+  const offres = Array.isArray(offresData?.data) ? offresData.data : [];
 
   const [maintenanceOn, setMaintenanceOn] = useState(Boolean(maintenanceData?.data?.enabled));
   const [maintenanceMsg, setMaintenanceMsg] = useState(maintenanceData?.data?.message ?? '');
@@ -111,8 +111,8 @@ export default function AdminDashboard() {
     } catch { toast.error('Réinitialisation impossible.'); }
   };
 
-  const totalCA = finances?.totaux?.chiffre_affaires ?? 0;
-  const activeUsers = users.filter((u) => u.statut === 'actif').length;
+  const totalCA = Number(finances?.totaux?.chiffre_affaires ?? 0) || 0;
+  const activeUsers = users.filter((u) => u?.statut === 'actif').length;
 
   return (
     <div ref={scope} className="space-y-5">
