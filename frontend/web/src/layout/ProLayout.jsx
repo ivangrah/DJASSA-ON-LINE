@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
-  Activity, BadgeCheck, Bell, BellRing, LayoutDashboard,
+  Activity, ArrowLeftRight, BadgeCheck, Bell, BellRing, LayoutDashboard,
   LogOut, Menu, ReceiptText, Server, Settings, Settings2, ShieldCheck, ShoppingBag, Sparkles, Store, Users, X,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';

@@ -7,18 +7,20 @@ const ToastContext = createContext(null);
 export function ToastProvider({ children }) {
   const [toasts, setToasts] = useState([]);
 
-  const push = useCallback((message, type = 'info') => {
+  const push = useCallback((message, opts = {}) => {
+    const type = typeof opts === 'string' ? opts : (opts.type ?? 'info');
+    const description = typeof opts === 'string' ? null : (opts.description ?? null);
     const id = crypto.randomUUID();
-    setToasts((prev) => [...prev.slice(-2), { id, message, type }]);
+    setToasts((prev) => [...prev.slice(-2), { id, message, type, description }]);
     window.setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 4200);
+    }, 4800);
   }, []);
 
   const toast = useMemo(() => ({
-    success: (msg) => push(msg, 'success'),
-    error: (msg) => push(msg, 'error'),
-    info: (msg) => push(msg, 'info'),
+    success: (msg, opts = {}) => push(msg, { ...opts, type: 'success' }),
+    error: (msg, opts = {}) => push(msg, { ...opts, type: 'error' }),
+    info: (msg, opts = {}) => push(msg, { ...opts, type: 'info' }),
   }), [push]);
 
   return (
@@ -29,14 +31,17 @@ export function ToastProvider({ children }) {
           <div
             key={t.id}
             role="status"
-            className="flex w-full items-center gap-2.5 rounded-[5px] bg-djassa-black border-solid border-[0.5px] border-[rgba(255,255,255,0.12)] px-4 py-3 text-sm font-DM-Sans font-medium text-white shadow-card"
+            className={`flex w-full items-start gap-2.5 rounded-[5px] border-solid border-[0.5px] px-4 py-3 text-sm font-DM-Sans shadow-card ${t.type === 'error' ? 'bg-[#780000] border-[#780000] text-white' : 'bg-djassa-black border-[rgba(255,255,255,0.12)] text-white'}`}
           >
-            {t.type === 'success' && <CheckCircle2 size={18} className="shrink-0 text-emerald-400" />}
-            {t.type === 'error' && <XCircle size={18} className="shrink-0 text-djassa-red" />}
-            {t.type === 'info' && <Info size={18} className="shrink-0 text-djassa-red-soft" />}
-            <span className="flex-1">{t.message}</span>
-            <button onClick={() => setToasts((prev) => prev.filter((x) => x.id !== t.id))} aria-label="Fermer">
-              <X size={16} className="text-white/50 hover:text-white" />
+            {t.type === 'success' && <CheckCircle2 size={18} className="mt-0.5 shrink-0 text-emerald-400" />}
+            {t.type === 'error' && <XCircle size={18} className="mt-0.5 shrink-0 text-white" />}
+            {t.type === 'info' && <Info size={18} className="mt-0.5 shrink-0 text-djassa-red-soft" />}
+            <div className="flex-1">
+              <p className="font-medium">{t.message}</p>
+              {t.description && <p className="mt-0.5 text-[11px] text-white/80">{t.description}</p>}
+            </div>
+            <button onClick={() => setToasts((prev) => prev.filter((x) => x.id !== t.id))} aria-label="Fermer" className="mt-0.5">
+              <X size={16} className="text-white/60 hover:text-white" />
             </button>
           </div>
         ))}

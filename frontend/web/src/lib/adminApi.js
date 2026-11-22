@@ -17,6 +17,9 @@ export const adminApi = {
   updateOffre: (id, payload) => api.put(`/admin/offres/${id}`, payload),
   deleteOffre: (id) => api.delete(`/admin/offres/${id}`),
   boutiques: (params) => api.get('/admin/catalog/boutiques', { params }),
+  createBoutique: (payload) => api.post('/admin/catalog/boutiques', payload),
+  updateBoutique: (id, payload) => api.put(`/admin/catalog/boutiques/${id}`, payload),
+  deleteBoutique: (id) => api.delete(`/admin/catalog/boutiques/${id}`),
   finances: () => api.get('/admin/catalog/boutiques/finances'),
-  broadcast: (payload) => api.post('/admin/notifications/broadcast', payload),
+  broadcast: (payload) => api.post('/admin/campaigns', payload),
 };

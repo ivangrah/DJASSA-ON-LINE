@@ -15,14 +15,14 @@ class AdminFinancialClient
     /** Statistiques financières d'un vendeur (règle 15 : appel poolé par l'appelant). */
     public function stats(string $vendeurId): array
     {
-        $path = '/internal/escrow/stats?vendeur_id='.urlencode($vendeurId);
+        $path = '/internal/escrow/stats';
         $signature = hash_hmac('sha256', "GET\n".$path."\n", $this->signingKey);
         try {
             $res = Http::withHeaders([
                 'Accept' => 'application/json',
                 'X-Djassa-Signature' => $signature,
             ])->connectTimeout(3)->timeout(8)
-              ->get(rtrim($this->escrowUrl, '/').$path);
+              ->get(rtrim($this->escrowUrl, '/').$path, ['vendeur_id' => $vendeurId]);
             return $res->successful() ? $res->json() : [];
         } catch (\Throwable) {
             return [];

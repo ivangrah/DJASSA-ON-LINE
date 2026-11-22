@@ -100,6 +100,15 @@ export default function AdminDashboard() {
   const [campaign, setCampaign] = useState({ audience: 'all', titre: '', corps: '', email: false });
   const [newUser, setNewUser] = useState({ nom: '', email: '', telephone: '', role: 'particulier', password: '' });
   const [profile, setProfile] = useState({ nom: user?.nom ?? '', email: user?.email ?? '', telephone: user?.telephone ?? '' });
+  const [newOffre, setNewOffre] = useState({ code: '', nom: '', montant_fcfa: '', duree_jours: 30, actif: true });
+  const [editingOffreId, setEditingOffreId] = useState(null);
+  const [newBoutique, setNewBoutique] = useState({ utilisateur_id: '', nom_boutique: '', telephone: '', categorie: 'general', ville: 'Abidjan' });
+
+  const apiError = (err, fallback) => {
+    const data = err?.response?.data;
+    if (data?.errors) return Object.values(data.errors).flat().join(' · ');
+    return data?.message ?? fallback;
+  };
 
   const toggleMaintenance = async (enabled) => {
     try {
@@ -107,7 +116,7 @@ export default function AdminDashboard() {
       setMaintenanceOn(enabled);
       qc.invalidateQueries({ queryKey: ['admin', 'maintenance'] });
       toast.success(enabled ? 'Mode maintenance activé.' : 'Mode maintenance désactivé.');
-    } catch { toast.error('Impossible de basculer la maintenance.'); }
+    } catch (err) { toast.error(apiError(err, 'Impossible de basculer la maintenance.')); }
   };
 
   const sendCampaign = async (e) => {
@@ -118,23 +127,23 @@ export default function AdminDashboard() {
       if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
         import('canvas-confetti').then(({ default: confetti }) => confetti({
           particleCount: 60, spread: 60, origin: { y: 0.7 }, colors: ['#780000', '#9E2A2B', '#E5E5E5'],
-        }));
+        })).catch(() => {});
       }
       setCampaign({ audience: 'all', titre: '', corps: '', email: false });
-    } catch (err) { toast.error(err.response?.data?.message ?? 'Échec de l’envoi.'); }
+    } catch (err) { toast.error(apiError(err, 'Échec de l’envoi de la campagne.')); }
   };
 
   const saveProfile = async (e) => {
     e.preventDefault();
-    try { await adminApi.updateProfile(profile); toast.success('Profil mis à jour.'); }
-    catch (err) { toast.error(err.response?.data?.message ?? 'Échec de la mise à jour.'); }
+    try { await adminApi.updateProfile(profile); toast.success('Profil admin mis à jour.'); }
+    catch (err) { toast.error(apiError(err, 'Échec de la mise à jour du profil.')); }
   };
 
   const resetPwd = async (id) => {
     try {
       const res = await adminApi.resetPassword(id);
       toast.success('Mot de passe réinitialisé.', { description: `Temporaire : ${res.data.temporary_password}` });
-    } catch { toast.error('Réinitialisation impossible.'); }
+    } catch (err) { toast.error(apiError(err, 'Réinitialisation impossible.')); }
   };
 
   const createUser = async (e) => {
@@ -144,15 +153,63 @@ export default function AdminDashboard() {
       toast.success(`Utilisateur « ${res.data?.data?.nom ?? newUser.nom} » créé.`);
       setNewUser({ nom: '', email: '', telephone: '', role: 'particulier', password: '' });
       qc.invalidateQueries({ queryKey: ['admin', 'users'] });
-    } catch (err) { toast.error(err.response?.data?.message ?? 'Création impossible.'); }
+    } catch (err) { toast.error(apiError(err, 'Création utilisateur impossible.')); }
   };
 
   const deleteUser = async (id) => {
+    if (!window.confirm('Supprimer cet utilisateur ?')) return;
     try {
       const res = await adminApi.deleteUser(id);
       toast.success(res.data?.deleted ? 'Utilisateur supprimé.' : 'Utilisateur supprimé.');
       qc.invalidateQueries({ queryKey: ['admin', 'users'] });
-    } catch (err) { toast.error(err.response?.data?.message ?? 'Suppression impossible.'); }
+    } catch (err) { toast.error(apiError(err, 'Suppression utilisateur impossible.')); }
+  };
+
+  const saveOffre = async (e) => {
+    e.preventDefault();
+    const payload = { ...newOffre, montant_fcfa: Number(newOffre.montant_fcfa), duree_jours: Number(newOffre.duree_jours) };
+    try {
+      if (editingOffreId) {
+        await adminApi.updateOffre(editingOffreId, payload);
+        toast.success('Offre mise à jour.');
+      } else {
+        await adminApi.createOffre(payload);
+        toast.success('Offre créée.');
+      }
+      setNewOffre({ code: '', nom: '', montant_fcfa: '', duree_jours: 30, actif: true });
+      setEditingOffreId(null);
+      qc.invalidateQueries({ queryKey: ['admin', 'offres'] });
+    } catch (err) { toast.error(apiError(err, 'Enregistrement offre impossible.')); }
+  };
+
+  const deleteOffre = async (id) => {
+    if (!window.confirm('Supprimer cette offre ?')) return;
+    try {
+      await adminApi.deleteOffre(id);
+      toast.success('Offre supprimée.');
+      qc.invalidateQueries({ queryKey: ['admin', 'offres'] });
+    } catch (err) { toast.error(apiError(err, 'Suppression offre impossible.')); }
+  };
+
+  const createBoutique = async (e) => {
+    e.preventDefault();
+    try {
+      await adminApi.createBoutique(newBoutique);
+      toast.success('Boutique créée.');
+      setNewBoutique({ utilisateur_id: '', nom_boutique: '', telephone: '', categorie: 'general', ville: 'Abidjan' });
+      qc.invalidateQueries({ queryKey: ['admin', 'boutiques'] });
+      qc.invalidateQueries({ queryKey: ['admin', 'finances'] });
+    } catch (err) { toast.error(apiError(err, 'Création boutique impossible.')); }
+  };
+
+  const deleteBoutique = async (id) => {
+    if (!window.confirm('Supprimer cette boutique ?')) return;
+    try {
+      await adminApi.deleteBoutique(id);
+      toast.success('Boutique supprimée.');
+      qc.invalidateQueries({ queryKey: ['admin', 'boutiques'] });
+      qc.invalidateQueries({ queryKey: ['admin', 'finances'] });
+    } catch (err) { toast.error(apiError(err, 'Suppression boutique impossible.')); }
   };
 
   const financesTotals = finances?.data?.totaux ?? finances?.totaux ?? finances?.data?.meta?.totaux ?? {};
@@ -313,9 +370,26 @@ export default function AdminDashboard() {
         <div className="space-y-5">
           <div className="grid gap-3 sm:grid-cols-3">
             <StatCard icon={Wallet} label="CA total" value={<AnimatedNumber value={totalCA} prefix="FCFA " />} tone="red" />
-            <StatCard icon={Lock} label="Fonds bloqués" value={<AnimatedNumber value={finances?.totaux?.fonds_held ?? 0} prefix="FCFA " />} tone="ink" />
-            <StatCard icon={Unlock} label="Fonds libérés" value={<AnimatedNumber value={finances?.totaux?.fonds_released ?? 0} prefix="FCFA " />} tone="ink" />
+            <StatCard icon={Lock} label="Fonds bloqués" value={<AnimatedNumber value={financesTotals?.fonds_held ?? 0} prefix="FCFA " />} tone="ink" />
+            <StatCard icon={Unlock} label="Fonds libérés" value={<AnimatedNumber value={financesTotals?.fonds_released ?? 0} prefix="FCFA " />} tone="ink" />
           </div>
+          <Panel title="Créer une boutique" subtitle="CRUD admin catalogue">
+            <form onSubmit={createBoutique} className="grid gap-3 sm:grid-cols-2">
+              <label className="block text-[10px] font-bold text-djassa-black/60">ID utilisateur vendeur (UUID)
+                <input required value={newBoutique.utilisateur_id} onChange={(e) => setNewBoutique({ ...newBoutique, utilisateur_id: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 text-[12px]" placeholder="uuid vendeur_pro" />
+              </label>
+              <label className="block text-[10px] font-bold text-djassa-black/60">Nom boutique
+                <input required value={newBoutique.nom_boutique} onChange={(e) => setNewBoutique({ ...newBoutique, nom_boutique: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 text-[12px]" />
+              </label>
+              <label className="block text-[10px] font-bold text-djassa-black/60">Téléphone
+                <input required value={newBoutique.telephone} onChange={(e) => setNewBoutique({ ...newBoutique, telephone: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 text-[12px]" />
+              </label>
+              <label className="block text-[10px] font-bold text-djassa-black/60">Ville
+                <input value={newBoutique.ville} onChange={(e) => setNewBoutique({ ...newBoutique, ville: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 text-[12px]" />
+              </label>
+              <div className="sm:col-span-2"><button type="submit" className="inline-flex items-center gap-2 rounded-[5px] bg-djassa-red px-4 py-2 font-spacegrotesk text-[11px] font-extrabold text-white"><Plus size={15} /> Créer la boutique</button></div>
+            </form>
+          </Panel>
           <AdminTable
             title="Chiffre d'affaires par boutique" totalLabel={`CA ${formatFCFA(totalCA)}`}
             columns={[{ key: 'nom_boutique', label: 'Boutique' }, { key: 'chiffre_affaires', label: 'CA (FCFA)' }, { key: 'fonds_held', label: 'Bloqué' }, { key: 'fonds_released', label: 'Libéré' }, { key: 'volume_ventes', label: 'Ventes' }]}
@@ -330,26 +404,67 @@ export default function AdminDashboard() {
               </>
             )}
           />
-          <img src="/images/admin-ecommerce.webp" alt="" aria-hidden="true" className="mx-auto h-40 w-auto object-contain" />
+          <AdminTable
+            title="Boutiques" totalLabel={`${boutiquesTotal} boutique(s)`}
+            columns={[{ key: 'nom_boutique', label: 'Nom' }, { key: 'ville', label: 'Ville' }, { key: 'verifie', label: 'Vérifiée' }, { key: 'actions', label: 'Actions' }]}
+            rows={boutiques}
+            renderRow={(b) => (
+              <>
+                <td className="px-3 py-2.5 font-semibold">{b.nom_boutique}</td>
+                <td className="px-3 py-2.5">{b.ville ?? '—'}</td>
+                <td className="px-3 py-2.5">{b.verifie ? <CheckCircle2 size={15} className="text-emerald-600" /> : <XCircle size={15} className="text-djassa-red" />}</td>
+                <td className="px-3 py-2.5"><button type="button" onClick={() => deleteBoutique(b.id)} className="inline-flex items-center gap-1 text-[10px] text-djassa-red hover:underline"><Trash2 size={12} /> Supprimer</button></td>
+              </>
+            )}
+          />
         </div>
       )}
 
       {/* ===== OFFRES & PLANS ===== */}
       {tab === 'offres' && (
-        <AdminTable
-          title="Offres & plans d'abonnement" totalLabel={`${offres.length} offres`}
-          columns={[{ key: 'code', label: 'Code' }, { key: 'nom', label: 'Nom' }, { key: 'montant_fcfa', label: 'Tarif (FCFA)' }, { key: 'duree_jours', label: 'Durée (j)' }, { key: 'actif', label: 'Actif' }]}
-          rows={offres}
-          renderRow={(o) => (
-            <>
-              <td className="px-3 py-2.5 font-mono text-[10px]">{o.code}</td>
-              <td className="px-3 py-2.5 font-semibold">{o.nom}</td>
-              <td className="px-3 py-2.5 text-djassa-red">{formatFCFA(o.montant_fcfa)}</td>
-              <td className="px-3 py-2.5">{o.duree_jours}</td>
-              <td className="px-3 py-2.5">{o.actif ? <CheckCircle2 size={15} className="text-emerald-600" /> : <XCircle size={15} className="text-djassa-red" />}</td>
-            </>
-          )}
-        />
+        <div className="space-y-5">
+          <Panel title={editingOffreId ? 'Modifier l’offre' : 'Créer une offre'} subtitle="CRUD admin offres d’abonnement">
+            <form onSubmit={saveOffre} className="grid gap-3 sm:grid-cols-2">
+              <label className="block text-[10px] font-bold text-djassa-black/60">Code
+                <input required disabled={Boolean(editingOffreId)} value={newOffre.code} onChange={(e) => setNewOffre({ ...newOffre, code: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 text-[12px] disabled:opacity-60" />
+              </label>
+              <label className="block text-[10px] font-bold text-djassa-black/60">Nom
+                <input required value={newOffre.nom} onChange={(e) => setNewOffre({ ...newOffre, nom: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 text-[12px]" />
+              </label>
+              <label className="block text-[10px] font-bold text-djassa-black/60">Montant (FCFA)
+                <input required type="number" min={0} value={newOffre.montant_fcfa} onChange={(e) => setNewOffre({ ...newOffre, montant_fcfa: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 text-[12px]" />
+              </label>
+              <label className="block text-[10px] font-bold text-djassa-black/60">Durée (jours)
+                <input required type="number" min={1} value={newOffre.duree_jours} onChange={(e) => setNewOffre({ ...newOffre, duree_jours: e.target.value })} className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 text-[12px]" />
+              </label>
+              <label className="flex items-center gap-2 text-[11px] font-semibold text-djassa-black/70"><input type="checkbox" checked={newOffre.actif} onChange={(e) => setNewOffre({ ...newOffre, actif: e.target.checked })} /> Offre active</label>
+              <div className="flex gap-2 sm:col-span-2">
+                <button type="submit" className="inline-flex items-center gap-2 rounded-[5px] bg-djassa-red px-4 py-2 font-spacegrotesk text-[11px] font-extrabold text-white"><Plus size={15} /> {editingOffreId ? 'Mettre à jour' : 'Créer l’offre'}</button>
+                {editingOffreId && <button type="button" onClick={() => { setEditingOffreId(null); setNewOffre({ code: '', nom: '', montant_fcfa: '', duree_jours: 30, actif: true }); }} className="rounded-[5px] bg-djassa-cloud px-4 py-2 font-spacegrotesk text-[11px] font-extrabold text-djassa-black">Annuler</button>}
+              </div>
+            </form>
+          </Panel>
+          <AdminTable
+            title="Offres & plans d'abonnement" totalLabel={`${offres.length} offres`}
+            columns={[{ key: 'code', label: 'Code' }, { key: 'nom', label: 'Nom' }, { key: 'montant_fcfa', label: 'Tarif (FCFA)' }, { key: 'duree_jours', label: 'Durée (j)' }, { key: 'actif', label: 'Actif' }, { key: 'actions', label: 'Actions' }]}
+            rows={offres}
+            renderRow={(o) => (
+              <>
+                <td className="px-3 py-2.5 font-mono text-[10px]">{o.code}</td>
+                <td className="px-3 py-2.5 font-semibold">{o.nom}</td>
+                <td className="px-3 py-2.5 text-djassa-red">{formatFCFA(o.montant_fcfa)}</td>
+                <td className="px-3 py-2.5">{o.duree_jours}</td>
+                <td className="px-3 py-2.5">{o.actif ? <CheckCircle2 size={15} className="text-emerald-600" /> : <XCircle size={15} className="text-djassa-red" />}</td>
+                <td className="px-3 py-2.5">
+                  <div className="flex gap-2">
+                    <button type="button" onClick={() => { setEditingOffreId(o.id); setNewOffre({ code: o.code ?? '', nom: o.nom ?? '', montant_fcfa: o.montant_fcfa ?? 0, duree_jours: o.duree_jours ?? 30, actif: Boolean(o.actif) }); }} className="text-[10px] font-bold text-djassa-black hover:underline">Modifier</button>
+                    <button type="button" onClick={() => deleteOffre(o.id)} className="text-[10px] font-bold text-djassa-red hover:underline">Supprimer</button>
+                  </div>
+                </td>
+              </>
+            )}
+          />
+        </div>
       )}
 
       {/* ===== NOTIFICATIONS & EMAIL ===== */}

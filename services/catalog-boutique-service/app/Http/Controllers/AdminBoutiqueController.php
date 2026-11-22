@@ -38,13 +38,15 @@ class AdminBoutiqueController extends Controller
     public function finances(): JsonResponse
     {
         $boutiques = Boutique::select(['id', 'utilisateur_id', 'nom_boutique'])->where('is_active', true)->get();
+        $escrowBase = rtrim((string) config('services.internal.escrow_url', 'http://escrow-payment-service:8080'), '/');
+        $signingKey = (string) config('services.internal.signing_key', '');
         $responses = Http::pool(fn ($pool) => $boutiques->mapWithKeys(fn ($b) => [$b->utilisateur_id => $pool
             ->as((string) $b->utilisateur_id)
             ->withHeaders([
                 'Accept' => 'application/json',
-                'X-Djassa-Signature' => hash_hmac('sha256', "GET\n/internal/escrow/stats?vendeur_id=".urlencode((string) $b->utilisateur_id)."\n", (string) config('services.internal.signing_key', '')),
+                'X-Djassa-Signature' => hash_hmac('sha256', "GET\n/internal/escrow/stats\n", $signingKey),
             ])->connectTimeout(3)->timeout(8)
-            ->get(rtrim((string) config('services.internal.escrow_url', 'http://escrow-payment-service:8080'), '/').'/internal/escrow/stats?vendeur_id='.urlencode((string) $b->utilisateur_id))
+            ->get($escrowBase.'/internal/escrow/stats', ['vendeur_id' => (string) $b->utilisateur_id])
         ])->all());
 
         $rows = $boutiques->map(function ($b) use ($responses) {
