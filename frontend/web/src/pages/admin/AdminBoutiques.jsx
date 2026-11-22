@@ -10,7 +10,7 @@ export default function AdminBoutiques() {
     queryFn: async () => (await api.get('/boutiques')).data,
     staleTime: 30_000,
   });
-  const boutiques = data?.data ?? data ?? [];
+  const boutiques = Array.isArray(data?.data) ? data.data : (Array.isArray(data) ? data : []);
 
   return (
     <div className="space-y-5">

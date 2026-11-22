@@ -9,7 +9,7 @@ export default function AdminLitiges() {
     queryFn: async () => (await api.get('/transactions')).data,
     staleTime: 30_000,
   });
-  const held = (data?.data ?? []).filter((t) => t.escrow_status === 'held');
+  const held = (Array.isArray(data?.data) ? data.data : []).filter((t) => t.escrow_status === 'held');
 
   return (
     <div className="space-y-5">
