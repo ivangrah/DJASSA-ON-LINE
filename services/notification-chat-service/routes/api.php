@@ -11,3 +11,4 @@ Route::post('/api/v1/messages/{message}/read',[MessageController::class,'read'])
 Route::post('/api/v1/conversations',[ConversationController::class,'store']);
 Route::get('/api/v1/notifications',[NotificationController::class,'index']);
 Route::post('/api/v1/notifications/{notification}/read',[NotificationController::class,'markRead']);
+Route::post('/api/v1/admin/notifications/broadcast',[\App\Http\Controllers\AdminCampaignController::class,'broadcast']);

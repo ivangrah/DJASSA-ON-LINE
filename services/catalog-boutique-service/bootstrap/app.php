@@ -19,6 +19,8 @@ spl_autoload_register(function (string $class): void {
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(api: __DIR__.'/../routes/api.php', apiPrefix: '', health: '/up')
     ->withCommands([\App\Console\Commands\ConsumeAuthEvents::class])
-    ->withMiddleware(fn (Middleware $middleware) => null)
+    ->withMiddleware(fn (Middleware $middleware) => $middleware->alias([
+        'admin.catalog' => \App\Http\Middleware\EnsureAdmin::class,
+    ]))
     ->withExceptions(fn (Exceptions $exceptions) => null)
     ->create();

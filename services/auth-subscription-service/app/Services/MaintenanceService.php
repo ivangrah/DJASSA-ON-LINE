@@ -79,7 +79,8 @@ class MaintenanceService
         $t = $line[0] ?? '';
         $r = substr($line, 1);
         if ($t === '+') return $r;
-        if ($t === '-' || $t === ':') return null;
+        if ($t === '-') return null;
+        if ($t === ':') return (int) $r;
         if ($t === '$') {
             $n = (int) $r; if ($n < 0) return null;
             $d = ''; while (strlen($d) < $n) { $c = fread($socket, $n - strlen($d)); if (! $c) break; $d .= $c; }

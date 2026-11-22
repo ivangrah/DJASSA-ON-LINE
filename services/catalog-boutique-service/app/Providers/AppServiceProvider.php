@@ -17,6 +17,10 @@ class AppServiceProvider extends ServiceProvider
             (string)config('services.redis.host','127.0.0.1'),(int)config('services.redis.port',6379),
             (string)config('services.redis.stream','djassa.events')
         ));
+        $this->app->singleton(\App\Services\AdminFinancialClient::class, fn () => new \App\Services\AdminFinancialClient(
+            (string) config('services.internal.escrow_url', 'http://escrow-payment-service:8080'),
+            (string) config('services.internal.signing_key', ''),
+        ));
     }
     public function boot(): void
     {

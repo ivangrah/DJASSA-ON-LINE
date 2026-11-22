@@ -28,6 +28,7 @@ Route::post('/internal/webhooks/geniuspay', [WebhookController::class, 'geniuspa
 
 // /internal/* — réseau Docker privé + header signé (D3).
 Route::prefix('internal/escrow')->group(function () {
+    Route::get('/stats', [InternalController::class, 'stats']);
     Route::post('/checkout', [InternalController::class, 'checkout']);
     Route::get('/transactions/{id}', [InternalController::class, 'getTransaction']);
     Route::post('/transactions/{id}/hold', [InternalController::class, 'hold']);

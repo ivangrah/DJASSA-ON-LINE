@@ -8,6 +8,16 @@ use Illuminate\Support\Facades\Route;
 Route::get('/api/v1/products', [ProductController::class, 'index']);
 Route::get('/api/v1/products/flash', [ProductController::class, 'index']);
 Route::get('/api/v1/products/{product}', [ProductController::class, 'show']);
+// Super Dashboard Admin — boutiques & finances (X-User-Role injecté par la gateway).
+Route::middleware('admin.catalog')->prefix('/api/v1/admin/catalog')->group(function () {
+    Route::get('/boutiques', [App\Http\Controllers\AdminBoutiqueController::class, 'index']);
+    Route::get('/boutiques/finances', [App\Http\Controllers\AdminBoutiqueController::class, 'finances']);
+    Route::get('/boutiques/{id}', [App\Http\Controllers\AdminBoutiqueController::class, 'show']);
+    Route::post('/boutiques', [App\Http\Controllers\AdminBoutiqueController::class, 'store']);
+    Route::put('/boutiques/{id}', [App\Http\Controllers\AdminBoutiqueController::class, 'update']);
+    Route::delete('/boutiques/{id}', [App\Http\Controllers\AdminBoutiqueController::class, 'destroy']);
+});
+
 Route::get('/api/v1/boutiques', [BoutiqueController::class, 'index']);
 Route::get('/api/v1/boutiques/{boutique:slug}', [BoutiqueController::class, 'show']);
 Route::get('/api/v1/souhaits', [SouhaitController::class, 'index']);

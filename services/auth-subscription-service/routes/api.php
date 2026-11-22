@@ -23,6 +23,10 @@ Route::middleware(['auth:sanctum', 'admin'])->prefix('/api/v1/admin')->group(fun
     Route::post('/maintenance', [App\Http\Controllers\AdminController::class, 'maintenance']);
     Route::get('/maintenance', [App\Http\Controllers\AdminController::class, 'maintenanceState']);
     Route::get('/audit', [App\Http\Controllers\AdminController::class, 'audit']);
+    Route::get('/offres', [App\Http\Controllers\AdminOffreController::class, 'index']);
+    Route::post('/offres', [App\Http\Controllers\AdminOffreController::class, 'store']);
+    Route::put('/offres/{id}', [App\Http\Controllers\AdminOffreController::class, 'update']);
+    Route::delete('/offres/{id}', [App\Http\Controllers\AdminOffreController::class, 'destroy']);
 });
 
 // Routes authentifiées

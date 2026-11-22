@@ -70,6 +70,27 @@ class InternalController extends Controller
         return response()->json(Transaction::findOrFail($id)->toArray());
     }
 
+    /** Agrégation financière pour le Super Dashboard (appel interne signé). */
+    public function stats(Request $request): JsonResponse
+    {
+        $this->verifyInternalSignature($request);
+        $vendeurId = (string) $request->query('vendeur_id', '');
+        $q = Transaction::query()->select(['vendeur_id', 'montant', 'escrow_status']);
+        if ($vendeurId !== '') $q->where('vendeur_id', $vendeurId);
+
+        $rows = $q->get();
+        $ca = (float) $rows->whereIn('escrow_status', ['held', 'released'])->sum('montant');
+        $held = (float) $rows->where('escrow_status', 'held')->sum('montant');
+        $released = (float) $rows->where('escrow_status', 'released')->sum('montant');
+
+        return response()->json([
+            'chiffre_affaires' => $ca,
+            'fonds_held' => $held,
+            'fonds_released' => $released,
+            'volume_ventes' => $rows->count(),
+        ]);
+    }
+
     public function hold(Request $request, string $id, \App\Services\EscrowService $escrow): JsonResponse
     {
         $this->verifyInternalSignature($request);

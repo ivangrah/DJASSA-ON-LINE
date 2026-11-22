@@ -39,7 +39,8 @@ class RedisQueue
         if($line===false||$line===''||$depth>8)return null;
         $line=rtrim($line,"\r\n"); $t=$line[0]??''; $r=substr($line,1);
         if($t==='+')return $r;
-        if($t==='-'||$t===':')return null;
+        if($t==='-')return null;
+        if($t===':')return (int)$r;
         if($t==='$'){ $n=(int)$r; if($n<0)return null; $d=''; while(strlen($d)<$n){$c=fread($socket,$n-strlen($d)); if(!$c)break; $d.=$c;} fread($socket,2); return $d; }
         if($t==='*'){ $n=(int)$r; if($n<0)return null; $a=[]; for($i=0;$i<$n;$i++)$a[]=$this->read($socket,$depth+1); return $a; }
         return $line;
