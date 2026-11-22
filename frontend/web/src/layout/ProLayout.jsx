@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
-  ArrowLeftRight, BadgeCheck, Bell, LayoutDashboard,
-  LogOut, Menu, ReceiptText, Settings2, ShoppingBag, Sparkles, Store, X,
+  AlertTriangle, ArrowLeftRight, BadgeCheck, Bell, LayoutDashboard,
+  LogOut, Menu, ReceiptText, Settings2, ShoppingBag, Sparkles, Store, Users, X,
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { Avatar } from '../components/ui';
@@ -18,8 +18,19 @@ const NAV = [
   { to: '/dashboard-pro/factures', label: 'Factures & reçus PDF', short: 'Factures', icon: ReceiptText },
 ];
 
+const ADMIN_NAV = [
+  { to: '/admin', end: true, label: 'Vue globale', short: 'Vue', icon: LayoutDashboard },
+  { to: '/admin/litiges', label: 'Litiges & Escrow', short: 'Litiges', icon: AlertTriangle },
+  { to: '/admin/boutiques', label: 'Boutiques & Modération', short: 'Boutiques', icon: Store },
+  { to: '/admin/utilisateurs', label: 'Utilisateurs', short: 'Users', icon: Users },
+  { to: '/admin/securite', label: 'Sécurité & Webhooks', short: 'Sécurité', icon: ShieldCheck },
+];
+
 function SidebarContent({ onNavigate, counts }) {
   const { user, boutique, logout } = useAuth();
+
+  const isAdmin = user?.role === 'admin';
+  const nav = isAdmin ? ADMIN_NAV : NAV;
 
   // Correction défensive d'une ancienne valeur mal orthographiée en base.
   const nomBoutique = (boutique?.nom_boutique ?? 'Boutique à créer').replace('Quincallierie', 'Quincaillerie');
@@ -38,7 +49,7 @@ function SidebarContent({ onNavigate, counts }) {
               Djassa <span className="text-white/45">Online</span>
             </p>
             <p className="mt-1.5 font-spacegrotesk text-[8px] font-extrabold uppercase tracking-[0.24em] text-djassa-red">
-              Espace vendeur
+              {isAdmin ? 'Supervision plateforme' : 'Espace vendeur'}
             </p>
           </div>
         </Link>
@@ -77,7 +88,7 @@ function SidebarContent({ onNavigate, counts }) {
       <nav className="mt-6 flex-1 space-y-1 overflow-y-auto px-3" aria-label="Navigation espace Pro">
         <p className="mb-2 px-3 font-spacegrotesk text-[8px] font-extrabold uppercase tracking-[0.24em] text-white/50">Pilotage</p>
 
-        {NAV.map(({ to, end, label, icon: Icon, key }) => (
+        {nav.map(({ to, end, label, icon: Icon, key }) => (
           <NavLink
             key={to}
             to={to}
@@ -176,15 +187,15 @@ export default function ProLayout() {
 
   return (
     <div className="min-h-screen bg-djassa-cream font-DM-Sans text-djassa-black">
-      {/* Sidebar desktop */}
-      <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 lg:block">
+      {/* Sidebar desktop (visible dès la tablette pour éviter le drawer superposé) */}
+      <aside className="fixed inset-y-0 left-0 z-40 hidden w-72 md:block">
         <SidebarContent counts={counts} />
       </aside>
 
-      {/* Drawer mobile */}
+      {/* Drawer mobile (uniquement sous md) */}
       {drawer && (
-        <div className="fixed inset-0 z-[80] lg:hidden">
-          <button className="absolute inset-0 bg-[#0A0A0A]/60 backdrop-blur-[2px]" onClick={() => setDrawer(false)} aria-label="Fermer le menu" />
+        <div className="fixed inset-0 z-[80] md:hidden">
+          <button className="absolute inset-0 bg-[#0A0A0A]/40" onClick={() => setDrawer(false)} aria-label="Fermer le menu" />
           <div className="absolute inset-y-0 left-0 w-[290px] max-w-[86vw] animate-[drawerIn_.28s_cubic-bezier(.22,1,.36,1)] shadow-2xl">
             <SidebarContent onNavigate={() => setDrawer(false)} counts={counts} />
             <button onClick={() => setDrawer(false)} className="absolute right-3 top-4 rounded-[5px] bg-white/10 p-1.5 text-white" aria-label="Fermer">
@@ -194,11 +205,11 @@ export default function ProLayout() {
         </div>
       )}
 
-      <div className="lg:pl-72">
+      <div className="md:pl-72">
         {/* Barre supérieure */}
         <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-xl">
           <div className="flex h-16 items-center gap-3 px-4 sm:px-6 lg:px-8">
-            <button onClick={() => setDrawer(true)} className="rounded-[5px] p-2 text-djassa-black/70 transition hover:bg-djassa-cloud lg:hidden" aria-label="Ouvrir le menu">
+            <button onClick={() => setDrawer(true)} className="rounded-[5px] p-2 text-djassa-black/70 transition hover:bg-djassa-cloud md:hidden" aria-label="Ouvrir le menu">
               <Menu size={22} />
             </button>
             <div className="min-w-0">
@@ -225,10 +236,10 @@ export default function ProLayout() {
         </main>
       </div>
 
-      {/* Barre mobile */}
-      <nav className="fixed inset-x-0 bottom-0 z-50 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl lg:hidden" aria-label="Navigation Pro mobile">
+      {/* Barre mobile (masquée si le drawer est ouvert ou sur grand écran) */}
+      <nav className={`fixed inset-x-0 bottom-0 z-50 bg-white/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl md:hidden ${drawer ? 'hidden' : ''}`} aria-label="Navigation Pro mobile">
         <div className="mx-auto flex max-w-lg items-stretch justify-around px-1">
-          {NAV.filter((item) => !item.desktopOnly).map(({ to, end, short, icon: Icon, key }) => (
+          {nav.filter((item) => !item.desktopOnly).map(({ to, end, short, icon: Icon, key }) => (
             <NavLink
               key={to}
               to={to}

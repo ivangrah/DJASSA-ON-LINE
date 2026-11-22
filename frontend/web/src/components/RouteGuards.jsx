@@ -55,7 +55,7 @@ export function ParticulierRoute({ children }) {
   if (!user) return <AuthGateLoader />;
   if (needsPlan && !isAdmin) return <Navigate to="/choisir-offre" replace />;
   if (user.role === 'vendeur_pro') return <Navigate to="/dashboard-pro" replace />;
-  if (user.role === 'admin') return <Navigate to="/dashboard-pro" replace />;
+  if (user.role === 'admin') return <Navigate to="/admin" replace />;
   if (user.role !== 'particulier') return <Navigate to="/" replace />;
 
   return children ?? <Outlet />;
@@ -80,7 +80,27 @@ export function ProRoute({ children }) {
     return <Navigate to="/choisir-offre" state={{ renew: true }} replace />;
   }
   if (user.role === 'particulier') return <Navigate to="/dashboard" replace />;
-  if (user.role !== 'vendeur_pro' && user.role !== 'admin') return <Navigate to="/" replace />;
+  if (user.role === 'admin') return <Navigate to="/admin" replace />;
+  if (user.role !== 'vendeur_pro') return <Navigate to="/" replace />;
+
+  return children ?? <Outlet />;
+}
+
+/**
+ * Espace Administration — hermétique, réservé au rôle admin.
+ */
+export function AdminRoute({ children }) {
+  const { isAuthenticated, user } = useAuth();
+  const location = useLocation();
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" state={{ from: location.pathname + location.search }} replace />;
+  }
+  if (!user) return <AuthGateLoader />;
+  if (user.role !== 'admin') {
+    if (user.role === 'vendeur_pro') return <Navigate to="/dashboard-pro" replace />;
+    return <Navigate to="/dashboard" replace />;
+  }
 
   return children ?? <Outlet />;
 }

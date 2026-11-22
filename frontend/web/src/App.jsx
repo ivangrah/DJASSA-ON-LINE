@@ -6,7 +6,7 @@ import { useAuth } from './context/AuthContext';
 import AppShell from './layout/AppShell';
 import ParticulierLayout from './layout/ParticulierLayout';
 import ProLayout from './layout/ProLayout';
-import { RequireAuth, OnboardingGuard, ParticulierRoute, ProRoute } from './components/RouteGuards';
+import { RequireAuth, OnboardingGuard, ParticulierRoute, ProRoute, AdminRoute } from './components/RouteGuards';
 
 const Feed = lazy(() => import('./pages/Feed'));
 const ProductDetail = lazy(() => import('./pages/ProductDetail'));
@@ -25,6 +25,11 @@ const MaBoutique = lazy(() => import('./pages/pro/MaBoutique'));
 const TrocsPro = lazy(() => import('./pages/pro/TrocsPro'));
 const AchatsPro = lazy(() => import('./pages/pro/AchatsPro'));
 const FacturesPro = lazy(() => import('./pages/pro/FacturesPro'));
+const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
+const AdminLitiges = lazy(() => import('./pages/admin/AdminLitiges'));
+const AdminBoutiques = lazy(() => import('./pages/admin/AdminBoutiques'));
+const AdminUtilisateurs = lazy(() => import('./pages/admin/AdminUtilisateurs'));
+const AdminSecurite = lazy(() => import('./pages/admin/AdminSecurite'));
 
 /** Redirection de compatibilité pour les anciens liens /moi et /pro/dashboard. */
 function DashboardRedirect() {
@@ -32,7 +37,8 @@ function DashboardRedirect() {
 
   if (!user) return <Navigate to="/login" replace />;
   if (needsPlan) return <Navigate to="/choisir-offre" replace />;
-  if (isAdmin || user.role === 'vendeur_pro') return <Navigate to="/dashboard-pro" replace />;
+  if (isAdmin) return <Navigate to="/admin" replace />;
+  if (user.role === 'vendeur_pro') return <Navigate to="/dashboard-pro" replace />;
   return <Navigate to="/dashboard" replace />;
 }
 
@@ -94,6 +100,18 @@ export default function App() {
         <Route path="trocs" element={<TrocsPro />} />
         <Route path="achats" element={<AchatsPro />} />
         <Route path="factures" element={<FacturesPro />} />
+      </Route>
+
+      {/* --- Espace Administration (admin uniquement) --- */}
+      <Route
+        path="/admin"
+        element={<AdminRoute><ProLayout /></AdminRoute>}
+      >
+        <Route index element={<AdminDashboard />} />
+        <Route path="litiges" element={<AdminLitiges />} />
+        <Route path="boutiques" element={<AdminBoutiques />} />
+        <Route path="utilisateurs" element={<AdminUtilisateurs />} />
+        <Route path="securite" element={<AdminSecurite />} />
       </Route>
 
       {/* --- Marketplace publique (AppShell) --- */}
