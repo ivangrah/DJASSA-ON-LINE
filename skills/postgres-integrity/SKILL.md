@@ -24,3 +24,14 @@ for f in database/schemas/*.sql; do psql -d djassa_check -v ON_ERROR_STOP=1 -f "
 ## Références
 
 `database/init/`, `database/schemas/`, `models/schemas/`.
+
+## Performance & production — règles 20–23
+
+Le référentiel complet est dans `AGENTS.md`. Checklist base obligatoire :
+
+- **20** — sélection explicite des colonnes (`select(['id','titre','prix','...'])`) ; jamais `SELECT *`.
+- **21** — zéro N+1 : `with()` sur les relations du même domaine et `Model::preventLazyLoading(! app()->isProduction())` activé en dev (`AppServiceProvider`).
+- **22** — index ciblés sur les FK, les colonnes de filtrage (`statut`, `marche`, `categorie`, `ville`) et de tri (`created_at`, `prix`).
+- **23** — pool de connexions PgBouncer devant PostgreSQL pour absorber les pics entre microservices.
+
+Rappel D2 : une base par domaine, aucune FK cross-domaine ; ces index sont à créer **par base**.

@@ -19,3 +19,19 @@ description: Crée et maintient les microservices Laravel 11 de Djassa Online �
 - `select-plan` ne doit jamais accorder le statut Pro sans webhook vérifié (finding B1 de `AUDIT_APPLICATION.md`).
 - `UserFactory` doit utiliser `particulier`, pas l'ancien rôle `user`.
 - `OffreTrocPolicy::create()` doit être réellement appelée dans `store()`.
+
+## Performance & production — règles 8, 14–19, 28–29
+
+Le référentiel complet est dans `AGENTS.md`. Checklist backend obligatoire :
+
+- **8** — dédupliquer les GET et verrouiller anti-double-clic les POST de paiement côté client/API.
+- **14** — pagination systématique (`paginate(20)` ou curseur) ; **interdiction formelle de `Model::all()`**.
+- **15** — appels inter-services indépendants en parallèle : `Http::pool()` (Laravel), `Promise.all()` (React).
+- **16** — cache Redis des données chaudes (catalogue public, boutiques populaires, catégories) avec invalidation événementielle (`article.created`, `article.updated`).
+- **17** — jobs Redis asynchrones : e-mails/SMS Brevo, PDF, compression d'images, matching des souhaits.
+- **18** — timeouts stricts `connectTimeout(3)` / `timeout(8)` sur GeniusPay, Brevo, Google OAuth + retry contrôlé.
+- **19** — retirer toute dépendance inutilisée de `composer.json` / `package.json`.
+- **28** — SSG/SSR pour les pages vitrines et SEO.
+- **29** — multi-instances derrière le gateway, répartition du trafic.
+
+Ces règles s'appliquent au code existant lors de toute modification, pas seulement au neuf.

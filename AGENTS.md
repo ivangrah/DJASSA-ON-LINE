@@ -47,6 +47,51 @@ La migration du monolithe vers les microservices est une décision séparée, et
 
 ⚠️ Le code actif est **déjà aligné** : 123 occurrences de `#780000`, `Space Grotesk` + `DM Sans` chargées dans `index.html`, 0 occurrence des anciens tokens `#E11D48/#E60023`. `DESIGN_SYSTEM_SUMMARY.md` reste une doc historique à rafraîchir.
 
+## Règles de Performance & Production (29 règles obligatoires)
+
+Référentiel officiel, applicable à chaque développement. Détail par domaine dans `agent/system-rules.md` et les skills correspondants.
+
+### A. Frontend — `frontend/web/`, `frontend/mobile/` (1–13)
+
+1. **Squelettes, jamais de spinner nu.** Reproduire la structure des cartes produit / dashboards.
+2. **WebP/AVIF + lazy loading.** `loading="lazy"` + `decoding="async"` sous la ligne de flottaison.
+3. **Polices auto-hébergées.** `Space Grotesk` + `DM Sans` en `.woff2` local, uniquement les graisses 400/500/600/700 ; aucun appel Google Fonts bloquant.
+4. **Code splitting par route.** `React.lazy()` + `Suspense` ; chunks lourds (Three.js, GSAP) isolés via `manualChunks` dans `vite.config.js`.
+5. **Virtualisation.** `@tanstack/react-virtual` pour catalogue infini, transactions et fils de messagerie.
+6. **Zéro re-render inutile.** `React.memo`, `useMemo`, `useCallback`, contextes cloisonnés (Auth, Cart).
+7. **Debounce 300 ms** sur la recherche catalogue avant appel API.
+8. **Déduplication des requêtes** + verrou anti-double-clic sur `POST /escrow/checkout` (TanStack Query).
+9. **Optimistic UI** avec rollback : favoris/souhaits, panier, lecture de message.
+10. **Streaming IA par token** (SSE / `ReadableStream`) si une aide à la rédaction est intégrée.
+11. **Scripts tiers différés** après `window.load` ou en `defer`.
+12. **Pages d'erreur dédiées** : 403 (dont Pro expiré), 404, 500, Hors-ligne — charte `#780000`, `border-none`.
+13. **Qualité terrain** : Core Web Vitals (RUM) + tests CPU 4× / Fast 3G sur smartphone d'entrée de gamme.
+
+### B. Backend & microservices — `backend/`, `services/` (14–19)
+
+14. **Pagination systématique.** `paginate(20)` ou curseur ; **jamais `Model::all()`**.
+15. **Appels indépendants en parallèle.** `Http::pool()` / `Promise.all()` plutôt que séquentiels.
+16. **Cache Redis des données chaudes.** Catalogue public, boutiques populaires, catégories ; invalidation par événements (`article.created`, `article.updated`).
+17. **Files de jobs Redis** pour tout travail lent : Brevo e-mails/SMS, PDF, compression d'images, matching souhaits.
+18. **Timeouts stricts** : `connectTimeout(3)` / `timeout(8)` sur GeniusPay, Brevo, Google OAuth + retry contrôlé.
+19. **Dépendances inutiles supprimées** de `composer.json` et `package.json`.
+
+### C. PostgreSQL — `database/` (20–23)
+
+20. **Sélection explicite des colonnes** (`select(['id','titre','prix','...'])`), jamais `SELECT *`.
+21. **Zéro N+1.** `with()` sur les relations du même domaine + `Model::preventLazyLoading(! app()->isProduction())` en dev.
+22. **Index ciblés.** FK, colonnes de filtre (`statut`, `marche`, `categorie`, `ville`) et de tri (`created_at`, `prix`).
+23. **Pool de connexions** PgBouncer devant PostgreSQL pour absorber les pics entre microservices.
+
+### D. Infrastructure, build & mesure (24–29)
+
+24. **Compression Gzip/Brotli** dans `backend/gateway/nginx.conf`.
+25. **Cache navigateur** : `Cache-Control: public, max-age=31536000, immutable` sur les assets buildés.
+26. **CDN** pour les fichiers statiques et illustrations.
+27. **Co-localisation** des conteneurs applicatifs dans la même région que PostgreSQL et Redis.
+28. **Rendu serveur/build (SSG/SSR)** pour les pages vitrines et SEO.
+29. **Montée en charge multi-instances** derrière l'API Gateway + répartition du trafic.
+
 ## Commandes
 
 ```bash
