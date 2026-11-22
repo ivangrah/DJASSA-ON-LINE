@@ -1,8 +1,8 @@
 import { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { DashboardSkeleton } from './components/ui';
+import DjassaPageLoader from './components/DjassaPageLoader.jsx';
 import { RouteError } from './components/ErrorPages.jsx';
-import RouteProgress from './components/RouteProgress.jsx';
+import TopProgressBar from './components/TopProgressBar.jsx';
 import { useAuth } from './context/AuthContext';
 import AppShell from './layout/AppShell';
 import ParticulierLayout from './layout/ParticulierLayout';
@@ -52,8 +52,8 @@ function DashboardRedirect() {
 export default function App() {
   return (
     <>
-    <RouteProgress />
-    <Suspense fallback={<DashboardSkeleton />}>
+    <TopProgressBar />
+    <Suspense fallback={<DjassaPageLoader />}>
     <Routes errorElement={<RouteError />}>
       {/* Anciennes URLs — conservées pour ne pas casser les favoris */}
       <Route path="/pro/dashboard" element={<Navigate to="/dashboard-pro" replace />} />
