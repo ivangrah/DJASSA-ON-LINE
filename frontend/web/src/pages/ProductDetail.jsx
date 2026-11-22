@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { usePageReveal } from '../hooks/usePageReveal';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import {
@@ -79,6 +80,8 @@ export default function ProductDetail() {
   const [barterOpen, setBarterOpen] = useState(false);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [faved, setFaved] = useState(false);
+  const scope = useRef(null);
+  usePageReveal(scope);
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ['product', id],
@@ -195,7 +198,7 @@ export default function ProductDetail() {
   const lowStock = Boolean(article.boutique && Number(article.stock) > 0 && Number(article.stock) <= 5);
 
   return (
-    <div className="mx-auto max-w-7xl px-3 py-3 sm:px-5 md:py-5">
+    <div ref={scope} className="mx-auto max-w-7xl px-3 py-3 sm:px-5 md:py-5">
       {/* Fil d'Ariane */}
       <nav className="mb-3 flex items-center gap-1.5 text-[10.5px] text-djassa-black/60" aria-label="Fil d'Ariane">
         <Link to="/" className="font-semibold transition hover:text-djassa-red">Accueil</Link>
@@ -206,7 +209,7 @@ export default function ProductDetail() {
       </nav>
 
       {/* ===== BANDEAU ROUGE ===== */}
-      <section
+      <section data-reveal
         className="relative overflow-hidden rounded-[5px] px-5 py-5 text-white shadow-card sm:px-7 sm:py-6"
         style={{ background: 'linear-gradient(135deg, #780000 0%, #4A0000 60%, #140505 100%)' }}
       >
@@ -320,7 +323,7 @@ export default function ProductDetail() {
           </div>
 
           {/* Panneau vendeur + prix + actions */}
-          <section className="overflow-hidden rounded-[5px] bg-white border-solid border-[0.5px] border-[rgba(18,18,18,0.08)] shadow-card">
+          <section data-reveal className="overflow-hidden rounded-[5px] bg-white border-solid border-[0.5px] border-[rgba(18,18,18,0.08)] shadow-card">
             <div className="p-4 text-white" style={{ background: 'linear-gradient(135deg, #780000 0%, #4A0000 60%, #140505 100%)' }}>
               <div className="flex items-center gap-3">
                 <Avatar name={sellerName} size={42} tone="red" className="ring-2 ring-white/30" />
@@ -394,7 +397,7 @@ export default function ProductDetail() {
           </section>
 
           {/* Description + caractéristiques */}
-          <section className="rounded-[5px] bg-white border-solid border-[0.5px] border-[rgba(18,18,18,0.08)] p-4 shadow-card">
+          <section data-reveal className="rounded-[5px] bg-white border-solid border-[0.5px] border-[rgba(18,18,18,0.08)] p-4 shadow-card">
             <h2 className="flex items-center gap-2 font-spacegrotesk text-[13px] font-extrabold uppercase tracking-wide text-djassa-black">
               <span className="flex h-6 w-6 items-center justify-center rounded-[5px] bg-djassa-red/10 text-djassa-red"><PackageOpen size={13} /></span>
               Description
@@ -433,7 +436,7 @@ export default function ProductDetail() {
 
       {/* Autres articles de la boutique */}
       {article.boutique && (
-        <section className="mt-8 overflow-hidden rounded-[5px] bg-white border-solid border-[0.5px] border-[rgba(18,18,18,0.08)] shadow-card">
+        <section data-reveal className="mt-8 overflow-hidden rounded-[5px] bg-white border-solid border-[0.5px] border-[rgba(18,18,18,0.08)] shadow-card">
           <div className="flex flex-wrap items-center justify-between gap-3 bg-djassa-red px-4 py-3 text-white">
             <h2 className="flex items-center gap-2 font-spacegrotesk text-[15px] font-extrabold tracking-tight">
               <Store size={16} /> Autres articles de la boutique

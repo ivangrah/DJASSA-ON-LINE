@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { usePageReveal } from '../hooks/usePageReveal';
 import {
   Banknote, Check, ChevronLeft, ChevronRight, CloudUpload, Camera, Image as ImageIcon,
   ArrowLeftRight, BadgeCheck, Crown, ArrowRight, Trash2, Zap,
@@ -36,6 +37,8 @@ async function compressImage(file, maxSide = 1440, quality = 0.82) {
 export default function Publish() {
   const navigate = useNavigate();
   const { isAuthenticated, isPro, boutique, needsPlan } = useAuth();
+  const scope = useRef(null);
+  usePageReveal(scope);
   const toast = useToast();
   const fileInputRef = useRef(null);
   const successRef = useRef(null);
@@ -156,7 +159,7 @@ export default function Publish() {
   }
 
   return (
-    <div className="mx-auto max-w-3xl px-3 pb-10 pt-4 sm:px-6">
+    <div ref={scope} data-reveal className="mx-auto max-w-3xl px-3 pb-10 pt-4 sm:px-6">
       {/* ===== BANDEAU ROUGE ===== */}
       <div className="rounded-[5px] p-4 text-white shadow-card sm:p-6" style={{ background: 'linear-gradient(135deg, #780000 0%, #4A0000 60%, #140505 100%)' }}>
         <nav className="font-DM-Sans text-[10px] text-white/55" aria-label="Fil d’Ariane">

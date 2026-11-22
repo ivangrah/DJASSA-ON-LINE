@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { usePageReveal } from '../../hooks/usePageReveal';
 import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -18,6 +19,8 @@ const FILTERS = [
 
 export default function FacturesPro() {
   const toast = useToast();
+  const scope = useRef(null);
+  usePageReveal(scope);
   const [filter, setFilter] = useState('ventes');
 
   const { data, isLoading } = useQuery({
@@ -44,7 +47,7 @@ export default function FacturesPro() {
   };
 
   return (
-    <div className="space-y-5">
+    <div ref={scope} data-reveal className="space-y-5">
       <PageHead
         eyebrow="Factures & reçus PDF"
         title="Ma comptabilité Djassa"

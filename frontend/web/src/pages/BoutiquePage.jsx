@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { usePageReveal } from '../hooks/usePageReveal';
 import { Link, useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -14,6 +15,8 @@ export default function BoutiquePage() {
   const { slug } = useParams();
   const [page, setPage] = useState(1);
   const [favs, setFavs] = useState([]);
+  const scope = useRef(null);
+  usePageReveal(scope);
 
   const { data, isLoading, isError } = useQuery({
     queryKey: ['boutique', slug, page],
@@ -46,7 +49,7 @@ export default function BoutiquePage() {
   }
 
   return (
-    <div className="mx-auto max-w-7xl px-3 pb-10 sm:px-6">
+    <div ref={scope} data-reveal className="mx-auto max-w-7xl px-3 pb-10 sm:px-6">
       <nav className="mt-2 font-DM-Sans text-[10px] text-djassa-black/55" aria-label="Fil d’Ariane">
         <Link to="/" className="hover:text-djassa-red">Accueil</Link> <span className="px-1">/</span>
         <span className="font-semibold text-djassa-red">Boutique</span>

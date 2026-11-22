@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { usePageReveal } from '../hooks/usePageReveal';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import { ArrowLeft, Eye, EyeOff, LockKeyhole, Mail, Sparkles, ShieldCheck, Truck, Zap } from 'lucide-react';
@@ -10,6 +11,8 @@ const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? '';
 
 export default function Login() {
   const { login, loginWithGoogle, loading, isAuthenticated, user, needsPlan, dashboardPath } = useAuth();
+  const scope = useRef(null);
+  usePageReveal(scope);
   const toast = useToast();
   const navigate = useNavigate();
   const location = useLocation();
@@ -50,7 +53,7 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-3.5rem)] items-center justify-center bg-[#F1F5F9] px-4 py-8 sm:px-6">
+    <div ref={scope} data-reveal className="flex min-h-[calc(100vh-3.5rem)] items-center justify-center bg-[#F1F5F9] px-4 py-8 sm:px-6">
       {/* Carte blanche arrondie */}
       <div className="grid w-full max-w-6xl overflow-hidden rounded-[5px] bg-white border-solid border-[0.5px] border-[rgba(18,18,18,0.08)] shadow-[0_20px_60px_rgba(18,18,18,0.08)] md:grid-cols-2">
 

@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
+import { usePageReveal } from '../../hooks/usePageReveal';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
@@ -76,6 +77,8 @@ function ProductThumb({ article, className = 'h-14 w-14' }) {
 
 export default function DashboardParticulier() {
   const { user } = useAuth();
+  const scope = useRef(null);
+  usePageReveal(scope);
   const toast = useToast();
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
@@ -153,7 +156,7 @@ export default function DashboardParticulier() {
   const pendingReceived = received.filter((o) => o.statut === 'pending').length;
 
   return (
-    <div className="space-y-5">
+    <div ref={scope} data-reveal className="space-y-5">
       {/* En-tête */}
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>

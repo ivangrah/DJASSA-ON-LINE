@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { usePageReveal } from '../../hooks/usePageReveal';
 import { Link } from 'react-router-dom';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
@@ -12,6 +13,8 @@ import { PageHead, Panel, ProductThumb, StatCard, TinyBadge } from './ui';
 
 export default function TrocsPro() {
   const toast = useToast();
+  const scope = useRef(null);
+  usePageReveal(scope);
   const queryClient = useQueryClient();
   const [sens, setSens] = useState('recues');
   const [counterFor, setCounterFor] = useState(null);
@@ -56,7 +59,7 @@ export default function TrocsPro() {
   const isLoading = sens === 'recues' ? loadingReceived : loadingSent;
 
   return (
-    <div className="space-y-5">
+    <div ref={scope} data-reveal className="space-y-5">
       <PageHead
         eyebrow="Mes trocs"
         title="Envois & réceptions"

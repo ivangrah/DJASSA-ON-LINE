@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
+import { usePageReveal } from '../hooks/usePageReveal';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
 import { ArrowLeftRight, Eye, Plus, Search, Tag, X } from 'lucide-react';
@@ -37,6 +38,8 @@ function SouhaitCard({ s, onRespond }) {
 /** Mur des Souhaits — recherche inversée (PRD §3.5) */
 export default function Souhaits() {
   const { isAuthenticated } = useAuth();
+  const scope = useRef(null);
+  usePageReveal(scope);
   const toast = useToast();
   const queryClient = useQueryClient();
   const [tab, setTab] = useState('tous'); // tous | miens
@@ -112,7 +115,7 @@ export default function Souhaits() {
   });
 
   return (
-    <div className="mx-auto max-w-4xl px-3 pb-10 pt-4 sm:px-6">
+    <div ref={scope} data-reveal className="mx-auto max-w-4xl px-3 pb-10 pt-4 sm:px-6">
       {/* En-tête */}
       <div className="flex items-end justify-between gap-3">
         <div>

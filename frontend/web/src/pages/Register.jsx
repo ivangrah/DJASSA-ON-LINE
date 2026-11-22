@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { usePageReveal } from '../hooks/usePageReveal';
 import { Link, useNavigate } from 'react-router-dom';
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
 import {
@@ -17,6 +18,8 @@ export default function Register() {
   const { register, loginWithGoogle, loading, isAuthenticated, dashboardPath } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
+  const scope = useRef(null);
+  usePageReveal(scope);
 
   const [form, setForm] = useState({ nom: '', email: '', telephone: '', password: '', password_confirmation: '' });
   const [showPwd, setShowPwd] = useState(false);
@@ -79,7 +82,7 @@ export default function Register() {
   };
 
   return (
-    <div className="flex min-h-[calc(100vh-3.5rem)] items-center justify-center bg-[#F1F5F9] px-4 py-8 sm:px-6">
+    <div ref={scope} data-reveal className="flex min-h-[calc(100vh-3.5rem)] items-center justify-center bg-[#F1F5F9] px-4 py-8 sm:px-6">
       <div className="grid w-full max-w-6xl overflow-hidden rounded-[5px] bg-white border-solid border-[0.5px] border-[rgba(18,18,18,0.08)] shadow-[0_20px_60px_rgba(18,18,18,0.08)] md:grid-cols-2">
 
         {/* Panneau rouge — illustration panier avec produits flottants */}

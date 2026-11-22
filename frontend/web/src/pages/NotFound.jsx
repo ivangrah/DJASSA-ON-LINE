@@ -1,9 +1,13 @@
 import { Link } from 'react-router-dom';
+import { useRef } from 'react';
 import { Compass } from 'lucide-react';
+import { usePageReveal } from '../hooks/usePageReveal';
 
 export default function NotFound() {
+  const scope = useRef(null);
+  usePageReveal(scope);
   return (
-    <div className="mx-auto flex max-w-md flex-col items-center px-6 py-20 text-center">
+    <div ref={scope} data-reveal className="mx-auto flex max-w-md flex-col items-center px-6 py-20 text-center">
       <svg viewBox="0 0 220 160" className="h-40 w-56" fill="none" aria-hidden="true">
         <circle cx="110" cy="72" r="54" stroke="#121212" strokeWidth="4" strokeDasharray="12 9" opacity="0.3" />
         <path d="M110 44v56M110 100l-17-17M110 100l17-17" stroke="#121212" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" opacity="0.85" />

@@ -1,4 +1,6 @@
+import { useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { usePageReveal } from '../../hooks/usePageReveal';
 import { useQuery } from '@tanstack/react-query';
 import {
   ArrowRight, Boxes, Check, Clock3, Download, LockKeyhole, ShoppingBag, Wallet,
@@ -11,6 +13,8 @@ import { PageHead, Panel, ProductThumb, StatCard, TinyBadge } from './ui';
 
 export default function AchatsPro() {
   const toast = useToast();
+  const scope = useRef(null);
+  usePageReveal(scope);
 
   const { data, isLoading } = useQuery({
     queryKey: ['transactions', 'pro-achats'],
@@ -29,7 +33,7 @@ export default function AchatsPro() {
   };
 
   return (
-    <div className="space-y-5">
+    <div ref={scope} data-reveal className="space-y-5">
       <PageHead
         eyebrow="Mes achats"
         title="Achats & Codes PIN"

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { usePageReveal } from '../hooks/usePageReveal';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useSearchParams, Link } from 'react-router-dom';
 import {
@@ -14,6 +15,8 @@ import BarterModal from '../components/BarterModal';
 
 export default function Messages() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const scope = useRef(null);
+  usePageReveal(scope);
   const partnerId = searchParams.get('to');
   const articleId = searchParams.get('article');
 
@@ -103,7 +106,7 @@ function Inbox({ conversations, isLoading, partnerId, articleId, onSelect }) {
   }), [conversations, query, onlyUnread]);
 
   return (
-    <div className="flex h-full flex-col">
+    <div ref={scope} data-reveal className="flex h-full flex-col">
       <div className="shrink-0 bg-djassa-red px-4 pb-3 pt-4 text-white">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">

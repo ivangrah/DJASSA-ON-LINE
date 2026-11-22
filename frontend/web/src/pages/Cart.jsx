@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { usePageReveal } from '../hooks/usePageReveal';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   ArrowLeft, ArrowRight, BadgeCheck, CheckCircle2, CreditCard, Loader2,
@@ -26,6 +27,8 @@ const PAYMENTS = [
 
 export default function Cart() {
   const toast = useToast();
+  const scope = useRef(null);
+  usePageReveal(scope);
   const queryClient = useQueryClient();
   const { items, count, subtotal, fees, total, remove, clear } = useCart();
   const { dashboardPath, isAuthenticated } = useAuth();
@@ -125,7 +128,7 @@ export default function Cart() {
   }
 
   return (
-    <div className="mx-auto max-w-6xl px-3 py-4 sm:px-6 sm:py-6 md:py-8">
+    <div ref={scope} data-reveal className="mx-auto max-w-6xl px-3 py-4 sm:px-6 sm:py-6 md:py-8">
       <div className="rounded-[5px] p-4 text-white shadow-card sm:p-6 md:p-8" style={{ background: 'linear-gradient(135deg, #780000 0%, #4A0000 60%, #140505 100%)' }}>
         <nav className="font-DM-Sans text-[10px] text-white/55" aria-label="Fil d’Ariane">
           <Link to="/" className="hover:text-white">Accueil</Link> <span className="px-1">/</span>
