@@ -154,12 +154,27 @@ services:
     depends_on: { postgres: { condition: service_healthy }, redis: { condition: service_started }, orchestrator: { condition: service_started } }
 
   notification-chat-service:
-    build: { context: ./services, args: { SERVICE: notification-chat-service } }
+    image: djassa-php:8.4
+    working_dir: /repo/services/notification-chat-service
+    volumes:
+      - .:/repo
+      - ./services/notification-chat-service/.env.docker:/repo/services/notification-chat-service/.env:ro
+    command: php artisan serve --host=0.0.0.0 --port=8080
     environment:
-      DJASSA_SERVICE: notification-chat-service
-      DB_URL: postgresql://djassa_chat:change_me_djassa_chat@postgres:5432/djassa_chat_db
-      REDIS_URL: redis://redis:6379
+      APP_ENV: local
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_DATABASE: djassa_chat_db
+      DB_USERNAME: postgres
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-djassa_dev}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_EVENTS_STREAM: djassa.events
+      REDIS_NOTIFICATION_QUEUE: djassa:notifications:jobs
       BREVO_API_KEY: ${BREVO_API_KEY:-}
+      BREVO_CONNECT_TIMEOUT: 3
+      BREVO_TIMEOUT: 8
+      DJASSA_INTERNAL_SIGNING_KEY: ${DJASSA_INTERNAL_SIGNING_KEY:-dev-signing-key}
     depends_on: { postgres: { condition: service_healthy }, redis: { condition: service_started } }
 
 volumes:
