@@ -19,6 +19,13 @@ spl_autoload_register(function (string $class): void {
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(api: __DIR__.'/../routes/api.php', apiPrefix: '', health: '/up')
     ->withCommands([\App\Console\Commands\ConsumeAuthEvents::class])
-    ->withMiddleware(fn (Middleware $middleware) => null)
+    ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->alias([
+            'admin' => \App\Http\Middleware\EnsureAdmin::class,
+            'maintenance' => \App\Http\Middleware\MaintenanceMode::class,
+        ]);
+        // Mode Maintenance global (les admins passent, voir le middleware).
+        $middleware->append(\App\Http\Middleware\MaintenanceMode::class);
+    })
     ->withExceptions(fn (Exceptions $exceptions) => null)
     ->create();

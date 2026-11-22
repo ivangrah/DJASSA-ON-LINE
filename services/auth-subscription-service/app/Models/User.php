@@ -18,7 +18,7 @@ class User extends Authenticatable
     public const ROLE_ADMIN = 'admin';
 
     protected $fillable = [
-        'nom', 'email', 'telephone', 'password', 'google_id', 'role',
+        'nom', 'email', 'telephone', 'password', 'google_id', 'role', 'statut',
         'plan_abonnement', 'abonnement_actif_jusqu_au', 'verifie', 'kyc_status',
         'ville', 'quartier', 'avatar', 'solde_portefeuille', 'email_verified_at',
     ];

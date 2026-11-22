@@ -24,6 +24,7 @@ class AuthController extends Controller
     public function __construct(
         private readonly GoogleTokenVerifier $google,
         private readonly InternalApiClient $internal,
+        private readonly \App\Services\AuditService $audit,
     ) {
     }
 
@@ -76,9 +77,11 @@ class AuthController extends Controller
     {
         $user = User::where('email', $request->validated('email'))->first();
         if (! $user || ! $user->password || ! Hash::check($request->validated('password'), $user->password)) {
+            $this->audit->record('login_failed', $user?->id, $request, ['email' => $request->validated('email')]);
             return response()->json(['message' => 'Identifiants invalides.'], 401);
         }
 
+        $this->audit->record('login', $user->id, $request);
         return $this->respond($user, $user->createToken('djassa-web')->plainTextToken);
     }
 
@@ -172,6 +175,7 @@ class AuthController extends Controller
 
     public function logout(Request $request): JsonResponse
     {
+        $this->audit->record('logout', (string) ($request->user()?->id ?? ''), $request);
         $request->user()->currentAccessToken()?->delete();
 
         return response()->json(['message' => 'Déconnecté.'])

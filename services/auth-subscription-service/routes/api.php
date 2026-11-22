@@ -10,6 +10,21 @@ Route::post('/api/v1/auth/register', [AuthController::class, 'register']);
 Route::post('/api/v1/auth/login', [AuthController::class, 'login']);
 Route::post('/api/v1/auth/google', [AuthController::class, 'google']);
 
+// Routes Administration — protégées par X-User-Role === 'admin' (injecté par la gateway).
+Route::middleware(['auth:sanctum', 'admin'])->prefix('/api/v1/admin')->group(function () {
+    Route::get('/users', [App\Http\Controllers\AdminController::class, 'users']);
+    Route::post('/users', [App\Http\Controllers\AdminController::class, 'storeUser']);
+    Route::get('/users/{id}', [App\Http\Controllers\AdminController::class, 'showUser']);
+    Route::put('/users/{id}', [App\Http\Controllers\AdminController::class, 'updateUser']);
+    Route::delete('/users/{id}', [App\Http\Controllers\AdminController::class, 'destroyUser']);
+    Route::post('/users/{id}/reset-password', [App\Http\Controllers\AdminController::class, 'resetPassword']);
+    Route::get('/profile', [App\Http\Controllers\AdminController::class, 'profile']);
+    Route::patch('/profile', [App\Http\Controllers\AdminController::class, 'updateProfile']);
+    Route::post('/maintenance', [App\Http\Controllers\AdminController::class, 'maintenance']);
+    Route::get('/maintenance', [App\Http\Controllers\AdminController::class, 'maintenanceState']);
+    Route::get('/audit', [App\Http\Controllers\AdminController::class, 'audit']);
+});
+
 // Routes authentifiées
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/api/v1/auth/logout', [AuthController::class, 'logout']);
