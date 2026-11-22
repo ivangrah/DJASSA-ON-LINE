@@ -7,6 +7,11 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        $this->app->singleton(\App\Services\MaintenanceService::class, fn () => new \App\Services\MaintenanceService(
+            (string) config('services.redis.host', '127.0.0.1'),
+            (int) config('services.redis.port', 6379),
+        ));
+
         $this->app->singleton(RedisCache::class, fn () => new RedisCache(
             (string) config('services.redis_cache.host', '127.0.0.1'),
             (int) config('services.redis_cache.port', 6379),

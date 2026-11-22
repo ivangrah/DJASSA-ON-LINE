@@ -14,6 +14,14 @@ class MaintenanceMode
 
     public function handle(Request $request, Closure $next): Response
     {
+        // Exemptions : connexion (pour que l'admin puisse entrer) et validation JWT interne de la gateway.
+        $path = $request->path();
+        if (str_starts_with($path, 'internal/') || in_array($path, [
+            'api/v1/auth/login', 'api/v1/auth/register', 'api/v1/auth/google', 'api/v1/maintenance', 'up',
+        ], true)) {
+            return $next($request);
+        }
+
         $state = $this->maintenance->state();
         if (! ($state['enabled'] ?? false)) {
             return $next($request);

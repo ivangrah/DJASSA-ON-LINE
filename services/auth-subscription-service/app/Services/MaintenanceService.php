@@ -17,9 +17,16 @@ class MaintenanceService
         private readonly int $port,
     ) {}
 
-    public function enable(string $message): array
+    public function enable(string $message, ?int $durationMinutes = null): array
     {
-        $state = ['enabled' => true, 'message' => $message, 'updated_at' => now()->toIso8601String()];
+        $state = [
+            'enabled' => true,
+            'message' => $message,
+            'duration_minutes' => $durationMinutes,
+            'started_at' => now()->toIso8601String(),
+            'ends_at' => $durationMinutes ? now()->addMinutes($durationMinutes)->toIso8601String() : null,
+            'updated_at' => now()->toIso8601String(),
+        ];
         $this->command(['SET', self::KEY, json_encode($state, JSON_UNESCAPED_UNICODE)]);
         return $state;
     }
@@ -38,7 +45,7 @@ class MaintenanceService
             $data = json_decode($raw, true);
             if (is_array($data)) return $data;
         }
-        return ['enabled' => false, 'message' => '', 'updated_at' => null];
+        return ['enabled' => false, 'message' => '', 'duration_minutes' => null, 'started_at' => null, 'ends_at' => null, 'updated_at' => null];
     }
 
     public function isEnabled(): bool

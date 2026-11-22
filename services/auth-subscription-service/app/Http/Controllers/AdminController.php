@@ -125,9 +125,10 @@ class AdminController extends Controller
         $data = $request->validate([
             'enabled' => ['required', 'boolean'],
             'message' => ['required_if:enabled,true', 'nullable', 'string', 'max:500'],
+            'duration_minutes' => ['sometimes', 'nullable', 'integer', 'min:1', 'max:10080'],
         ]);
         $state = $data['enabled']
-            ? $this->maintenance->enable((string) ($data['message'] ?? ''))
+            ? $this->maintenance->enable((string) ($data['message'] ?? ''), $data['duration_minutes'] ?? null)
             : $this->maintenance->disable();
         $this->audit->record('admin.maintenance_toggle', $this->adminId($request), $request, ['enabled' => $data['enabled']]);
         return response()->json(['data' => $state, 'message' => 'Mode maintenance mis à jour.']);

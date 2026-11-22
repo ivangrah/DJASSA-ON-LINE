@@ -20,6 +20,6 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(api: __DIR__.'/../routes/api.php', apiPrefix: '', health: '/up')
     ->withCommands([\App\Console\Commands\ConsumeAuthEvents::class])
     ->withCommands([\App\Console\Commands\ConsumeTrocEvents::class])
-    ->withMiddleware(fn (Middleware $middleware) => null)
+    ->withMiddleware(fn (Middleware $middleware) => $middleware->append(\App\Http\Middleware\MaintenanceMode::class))
     ->withExceptions(fn (Exceptions $exceptions) => null)
     ->create();

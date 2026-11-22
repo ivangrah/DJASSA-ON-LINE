@@ -21,6 +21,6 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withCommands([\App\Console\Commands\ConsumeAuthEvents::class])
     ->withCommands([\App\Console\Commands\ConsumeTrocEvents::class])
     ->withCommands([\App\Console\Commands\ConsumeChatEvents::class, \App\Console\Commands\WorkNotifications::class])
-    ->withMiddleware(fn (Middleware $middleware) => null)
+    ->withMiddleware(fn (Middleware $middleware) => $middleware->append(\App\Http\Middleware\MaintenanceMode::class))
     ->withExceptions(fn (Exceptions $exceptions) => null)
     ->create();

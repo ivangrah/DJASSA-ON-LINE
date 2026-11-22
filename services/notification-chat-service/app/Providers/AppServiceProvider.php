@@ -8,6 +8,11 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
+        $this->app->singleton(\App\Services\MaintenanceService::class, fn () => new \App\Services\MaintenanceService(
+            (string) config('services.redis.host', '127.0.0.1'),
+            (int) config('services.redis.port', 6379),
+        ));
+
         $this->app->singleton(BrevoService::class);
         $this->app->singleton(RedisQueue::class, fn()=>new RedisQueue(
             (string)config('services.redis.host','127.0.0.1'),(int)config('services.redis.port',6379),

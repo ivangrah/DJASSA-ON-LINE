@@ -18,6 +18,6 @@ spl_autoload_register(function (string $class): void {
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(api: __DIR__.'/../routes/api.php', apiPrefix: '', health: '/up')
-    ->withMiddleware(fn (Middleware $middleware) => null)
+    ->withMiddleware(fn (Middleware $middleware) => $middleware->append(\App\Http\Middleware\MaintenanceMode::class))
     ->withExceptions(fn (Exceptions $exceptions) => null)
     ->create();

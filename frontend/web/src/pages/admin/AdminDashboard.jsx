@@ -68,12 +68,13 @@ export default function AdminDashboard() {
 
   const [maintenanceOn, setMaintenanceOn] = useState(Boolean(maintenanceData?.data?.enabled));
   const [maintenanceMsg, setMaintenanceMsg] = useState(maintenanceData?.data?.message ?? '');
+  const [maintenanceDuration, setMaintenanceDuration] = useState(maintenanceData?.data?.duration_minutes ?? 60);
   const [campaign, setCampaign] = useState({ audience: 'all', titre: '', corps: '', email: false });
   const [profile, setProfile] = useState({ nom: user?.nom ?? '', email: user?.email ?? '', telephone: user?.telephone ?? '' });
 
   const toggleMaintenance = async (enabled) => {
     try {
-      await adminApi.setMaintenance({ enabled, message: enabled ? maintenanceMsg : '' });
+      await adminApi.setMaintenance({ enabled, message: enabled ? maintenanceMsg : '', duration_minutes: enabled ? Number(maintenanceDuration) : null });
       setMaintenanceOn(enabled);
       qc.invalidateQueries({ queryKey: ['admin', 'maintenance'] });
       toast.success(enabled ? 'Mode maintenance activé.' : 'Mode maintenance désactivé.');
@@ -307,6 +308,15 @@ export default function AdminDashboard() {
               </button>
             </div>
             <textarea rows={3} placeholder="Message affiché aux utilisateurs" value={maintenanceMsg} onChange={(e) => setMaintenanceMsg(e.target.value)} className="mt-3 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 text-[12px]" />
+            <label className="mt-3 block font-DM-Sans text-[10px] font-bold text-djassa-black/60">Durée estimée (minutes)
+              <input type="number" min={1} max={10080} value={maintenanceDuration} onChange={(e) => setMaintenanceDuration(e.target.value)}
+                className="mt-1 w-full rounded-[5px] border-none bg-djassa-cloud px-3 py-2 text-[12px]" />
+            </label>
+            {maintenanceData?.data?.ends_at && (
+              <p className="mt-2 font-DM-Sans text-[10px] text-djassa-black/55">
+                Fin prévue : {new Date(maintenanceData.data.ends_at).toLocaleString('fr-FR')}
+              </p>
+            )}
             <img src="/images/admin-gears.webp" alt="" aria-hidden="true" className="mx-auto mt-3 h-24 w-auto object-contain" />
           </Panel>
           <Panel title="Mon profil admin" subtitle="Modifier mes informations">

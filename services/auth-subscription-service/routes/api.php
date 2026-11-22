@@ -5,6 +5,9 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\InternalController;
 use Illuminate\Support\Facades\Route;
 
+// État du mode maintenance (public — la page /maintenance doit pouvoir lire le message).
+Route::get('/api/v1/maintenance', [\App\Http\Controllers\AdminController::class, 'maintenanceState']);
+
 // Routes publiques
 Route::post('/api/v1/auth/register', [AuthController::class, 'register']);
 Route::post('/api/v1/auth/login', [AuthController::class, 'login']);
