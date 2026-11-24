@@ -4,7 +4,7 @@
 | ---------------------------------- | ------------------------------------------------------------ |
 | Old timestamps read "340 days ago" | Switch to an absolute date after a week                      |
 | Numbers jitter when they change    | `font-variant-numeric: tabular-nums`                         |
-| Large headings look off            | Tighter tracking like `-0.02em`                              |
+| Large headings look off            | Tighter tracking like `-0.03em`                              |
 | Body text looks awkward            | Cap the line at about 65 characters with `max-width: 65ch`   |
 | Button feels unresponsive          | `transform: scale(0.97)` on `:active`                        |
 | Avatar squished into an oval       | `flex-shrink: 0` on the avatar                               |
