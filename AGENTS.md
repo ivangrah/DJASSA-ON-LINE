@@ -2,6 +2,8 @@
 
 > Point d'entrée lu automatiquement. Pour les règles détaillées, voir **`agent/system-rules.md`** et les skills dans **`skills/*/SKILL.md`**.
 
+Ce fichier est lu par l'agent (OpenCode) au début de chaque session. Il fixe les règles permanentes du projet. Les chantiers ponctuels (corrections, refontes) sont donnés séparément dans le prompt de la session.
+
 ## État réel du dépôt
 
 Architecture **100 % microservices** (Phase 4 terminée). Le monolithe `backend-laravel/` a été retiré.
@@ -31,6 +33,12 @@ Architecture **100 % microservices** (Phase 4 terminée). Le monolithe `backend-
 
 `test/` valide que ça marche ; `security/` empêche que ça casse. Ne pas confondre.
 
+## Le projet en bref
+
+Marketplace d'occasion et de troc à Abidjan. Particuliers et boutiques Pro vérifiées. Confiance par **séquestre Mobile Money (GeniusPay)** et **PIN à 4 chiffres** validé à la remise. Montants en FCFA, interface en français.
+
+**Le code fait foi.** Les documents (`documents/`, cahier des charges) décrivent l'intention. En cas d'écart, suis le dépôt et signale la divergence.
+
 ## Règles d'or
 
 1. **Database-per-Service.** Une base par service, un rôle PostgreSQL par base, zéro requête SQL cross-service. Références croisées = UUID logiques, communication = API interne ou événements Redis.
@@ -40,11 +48,63 @@ Architecture **100 % microservices** (Phase 4 terminée). Le monolithe `backend-
 5. **Isolation PostgreSQL active (D2).** Chaque service possède sa base (`djassa_auth_db`, `djassa_catalog_db`, `djassa_troc_db`, `djassa_escrow_db`, `djassa_chat_db`) et aucun modèle n'a de relation cross-base. Intégrité inter-domaines par API interne signée (`X-Djassa-Signature`) et événements Redis Streams.
 6. **Pas de vibe-coding.** Voir `agent/system-rules.md`.
 
+### Sécurité du PIN et du séquestre (précisions)
+
+- Aucun secret, PIN, clé GeniusPay ou clé HMAC dans le code, les logs, les tests ou les réponses API. Variables d'environnement uniquement ; échec du démarrage en production si une clé requise est absente.
+- Le PIN n'est jamais stocké en clair ni renvoyé après sa création. Hachage bcrypt **plus** secret serveur (pepper), 5 tentatives maximum par transaction **et** par IP, verrouillage après 5 essais, tentatives journalisées. Détenteur du PIN = acheteur ; le vendeur ne le saisit qu'après remise de l'objet.
+- Les webhooks sont vérifiés (HMAC-SHA256 sur le corps brut, comparaison à temps constant) **avant** tout traitement, rejetés si la signature est absente, et idempotents (clé d'événement unique). Montant et devise sont comparés à la transaction.
+- Les transitions d'état interdites sont refusées côté application **et** par contrainte en base. Chaîne autorisée : `initiated → held`, `held → released | refunded | disputed`, `initiated → failed`, `disputed → released | refunded`, avec verrous transactionnels contre la double libération et libération/remboursement automatique après un délai configurable si le PIN n'est jamais saisi.
+- Troc pur (sans soulte) : confirmation mutuelle. Litiges et arbitrage admin : voir `docs/CHECKLIST-MISE-EN-LIGNE.md` et `security/checklists/OWASP_TOP10_DJASSA.md`.
+- Un service escrow indisponible ne doit jamais produire de 500 dans l'administration.
+- Les montants sont en `NUMERIC(12,2)`, jamais en flottants.
+- En-têtes `X-User-Id` et `X-User-Role` : uniquement du gateway, jamais du client.
+
+## Méthode de travail
+
+1. **Lis avant d'écrire** : fichiers concernés, tests existants, contrats.
+2. **Plan court d'abord** (fichiers touchés, risques). Pour tout ce qui touche au séquestre, au PIN, à l'authentification ou aux migrations : attends mon accord.
+3. **Petits lots** : une modification cohérente + ses tests + un commit en français. Ne mélange pas documentation, sécurité et design.
+4. **Prouve, ne suppose pas** : lance les commandes de la section 6 et montre le résultat réel. Si tu n'as pas pu vérifier quelque chose, dis-le.
+5. **Une seule question à la fois** si une règle est ambiguë. Ne devine pas sur l'argent ou la sécurité.
+6. **Skills** : charge les skills de la table ci-dessous selon la tâche, annonce lesquels tu utilises, et n'en ouvre pas d'autres sans raison. Les skills propres au projet passent avant les skills génériques.
+
+### Skills par type de tâche
+
+| Tâche | Skills à utiliser |
+|---|---|
+| Microservices Laravel, endpoints, policies | `laravel-microservices` (projet), `laravel-specialist` |
+| Base de données, migrations | `postgres-integrity` (projet), `postgres-pro` |
+| Séquestre, PIN, paiement, webhooks | `security-escrow-audit` (projet), `secure-code-guardian` |
+| Avant de modifier un contrat ou un schéma | `change-impact` |
+| Tests | `test-driven-development`, `tdd-workflow`, `e2e-testing`, `playwright-expert` |
+| Frontend web et mobile | `react-ui-djassa` (projet), `mobile-native`, `animate-expo` (Expo) |
+| Animation web | `motion-design` (projet), `gsap-core`, `gsap-react`, `animation-performance` |
+| Accessibilité et revue d'interface | `web-design-guidelines`, `break-ui` |
+| Documentation et cahier des charges | `docs-governance`, `markdown-pro` |
+| Vidéo promo (Remotion) | `remotion-motion-graphics` |
+| Fin de chaque lot | `verification-before-completion` |
+
+Skills présents dans le pack mais **non installés** dans cette installation et donc retirés de la table : `api-and-interface-design`, `migration`, `deprecation-and-migration`, `security-and-hardening`, `doubt-driven-development`, `frontend-ui-engineering`, `accessibility-engineering`, `documentation-and-adrs`, `spec-driven-development`, `pixel2motion`, `git-workflow-and-versioning`, `code-review-and-quality`.
+
+**Skills à ne pas laisser décider du style visuel** : `design-taste-frontend`, `unslop`, `apple-design`. Ils proposent des effets (glow, verre, dégradés, fonds WebGL) que la charte interdit. Utilise-les au plus pour un conseil de hiérarchie ou d'espacement, jamais pour les couleurs, les polices ou les effets. (Les autres noms du pack — `ui-ux-pro-max`, `impeccable`, `react-bits`, `theme-factory`, `banner-design` — ne sont pas installés ici.)
+
+**Skills interdits sur ce dépôt** car ils envoient du code ou des données à l'extérieur : les `caveman-*` liés au cloud, `connect`, `connect-apps`, `skill-share`, `developer-growth-analysis` (aucun n'est installé ici). `strix-pentest` est installé mais uniquement sur mes propres environnements, après accord.
+
 ## Design system (cible)
 
 `#780000` (accent) · `#121212` (encre) · `#FFFFFF` · `Space Grotesk` (titres) + `DM Sans` (corps) · composants `border-none` · icônes Lucide ≥ 16px · GSAP sobre, `prefers-reduced-motion` respecté.
 
 ⚠️ Le code actif est **déjà aligné** : 123 occurrences de `#780000`, `Space Grotesk` + `DM Sans` chargées dans `index.html`, 0 occurrence des anciens tokens `#E11D48/#E60023`. `DESIGN_SYSTEM_SUMMARY.md` reste une doc historique à rafraîchir.
+
+### Précisions de la charte active
+
+- **Tokens** (jamais de valeur en dur dans les composants) : `--accent #780000`, `--ink #121212`, `--white #FFFFFF`, `--surface-1 #F6F6F6`, `--surface-2 #EFEFEF`. Un seul vert de succès, défini en token et lisible avec texte blanc (ex. `#1B7F46`). Une erreur se signale par une icône et un message, pas seulement par une couleur.
+- Tout nouveau code utilise les tokens. Les occurrences en dur existantes (123 de `#780000`) se migrent pendant le chantier C.
+- **Typographie** : titres Space Grotesk 700, `letter-spacing: -0.03em` à partir de 24 px ; corps DM Sans 400 / 500 / 700, interligne 1,4, 16 px minimum sur mobile ; polices `.woff2` auto-hébergées latin + latin-ext, `font-display: swap`, aucun appel Google Fonts ; échelle 12 / 14 / 16 / 20 / 24 / 32 / 40 / 56 px ; montants `Intl.NumberFormat('fr-FR')` avec chiffres tabulaires. Pas d'italique, pas de tracking large sur petits textes, pas de dégradé de texte.
+- **Composants** : `border-none`, coins arrondis, grille de 8 px, cibles tactiles ≥ 44 px, hiérarchie par surfaces et espacement plutôt que par bordures ou ombres lourdes. Icônes Lucide 24 px, trait 2 px (minimum absolu ≥ 16 px à l'écran). Squelettes, jamais de spinner nu. États vides, 403, 404, 500, hors-ligne. Modale de confirmation, jamais `window.confirm`.
+- **Motion** : GSAP sobre, un mouvement principal par écran, entrées 300 à 450 ms, sorties 0,5× plus courtes, `prefers-reduced-motion` respecté. Animer uniquement `transform` et `opacity`. Three.js / Rive réservés aux moments signature.
+- **Interdits** : `#E11D48`, `#E60023`, verts citron ou olive, dégradés violets ou bleus, glow/bloom, glassmorphism (`backdrop-filter`), fond crème + serif, polices distantes.
+- **Cas particuliers** : le rouge `#780000` est interdit comme couleur de texte sur fond sombre (contraste insuffisant) : texte blanc, rouge en fond de bouton seulement. Logo toujours en SVG, espace libre égal à la hauteur du D, taille minimale 120 px, variantes pleine couleur / monochrome / inversée, jamais étiré, recoloré ni avec ombre. Contraste ≥ 4,5:1 et focus clavier visible. Dans les visuels générés par IA, ne conserve ni logo ni texte : superpose le vrai logo et de vrais libellés.
 
 ## Règles de Performance & Production (29 règles obligatoires)
 
@@ -106,6 +166,16 @@ cd frontend/web && npm run build
 ./security/scripts/run-security-audit.sh
 ./test/run-all.sh   # 5 suites : 51 tests / 168 assertions
 ```
+
+Vérifications complémentaires : `./vendor/bin/phpunit` dans chaque service touché ; `docker compose config && docker compose up -d` doit laisser 9 conteneurs Up.
+
+**Définition de « terminé »** : exigence livrée, test automatisé vert, build vert, documentation mise à jour, aucun secret ni PIN en clair.
+
+## Style de communication
+
+- Réponds en français, de façon directe.
+- Fin de chaque lot : 10 lignes maximum (ce qui a changé, fichiers touchés, tests lancés avec leur résultat réel, décisions qui m'attendent).
+- Si tu n'es pas sûr d'un fait (réglementation, API GeniusPay, comportement d'une librairie), dis-le et indique où le vérifier.
 
 ## Références
 
