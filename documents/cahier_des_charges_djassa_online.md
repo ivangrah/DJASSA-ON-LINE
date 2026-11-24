@@ -110,7 +110,7 @@ Priorité : **MVP** = version initiale ; **V2** = évolution planifiée.
 | FR-04 | Sélection du rôle initial : Particulier ou Boutique Pro | MVP | `POST /auth/select-plan` (choix initial, n’accorde pas d’entitlement Pro) ; rôles étanches `particulier | vendeur_pro | admin` |
 | FR-05 | Profil utilisateur consultable | MVP | `GET /auth/me` renvoie l’utilisateur authentifié |
 | FR-06 | Vitrine Boutique Pro vérifiée | MVP | `/catalog/boutiques/{slug}` public ; badge « vérifié » ; documentation RCCM ; tableau de bord stocks et reçus PDF |
-| FR-07 | KYC léger pour les boutiques Pro | MVP | Document RCCM + identité du gérant avant activation de la vente de neuf ; les particuliers n’ont que l’e-mail vérifié par OTP (FR-03) ; champ `kyc_status ∈ {none, pending, verified}` |
+| FR-07 | KYC léger pour les boutiques Pro | MVP | Document RCCM + identité du gérant avant activation de la vente de neuf ; les particuliers n’ont que l’e-mail vérifié par OTP (FR-03) ; champ `kyc_status` (défaut `none`) ; valeurs `pending` / `verified`, à contraindre par CHECK en base (décision retenue) ; `plan_abonnement` peut être NULL (migration `:20` et `:34`) |
 
 ### 5.2 Catalogue et publication
 
@@ -186,10 +186,11 @@ Priorité : **MVP** = version initiale ; **V2** = évolution planifiée.
 
 | ID | Exigence | Priorité | Critère d’acceptation |
 |---|---|---|---|
-| FR-48 | Modèle économique | MVP | Application du taux de commission `[À DÉCIDER]` sur les transactions ; abonnements `gratuit` / `pro` dont les prix sont `[À DÉCIDER]` ; prise en charge des frais GeniusPay / Mobile Money (vendeur, acheteur ou plateforme) `[À DÉCIDER]`. Appui sur les champs réels de la migration active : `plan_abonnement ∈ {gratuit, pro}` et `offres_abonnement` (`djassa_auth_db`) ; aucun chiffre inventé dans ce document |
-| FR-49 | Modération et signalement | MVP | Signalement d’une annonce ou d’un utilisateur disponible depuis la fiche et la messagerie ; file de traitement admin ; cohérent avec FR-46 (maintenance/profil) et FR-47 (actions confirmées) ; règles de décision `[À DÉCIDER]` |
-| FR-50 | Litiges | MVP | Processus de litige et arbitrage admin renvoyé au **chantier B** et à `docs/CHECKLIST-MISE-EN-LIGNE.md` (§ 1 et § 6) ; aucune duplication de la spécification du PIN dans ce document ; transitions `disputed → released / refunded` déjà cadrées en § 6.4 |
-| FR-51 | Conditions d’utilisation | MVP | Cadre documentaire seulement : CGU, politique de confidentialité, liste des objets interdits ; aucun texte juridique rédigé ici ; mention « à valider par un juriste » ; contenu définitif `[À DÉCIDER]` |
+| FR-48 | Modèle économique | MVP | Taux de commission de 10 % sur les achats, les ventes, le troc et les autres transactions, appliqué aux particuliers comme aux vendeurs Pro certifiés ; abonnements `gratuit` à 0 FCFA et `pro` à 5 000 FCFA ; frais GeniusPay / Mobile Money payés par l’acheteur. Appui sur les champs réels de la migration active : `plan_abonnement ∈ {gratuit, pro}` et `offres_abonnement` (`djassa_auth_db`) ; montants ci-dessus validés par le produit |
+| FR-49 | Modération et signalement | MVP | Signalement d’une annonce ou d’un utilisateur disponible depuis la fiche et la messagerie ; file de traitement admin ; cohérent avec FR-46 (maintenance/profil) et FR-47 (actions confirmées) ; règles de décision par défaut : le non-respect de l’intégrité des annonces, des CGU ou de la politique de confidentialité déclenche la modération |
+| FR-50 | Litiges | MVP | Processus de litige et arbitrage admin renvoyé au **chantier B** et à `docs/CHECKLIST-MISE-EN-LIGNE.md` (§ 1 et § 6) ; aucune duplication de la spécification du PIN dans ce document ; transitions `disputed → released / refunded` à ajouter au § 6.4 et au § 10 (escrow_status) lors du chantier B |
+| FR-51 | Conditions d’utilisation | MVP | Cadre documentaire avec définition par défaut : les CGU régissent l’utilisation de la marketplace (publication, vente, troc, paiement) ; la politique de confidentialité décrit les données collectées (e-mail, téléphone, KYC léger, transactions) et leurs finalités ; les objets interdits couvrent les biens illicites, dangereux ou contrefaits (liste exhaustive à annexer) ; aucun texte juridique définitif ici ; mention « à valider par un juriste » |
+| FR-52 | Limite de publication et de troc pour les particuliers | MVP | Un compte de rôle `particulier` peut publier environ 10 articles par mois et propose environ 10 trocs par mois ; au-delà de l’une ou l’autre limite, la publication et le troc sont bloqués jusqu’à la souscription à l’offre `pro`, qui débloque les deux limites. Le particulier conserve l’achat d’articles/produits sans limitation |
 
 ---
 
@@ -443,11 +444,12 @@ Le rendu de la vidéo promotionnelle est livré séparément dans `video/djassa-
 | KYC | « complet » suggéré dans certains visuels | KYC léger MVP pour les boutiques Pro (RCCM + identité du gérant) ; particuliers : e-mail vérifié par OTP | Maintenir le KYC léger en MVP (FR-07), aligner § 2.3 |
 | Rôles — écart de schéma | `documents/schema_physique.sql:444` : `CHECK (role IN ('user','pro_seller','admin'))` (historique) | Migration active `services/auth-subscription-service/database/migrations/2026_11_22_000000_create_users_table.php:33` : `CHECK (role IN ('particulier','vendeur_pro','admin'))` ; défaut `particulier` (:19) | Le code fait foi : utiliser les rôles de la migration (§ 10) ; schéma physique à rafraîchir |
 | FR-22 — Match automatique | `MVP / V2` ambigu | MVP : scan Redis + notification à la publication ; V2 : « Match de troc évolué » | Cadrer la frontière en FR-22 |
-| Modèle économique | Non chiffré dans les sources | Champs réels `plan_abonnement` (gratuit/pro) et `offres_abonnement` | Ajouter FR-48 avec `[À DÉCIDER]` (commission, prix, frais GeniusPay) |
-| Modération et signalement | Sommaire | FR-46/FR-47 opérationnels | Ajouter FR-49 |
+| Modèle économique | Non chiffré dans les sources | Champs réels `plan_abonnement` (gratuit/pro) et `offres_abonnement` | FR-48 retenue : commission 10 % sur achats, ventes, troc et autres transactions (particuliers et Pro certifiés), abonnement gratuit 0 FCFA / pro 5 000 FCFA, frais GeniusPay payés par l’acheteur |
+| Modération et signalement | Sommaire | FR-46/FR-47 opérationnels | FR-49 retenue avec règles par défaut : non-respect de l’intégrité, des CGU ou de la confidentialité → modération |
 | Litiges | Checklist et visuels | Renvoi chantier B, pas de spec PIN dupliquée | Ajouter FR-50 |
-| Conditions d’utilisation | Non documentées | Cadre CGU/confidentialité/objets interdits à valider par un juriste | Ajouter FR-51 |
+| Conditions d’utilisation | Non documentées | Cadre CGU/confidentialité/objets interdits à valider par un juriste | FR-51 retenue avec définition par défaut, à valider par un juriste |
 | Coquilles du document | — | `11.2 Navigation`, `Logs structurés`, `committé`, `exposés publiquement` | Corrigées |
+| Limite de publication et de troc des particuliers | Non chiffrée dans les sources | Le code ne plafonne pas encore la publication ni le troc | FR-52 ajoutée : ~10 articles/mois et ~10 trocs/mois pour un particulier ; au-delà, souscription à l’offre `pro` requise pour débloquer ; seul l’achat reste illimité |
 
 ---
 
