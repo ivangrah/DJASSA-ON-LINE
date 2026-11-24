@@ -2,8 +2,9 @@
 
 | Champ | Valeur |
 |---|---|
-| Version | 1.0 |
+| Version | 1.1 |
 | Date | 24 novembre 2026 |
+| Historique | v1.0 (24/11/2026) : synthèse initiale — v1.1 (24/11/2026) : rôles et KYC alignés sur le code, FR-22 cadré, coquilles corrigées, ajout modèle économique / modération / litiges / conditions d’utilisation |
 | Périmètre | Application Djassa Online (web + mobile), API Gateway et microservices |
 | Statut | Document de référence — synthèse des documents du dossier `documents/`, arbitrée avec l’état réel du dépôt |
 | Public | Produit, développement, QA, design, infrastructure |
@@ -39,7 +40,7 @@ Djassa Online est une marketplace hybride inspirée du « Djassa » ivoirien : e
 
 ### 2.3 Hors périmètre V1
 
-- KYC complet (seul un KYC léger est prévu) ;
+- KYC complet (seul un KYC léger est prévu en MVP, pour les boutiques Pro : document RCCM + identité du gérant) ;
 - Programme de fidélité avancé et gamification complète (Match de troc évolué) ;
 - Livraison physique intégrée ;
 - Multi-langue (le produit est francophone, montants en FCFA).
@@ -109,7 +110,7 @@ Priorité : **MVP** = version initiale ; **V2** = évolution planifiée.
 | FR-04 | Sélection du rôle initial : Particulier ou Boutique Pro | MVP | `POST /auth/select-plan` (choix initial, n’accorde pas d’entitlement Pro) ; rôles étanches `particulier | vendeur_pro | admin` |
 | FR-05 | Profil utilisateur consultable | MVP | `GET /auth/me` renvoie l’utilisateur authentifié |
 | FR-06 | Vitrine Boutique Pro vérifiée | MVP | `/catalog/boutiques/{slug}` public ; badge « vérifié » ; documentation RCCM ; tableau de bord stocks et reçus PDF |
-| FR-07 | KYC léger pour les boutiques Pro | V2 | Contrôle documentaire minimal avant activation de la vente de neuf |
+| FR-07 | KYC léger pour les boutiques Pro | MVP | Document RCCM + identité du gérant avant activation de la vente de neuf ; les particuliers n’ont que l’e-mail vérifié par OTP (FR-03) ; champ `kyc_status ∈ {none, pending, verified}` |
 
 ### 5.2 Catalogue et publication
 
@@ -134,7 +135,7 @@ Priorité : **MVP** = version initiale ; **V2** = évolution planifiée.
 | FR-19 | Réponse à une offre | MVP | Accepter / refuser / contre-offre ; états `pending → accepted | rejected | completed` |
 | FR-20 | Carte d’offre dans la messagerie | MVP | Offre affichée sous forme de carte interactive dans la conversation |
 | FR-21 | Verrouillage des articles échangés | MVP | Passage des articles concernés au statut `reserved` à l’acceptation |
-| FR-22 | Match automatique avec le Mur des souhaits | MVP / V2 | Job Redis de scan à la publication ; notification à l’utilisateur concerné |
+| FR-22 | Match automatique avec le Mur des souhaits | MVP | **MVP** = job Redis de scan des souhaits à la publication + notification à l’utilisateur concerné ; **V2** = « Match de troc évolué » (§ 2.3) |
 | FR-23 | Reprise / revente d’un objet reçu | V2 | Option « reprise » sur le détail produit |
 
 ### 5.4 Messagerie et notifications
@@ -180,6 +181,15 @@ Priorité : **MVP** = version initiale ; **V2** = évolution planifiée.
 | FR-45 | Administration des notifications | MVP | Campagnes dans `djassa_chat_db.admin_campaigns`, file Redis `admin.campaign` |
 | FR-46 | Maintenance et profil admin | MVP | Onglet accessible dans la sidebar (défilement autorisé) |
 | FR-47 | Suppression et mise à jour avec confirmation | MVP | Modale de confirmation, feedback visuel et sonore, plus de `window.confirm` |
+
+### 5.8 Modèle économique, modération et conditions d’utilisation
+
+| ID | Exigence | Priorité | Critère d’acceptation |
+|---|---|---|---|
+| FR-48 | Modèle économique | MVP | Application du taux de commission `[À DÉCIDER]` sur les transactions ; abonnements `gratuit` / `pro` dont les prix sont `[À DÉCIDER]` ; prise en charge des frais GeniusPay / Mobile Money (vendeur, acheteur ou plateforme) `[À DÉCIDER]`. Appui sur les champs réels de la migration active : `plan_abonnement ∈ {gratuit, pro}` et `offres_abonnement` (`djassa_auth_db`) ; aucun chiffre inventé dans ce document |
+| FR-49 | Modération et signalement | MVP | Signalement d’une annonce ou d’un utilisateur disponible depuis la fiche et la messagerie ; file de traitement admin ; cohérent avec FR-46 (maintenance/profil) et FR-47 (actions confirmées) ; règles de décision `[À DÉCIDER]` |
+| FR-50 | Litiges | MVP | Processus de litige et arbitrage admin renvoyé au **chantier B** et à `docs/CHECKLIST-MISE-EN-LIGNE.md` (§ 1 et § 6) ; aucune duplication de la spécification du PIN dans ce document ; transitions `disputed → released / refunded` déjà cadrées en § 6.4 |
+| FR-51 | Conditions d’utilisation | MVP | Cadre documentaire seulement : CGU, politique de confidentialité, liste des objets interdits ; aucun texte juridique rédigé ici ; mention « à valider par un juriste » ; contenu définitif `[À DÉCIDER]` |
 
 ---
 
@@ -258,7 +268,7 @@ Priorité : **MVP** = version initiale ; **V2** = évolution planifiée.
 | NFR-24 | Isolation des données | Une base PostgreSQL par service, un rôle par base, zéro requête SQL cross-service ; références croisées en UUID logiques |
 | NFR-25 | Isolation financière | Clés GeniusPay et PIN confinés dans `escrow-payment-service` / `djassa_escrow_db` |
 | NFR-26 | Validation des entrées | Protection SQLi/XSS, validation MIME des images, nettoyage EXIF, rate limiting (60 req/min ; 10/min sur auth) |
-| NFR-27 | Journalisation | Logsstructurés, traçabilité des transactions et des accès admin |
+| NFR-27 | Journalisation | Logs structurés, traçabilité des transactions et des accès admin |
 
 ### 7.3 Disponibilité et qualité
 
@@ -342,7 +352,7 @@ Les tables métier du schéma physique PostgreSQL (UUID en clé primaire) :
 
 | Table | Champs clés | Contraintes notables |
 |---|---|---|
-| `users` | `id`, `email`, `phone`, `google_id`, `role`, `kyc_status` | `role ∈ {user, pro, admin}` |
+| `users` | `id`, `email`, `phone`, `google_id`, `role`, `plan_abonnement`, `kyc_status` | `role ∈ {particulier, vendeur_pro, admin}` (migration active `2026_11_22_000000_create_users_table.php:33`) ; `plan_abonnement ∈ {gratuit, pro}` ; `kyc_status ∈ {none, pending, verified}` |
 | `boutiques` | `id`, `utilisateur_id`, `slug`, `nom_boutique`, `is_verified`, `rccm_doc` | slug unique, vérification |
 | `articles` | `id`, `utilisateur_id`, `boutique_id`, `titre`, `prix`, `prix_flash`, `prix_negociable`, `condition`, `mode_transaction`, `est_trocable`, `stock`, `categorie`, `specs`, `images`, `ville`, `quartier`, `statut`, `vente_flash`, `flash_fin_at`, `vues`, `favoris`, `recherche` | `prix NUMERIC(12,2) ≥ 0` ; `statut ∈ {draft, published, reserved, sold, archived}` ; `neuf ⇒ boutique_id NOT NULL` ; `recherche tsvector` généré (french) |
 | `offres_troc` | `id`, `article_id`, `utilisateur_id`, `cash_supplement`, `statut` | `statut ∈ {pending, accepted, rejected, completed}` |
@@ -372,7 +382,7 @@ Index BTree et GIN présents sur : catégorie, état, mode, statut, boutique, tr
 
 Interdits : verts citron/olive, anciens tokens `#E11D48` / `#E60023`, dégradés violets/bleus, glow/bloom, verre, HUD, serif + mono caps sur fond crème.
 
-### 11.2navigation
+### 11.2 Navigation
 
 Cinq piliers : **Accueil** (Tout / Occasion & Troc / Boutiques Neuves + Ventes Flash), **Publier** (bouton +, tunnel 3 étapes), **Mur des souhaits**, **Messages & Offres**, **Mon Djassa**. L’espace Pro/admin ajoute boutiques, finances, offres, notifications, maintenance et profil ; la sidebar doit rester défilable sur toutes les hauteurs d’écran.
 
@@ -407,10 +417,10 @@ Le rendu de la vidéo promotionnelle est livré séparément dans `video/djassa-
 ## 13. Décisions et conventions
 
 1. Les montants sont exprimés en FCFA, arrondis à la pièce, stockés en `NUMERIC(12,2)`.
-2. Les identifiants publicly exposés sont des UUID ; aucune clé séquentielle n’est utilisée dans les contrats.
+2. Les identifiants exposés publiquement sont des UUID ; aucune clé séquentielle n’est utilisée dans les contrats.
 3. Le statut d’une ressource est toujours une chaîne contrainte par CHECK en base et validée côté application.
 4. Toute suppression sensible passe par une modale de confirmation avec feedback utilisateur.
-5. Aucun secret (clé GeniusPay, PIN, clé HMAC) ne doit être committer ; les valeurs de développement restent dans l’environnement Docker.
+5. Aucun secret (clé GeniusPay, PIN, clé HMAC) ne doit être committé ; les valeurs de développement restent dans l’environnement Docker.
 6. Toute évolution de contrat est d’abord déclarée dans `models/schemas/` puis dans `routes/api-gateway.routes.json`.
 
 ---
@@ -430,7 +440,14 @@ Le rendu de la vidéo promotionnelle est livré séparément dans `video/djassa-
 | Polices | Charte historique | Auto-hébergées `.woff2` en local | Aucun appel Google Fonts bloquant |
 | Images | GCS dans l’App Flow | `public/uploads/` du service catalogue + `/uploads/` au gateway | Conserver l’implémentation actuelle |
 | Auth OTP | SMS ou e-mail selon les documents | OTP e-mail Brevo | Conserver e-mail |
-| KYC | « complet » suggéré dans certains visuels | KYC léger | Maintenir le périmètre MVP |
+| KYC | « complet » suggéré dans certains visuels | KYC léger MVP pour les boutiques Pro (RCCM + identité du gérant) ; particuliers : e-mail vérifié par OTP | Maintenir le KYC léger en MVP (FR-07), aligner § 2.3 |
+| Rôles — écart de schéma | `documents/schema_physique.sql:444` : `CHECK (role IN ('user','pro_seller','admin'))` (historique) | Migration active `services/auth-subscription-service/database/migrations/2026_11_22_000000_create_users_table.php:33` : `CHECK (role IN ('particulier','vendeur_pro','admin'))` ; défaut `particulier` (:19) | Le code fait foi : utiliser les rôles de la migration (§ 10) ; schéma physique à rafraîchir |
+| FR-22 — Match automatique | `MVP / V2` ambigu | MVP : scan Redis + notification à la publication ; V2 : « Match de troc évolué » | Cadrer la frontière en FR-22 |
+| Modèle économique | Non chiffré dans les sources | Champs réels `plan_abonnement` (gratuit/pro) et `offres_abonnement` | Ajouter FR-48 avec `[À DÉCIDER]` (commission, prix, frais GeniusPay) |
+| Modération et signalement | Sommaire | FR-46/FR-47 opérationnels | Ajouter FR-49 |
+| Litiges | Checklist et visuels | Renvoi chantier B, pas de spec PIN dupliquée | Ajouter FR-50 |
+| Conditions d’utilisation | Non documentées | Cadre CGU/confidentialité/objets interdits à valider par un juriste | Ajouter FR-51 |
+| Coquilles du document | — | `11.2 Navigation`, `Logs structurés`, `committé`, `exposés publiquement` | Corrigées |
 
 ---
 
