@@ -2,9 +2,9 @@
 
 | Champ | Valeur |
 |---|---|
-| Version | 1.2 |
+| Version | 1.2.1 |
 | Date | 25 novembre 2026 |
-| Historique | v1.0 (24/11/2026) : synthèse initiale — v1.1 (24/11/2026) : rôles et KYC alignés sur le code, FR-22 cadré, coquilles corrigées, ajout modèle économique / modération / litiges / conditions d’utilisation — v1.2 (25/11/2026) : état `disputed` (migration CHECK), distinction Boutique Pro vérifiée dans la messagerie, fonctionnalité Deal (FR-53) |
+| Historique | v1.0 (24/11/2026) : synthèse initiale — v1.1 (24/11/2026) : rôles et KYC alignés sur le code, FR-22 cadré, coquilles corrigées, ajout modèle économique / modération / litiges / conditions d’utilisation — v1.2 (25/11/2026) : état `disputed` (migration CHECK), distinction Boutique Pro vérifiée dans la messagerie, fonctionnalité Deal (FR-53) — v1.2.1 (25/11/2026) : résultats de recette réels consignés en § 12 |
 | Périmètre | Application Djassa Online (web + mobile), API Gateway et microservices |
 | Statut | Document de référence — synthèse des documents du dossier `documents/`, arbitrée avec l’état réel du dépôt |
 | Public | Produit, développement, QA, design, infrastructure |
@@ -412,6 +412,8 @@ Cinq piliers : **Accueil** (Tout / Occasion & Troc / Boutiques Neuves + Ventes F
 | Audit sécurité | `./security/scripts/run-security-audit.sh` | Aucun finding bloquant |
 | Contrats | `models/schemas/` vs `routes/api-gateway.routes.json` | Cohérence des champs échangés |
 | Validation visuelle | Parcours navigateur : publication, achat PIN, troc, admin | Aucune erreur console bloquante ; sidebar accessible |
+
+**Résultats constatés (25/11/2026, branche `docs/cahier-des-charges`)** : build frontend OK (chunk principal 133,46 kB / gzip 40,99 kB) ; phpunit escrow OK 17 tests / 72 assertions ; phpunit chat OK 20 tests / 58 assertions ; phpunit auth OK 19 tests / 54 assertions ; phpunit catalogue OK 4 tests / 17 assertions ; audit sécurité sans finding bloquant. Le test `AdminCampaignTest::test_campagne_mise_en_file` a été aligné sur le garde-fou `confirm_mass` (envoi de masse) : suite verte.
 
 **Définition de « terminé »** : exigence livrée, test automatisé correspondant vert, build vert, documentation mise à jour, aucun secret ni PIN en clair dans le code ou les réponses.
 
