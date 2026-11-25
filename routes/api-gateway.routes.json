@@ -87,6 +87,24 @@
       "method": "GET",
       "service": "notification-chat-service",
       "auth": true
+    },
+    {
+      "path": "/deals",
+      "method": "GET",
+      "service": "notification-chat-service",
+      "auth": true
+    },
+    {
+      "path": "/deals",
+      "method": "POST",
+      "service": "notification-chat-service",
+      "auth": true
+    },
+    {
+      "path": "/deals/{deal}/respond",
+      "method": "PATCH",
+      "service": "notification-chat-service",
+      "auth": true
     }
   ]
 }

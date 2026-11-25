@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Deal (négociation de remise)",
+  "description": "Accord négocié entre les deux participants d'une conversation : prix FCFA et lieu de remise. Une partie propose, l'autre accepte, refuse ou contre-propose. Le Deal accepté vaut confirmation mutuelle des conditions de remise (troc pur notamment).",
+  "type": "object",
+  "required": ["id", "conversation_id", "propose_par", "montant_fcfa", "lieu_remise", "statut"],
+  "properties": {
+    "id": { "type": "string", "format": "uuid" },
+    "conversation_id": { "type": "string", "format": "uuid" },
+    "article_id": { "type": ["string", "null"], "format": "uuid" },
+    "propose_par": { "type": "string", "format": "uuid" },
+    "montant_fcfa": { "type": "string", "description": "NUMERIC(12,2) sérialisé en chaîne, jamais flottant" },
+    "lieu_remise": { "type": "string", "maxLength": 255 },
+    "statut": { "type": "string", "enum": ["proposed", "accepted", "countered", "rejected"] },
+    "created_at": { "type": ["string", "null"] },
+    "updated_at": { "type": ["string", "null"] }
+  }
+}

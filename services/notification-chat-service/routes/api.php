@@ -1,5 +1,6 @@
 <?php
 use App\Http\Controllers\ConversationController;
+use App\Http\Controllers\DealController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
@@ -9,6 +10,9 @@ Route::get('/api/v1/messages/unread-count',[MessageController::class,'unreadCoun
 Route::post('/api/v1/messages',[MessageController::class,'store']);
 Route::post('/api/v1/messages/{message}/read',[MessageController::class,'read']);
 Route::post('/api/v1/conversations',[ConversationController::class,'store']);
+Route::get('/api/v1/deals',[DealController::class,'index']);
+Route::post('/api/v1/deals',[DealController::class,'store']);
+Route::patch('/api/v1/deals/{deal}/respond',[DealController::class,'respond']);
 Route::get('/api/v1/notifications',[NotificationController::class,'index']);
 Route::post('/api/v1/notifications/{notification}/read',[NotificationController::class,'markRead']);
 Route::post('/api/v1/admin/notifications/broadcast',[\App\Http\Controllers\AdminCampaignController::class,'broadcast']);

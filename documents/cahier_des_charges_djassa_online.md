@@ -2,9 +2,9 @@
 
 | Champ | Valeur |
 |---|---|
-| Version | 1.1 |
-| Date | 24 novembre 2026 |
-| Historique | v1.0 (24/11/2026) : synthèse initiale — v1.1 (24/11/2026) : rôles et KYC alignés sur le code, FR-22 cadré, coquilles corrigées, ajout modèle économique / modération / litiges / conditions d’utilisation |
+| Version | 1.2 |
+| Date | 25 novembre 2026 |
+| Historique | v1.0 (24/11/2026) : synthèse initiale — v1.1 (24/11/2026) : rôles et KYC alignés sur le code, FR-22 cadré, coquilles corrigées, ajout modèle économique / modération / litiges / conditions d’utilisation — v1.2 (25/11/2026) : état `disputed` (migration CHECK), distinction Boutique Pro vérifiée dans la messagerie, fonctionnalité Deal (FR-53) |
 | Périmètre | Application Djassa Online (web + mobile), API Gateway et microservices |
 | Statut | Document de référence — synthèse des documents du dossier `documents/`, arbitrée avec l’état réel du dépôt |
 | Public | Produit, développement, QA, design, infrastructure |
@@ -146,6 +146,7 @@ Priorité : **MVP** = version initiale ; **V2** = évolution planifiée.
 | FR-25 | Envoi de message lié à une annonce ou une offre | MVP | Persistance dans `messages` ; index sur `article_id`, `conversation_id` |
 | FR-26 | Notifications e-mail / SMS | MVP | Brevo : confirmation de commande, reçu, offre de troc, alerte souhait |
 | FR-27 | Notifications push mobile | V2 | Appareils enregistrés via Expo |
+| FR-53 | Deal — accord sur le prix et le lieu de remise | MVP | Depuis une conversation, une partie propose un `montant_fcfa` (NUMERIC(12,2)) et un `lieu_remise` ; l'autre partie accepte, refuse ou fait une contre-proposition (nouveau montant + lieu). Table `deals` dans `djassa_chat_db` (UUID, `statut ∈ {proposed, accepted, countered, rejected}`), routes `GET/POST /api/v1/deals` et `PATCH /api/v1/deals/{id}/respond` (auth JWT, participants uniquement), notification `in_app` à l'autre partie. Un deal `accepted` vaut confirmation mutuelle des conditions de remise (troc pur sans soulte) |
 
 ### 5.5 Mur des souhaits
 
@@ -163,8 +164,8 @@ Priorité : **MVP** = version initiale ; **V2** = évolution planifiée.
 | FR-32 | Webhook GeniusPay | MVP | `POST /escrow/webhooks/geniuspay`, non authentifié mais signé HMAC-SHA256 ; idempotence |
 | FR-33 | Séquestre des fonds | MVP | État `held` ; fonds non libérés avant remise |
 | FR-34 | PIN à 4 chiffres | MVP | PIN haché (bcrypt) dans `transactions.pin_hash` ; jamais stocké en clair |
-| FR-35 | Validation du PIN et libération | MVP | `initiated → held → released` ; après 5 tentatives infructueuses, verrouillage |
-| FR-36 | Remboursement / échec | MVP | États `refunded` et `failed` traçables |
+| FR-35 | Validation du PIN et libération | MVP | `initiated → held → released` ; après 5 tentatives infructueuses, verrouillage ; un litige peut ouvrir `held → disputed` avant arbitrage |
+| FR-36 | Remboursement / échec | MVP | États `refunded`, `failed` et `disputed` traçables ; depuis `disputed`, arbitrage admin vers `released` ou `refunded` |
 | FR-37 | Reçus de transaction | MVP | Reçu e-mail (Brevo) et PDF pour les boutiques Pro |
 | FR-38 | Consultation des statistiques escrow par vendeur | MVP | Endpoint interne signé `GET /internal/escrow/stats?vendeur_id=…`, utilisé par le dashboard admin |
 
@@ -188,7 +189,7 @@ Priorité : **MVP** = version initiale ; **V2** = évolution planifiée.
 |---|---|---|---|
 | FR-48 | Modèle économique | MVP | Taux de commission de 10 % sur les achats, les ventes, le troc et les autres transactions, appliqué aux particuliers comme aux vendeurs Pro certifiés ; abonnements `gratuit` à 0 FCFA et `pro` à 5 000 FCFA ; frais GeniusPay / Mobile Money payés par l’acheteur. Appui sur les champs réels de la migration active : `plan_abonnement ∈ {gratuit, pro}` et `offres_abonnement` (`djassa_auth_db`) ; montants ci-dessus validés par le produit |
 | FR-49 | Modération et signalement | MVP | Signalement d’une annonce ou d’un utilisateur disponible depuis la fiche et la messagerie ; file de traitement admin ; cohérent avec FR-46 (maintenance/profil) et FR-47 (actions confirmées) ; règles de décision par défaut : le non-respect de l’intégrité des annonces, des CGU ou de la politique de confidentialité déclenche la modération |
-| FR-50 | Litiges | MVP | Processus de litige et arbitrage admin renvoyé au **chantier B** et à `docs/CHECKLIST-MISE-EN-LIGNE.md` (§ 1 et § 6) ; aucune duplication de la spécification du PIN dans ce document ; transitions `disputed → released / refunded` à ajouter au § 6.4 et au § 10 (escrow_status) lors du chantier B |
+| FR-50 | Litiges | MVP | Processus de litige et arbitrage admin renvoyé au **chantier B** et à `docs/CHECKLIST-MISE-EN-LIGNE.md` (§ 1 et § 6) ; aucune duplication de la spécification du PIN dans ce document ; transitions `disputed → released / refunded` ajoutées au § 6.4 et au § 10 (escrow_status) lors du chantier B |
 | FR-51 | Conditions d’utilisation | MVP | Cadre documentaire avec définition par défaut : les CGU régissent l’utilisation de la marketplace (publication, vente, troc, paiement) ; la politique de confidentialité décrit les données collectées (e-mail, téléphone, KYC léger, transactions) et leurs finalités ; les objets interdits couvrent les biens illicites, dangereux ou contrefaits (liste exhaustive à annexer) ; aucun texte juridique définitif ici ; mention « à valider par un juriste » |
 | FR-52 | Limite de publication et de troc pour les particuliers | MVP | Un compte de rôle `particulier` peut publier environ 10 articles par mois et propose environ 10 trocs par mois ; au-delà de l’une ou l’autre limite, la publication et le troc sont bloqués jusqu’à la souscription à l’offre `pro`, qui débloque les deux limites. Le particulier conserve l’achat d’articles/produits sans limitation |
 
@@ -227,7 +228,7 @@ Priorité : **MVP** = version initiale ; **V2** = évolution planifiée.
 |---|---|
 | Article | `draft → published → reserved → sold` (`archived`) |
 | Offre de troc | `pending → accepted / rejected → completed` |
-| Transaction escrow | `initiated → held → released / refunded / failed` |
+| Transaction escrow | `initiated → held → released / refunded / failed / disputed` ; depuis `disputed` → `released` ou `refunded` |
 | Souhait | `active → satisfait / expiré / archivé` |
 
 ---
@@ -340,6 +341,9 @@ Base : `http://127.0.0.1:8080`, préfixe `/api/v1`.
 | POST | `/escrow/checkout` | escrow | oui | anti-double-clic client |
 | POST | `/escrow/webhooks/geniuspay` | escrow | non | signé HMAC-SHA256 |
 | GET | `/messages/conversations` | chat | oui | — |
+| GET | `/deals` | chat | oui | `?conversation_id=` ; participants uniquement |
+| POST | `/deals` | chat | oui | participants uniquement ; montant FCFA + lieu de remise |
+| PATCH | `/deals/{id}/respond` | chat | oui | action `accept`/`reject`/`counter` ; le proposant ne peut pas répondre à sa propre offre |
 
 Endpoints internes (non exposés publiquement) : `GET /internal/escrow/stats`, `GET /internal/escrow/transactions/{id}`, `POST /internal/escrow/hold`, `POST /internal/escrow/release`, `POST /internal/escrow/checkout`, `POST /internal/escrow/webhooks/log` ; signature HMAC sur `"GET\n/internal/escrow/stats\n"` avec la clé partagée `services.internal.signing_key`.
 
@@ -358,7 +362,7 @@ Les tables métier du schéma physique PostgreSQL (UUID en clé primaire) :
 | `articles` | `id`, `utilisateur_id`, `boutique_id`, `titre`, `prix`, `prix_flash`, `prix_negociable`, `condition`, `mode_transaction`, `est_trocable`, `stock`, `categorie`, `specs`, `images`, `ville`, `quartier`, `statut`, `vente_flash`, `flash_fin_at`, `vues`, `favoris`, `recherche` | `prix NUMERIC(12,2) ≥ 0` ; `statut ∈ {draft, published, reserved, sold, archived}` ; `neuf ⇒ boutique_id NOT NULL` ; `recherche tsvector` généré (french) |
 | `offres_troc` | `id`, `article_id`, `utilisateur_id`, `cash_supplement`, `statut` | `statut ∈ {pending, accepted, rejected, completed}` |
 | `offres_troc_articles` | liaison offre ↔ articles proposés | — |
-| `transactions` | `id`, `article_id`, `acheteur_id`, `vendeur_id`, `montant`, `escrow_status`, `pin_hash` | `escrow_status ∈ {initiated, held, released, refunded, failed}` ; `pin_hash VARCHAR(255)` |
+| `transactions` | `id`, `article_id`, `acheteur_id`, `vendeur_id`, `montant`, `escrow_status`, `pin_hash` | `escrow_status ∈ {initiated, held, released, refunded, failed, disputed}` ; `pin_hash VARCHAR(255)` |
 | `souhaits` | `id`, `utilisateur_id`, `keywords` (TSVECTOR), `max_budget`, `accepts_barter`, `statut` | `statut = active` par défaut |
 | `messages` | `id`, `conversation_id`, `article_id`, `offre_troc_id`, `expediteur_id`, `contenu`, `non_lus` | index sur conversation / article / offre |
 
@@ -437,7 +441,7 @@ Le rendu de la vidéo promotionnelle est livré séparément dans `video/djassa-
 | Charte | Charte historique : `#E11D48`, `#0F172A`, Plus Jakarta Sans, Inter | `#780000`, `#121212`, Space Grotesk, DM Sans | Appliquer la charte active ; mettre à jour les maquettes |
 | Routes catalogue | TRD : `/products`, `/barter-offers` | `/catalog/articles`, `/troc/offres` | Utiliser les routes du gateway |
 | Rôles | TRD : `user`, `pro_seller`, `admin` | `particulier`, `vendeur_pro`, `admin` | Utiliser les rôles réels |
-| Statuts transaction | TRD : `held`, `released`, `refunded` | `initiated`, `held`, `released`, `refunded`, `failed` | Aligner sur le schéma physique |
+| Statuts transaction | TRD : `held`, `released`, `refunded` | `initiated`, `held`, `released`, `refunded`, `failed`, `disputed` | `disputed` ajouté au chantier B (migration CHECK + constante modèle) |
 | Polices | Charte historique | Auto-hébergées `.woff2` en local | Aucun appel Google Fonts bloquant |
 | Images | GCS dans l’App Flow | `public/uploads/` du service catalogue + `/uploads/` au gateway | Conserver l’implémentation actuelle |
 | Auth OTP | SMS ou e-mail selon les documents | OTP e-mail Brevo | Conserver e-mail |
@@ -450,6 +454,7 @@ Le rendu de la vidéo promotionnelle est livré séparément dans `video/djassa-
 | Conditions d’utilisation | Non documentées | Cadre CGU/confidentialité/objets interdits à valider par un juriste | FR-51 retenue avec définition par défaut, à valider par un juriste |
 | Coquilles du document | — | `11.2 Navigation`, `Logs structurés`, `committé`, `exposés publiquement` | Corrigées |
 | Limite de publication et de troc des particuliers | Non chiffrée dans les sources | Le code ne plafonne pas encore la publication ni le troc | FR-52 ajoutée : ~10 articles/mois et ~10 trocs/mois pour un particulier ; au-delà, souscription à l’offre `pro` requise pour débloquer ; seul l’achat reste illimité |
+| Deal — accord prix et lieu de remise | Négociation libre dans le chat (`payload`) | Table `deals` dans chat-service + routes `/deals` + UI `DealCard` | FR-53 ajoutée : proposition/acceptation/contre-proposition structurées, confirmation mutuelle du troc pur ; lien ultérieur avec la transaction escrow (`lieu_remise`/`deal_id`) à arbitrer |
 
 ---
 
