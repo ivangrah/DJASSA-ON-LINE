@@ -5,6 +5,7 @@ use App\Models\Conversation;
 use App\Models\Message;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 class MessageController extends Controller
 {
     public function conversations(Request $request): JsonResponse
@@ -13,7 +14,48 @@ class MessageController extends Controller
         $page=Conversation::select(['id','participant_1','participant_2','article_id','offre_troc_id','dernier_message_at','created_at'])
             ->where('participant_1',$id)->orWhere('participant_2',$id)
             ->latest('dernier_message_at')->paginate(20);
-        return response()->json(['data'=>$page->items(),'meta'=>['current_page'=>$page->currentPage(),'last_page'=>$page->lastPage(),'total'=>$page->total()]]);
+
+        $users=[];
+        $items=array_map(function ($conversation) use ($id, &$users) {
+            $array=$conversation->toArray();
+            $partnerId=$array['participant_1']===$id ? $array['participant_2'] : $array['participant_1'];
+            if (! array_key_exists($partnerId, $users)) {
+                $users[$partnerId]=$this->fetchParticipant($partnerId);
+            }
+            $array['with']=$users[$partnerId];
+            return $array;
+        }, $page->items());
+
+        return response()->json(['data'=>$items,'meta'=>['current_page'=>$page->currentPage(),'last_page'=>$page->lastPage(),'total'=>$page->total()]]);
+    }
+
+    /** Profil du participant via l'endpoint interne signé auth-service (D3). */
+    private function fetchParticipant(string $userId): ?array
+    {
+        $base=rtrim((string) config('services.internal.auth_url','http://auth-subscription-service:8080'),'/');
+        $key=(string) config('services.internal.signing_key','');
+        if ($key==='') {
+            return null;
+        }
+        $path='/internal/auth/users/'.$userId;
+        try {
+            $signature=hash_hmac('sha256',"GET\n{$path}\n",$key);
+            $response=Http::withHeaders(['Accept'=>'application/json','X-Djassa-Signature'=>$signature])
+                ->connectTimeout(3)->timeout(8)->get($base.$path);
+            if ($response->failed()) {
+                return null;
+            }
+            $data=$response->json() ?? [];
+            return [
+                'id'=>$data['id'] ?? $userId,
+                'nom'=>$data['nom'] ?? null,
+                'role'=>$data['role'] ?? null,
+                'is_pro'=>(bool) ($data['is_pro'] ?? false),
+                'boutique'=>$data['boutique'] ?? null,
+            ];
+        } catch (\Throwable $e) {
+            return null;
+        }
     }
 
     public function thread(Request $request): JsonResponse

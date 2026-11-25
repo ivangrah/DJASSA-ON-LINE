@@ -20,6 +20,13 @@ class ProductResource extends JsonResource
             'vues' => (int) $this->vues, 'favoris' => (int) $this->favoris,
             'est_neuf_boutique' => $this->est_neuf_boutique,
             'boutique_id' => $this->boutique_id, 'utilisateur_id' => $this->utilisateur_id,
+            'proprietaire' => ['id' => $this->utilisateur_id],
+            'boutique' => $this->whenLoaded('boutique', fn () => [
+                'id' => $this->boutique->id,
+                'nom_boutique' => $this->boutique->nom_boutique,
+                'slug' => $this->boutique->slug,
+                'verifie' => (bool) $this->boutique->verifie,
+            ]),
             'created_at' => $this->created_at?->toIso8601String(),
         ];
     }

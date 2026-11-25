@@ -70,9 +70,26 @@ class InternalController extends Controller
     public function getUser(string $id): JsonResponse
     {
         $this->verify($request = request());
-        $user = User::query()->select(['id','nom','email','telephone','role','plan_abonnement'])->findOrFail($id);
+        $user = User::query()->select(['id','nom','email','telephone','role','plan_abonnement','verifie'])->findOrFail($id);
 
-        return response()->json($user->toArray());
+        $data = $user->toArray();
+        $data['is_pro'] = $user->role === User::ROLE_VENDEUR_PRO;
+        $data['boutique'] = null;
+        try {
+            $boutique = app(\App\Services\InternalApiClient::class)->getBoutiqueByUser($id);
+            if ($boutique !== null) {
+                $data['boutique'] = [
+                    'nom_boutique' => $boutique['nom_boutique'] ?? null,
+                    'slug' => $boutique['slug'] ?? null,
+                    'verifie' => (bool) ($boutique['verifie'] ?? false),
+                ];
+            }
+        } catch (\Throwable $e) {
+            // Catalog indisponible : on ne casse pas la messagerie ; le champ reste null.
+            Log::warning('[internal] getUser: boutique indisponible', ['user_id' => $id]);
+        }
+
+        return response()->json($data);
     }
 
     /** Compte de destinataires pour campagnes admin (HMAC interne). */

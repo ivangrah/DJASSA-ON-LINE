@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Message;
 use App\Models\Notification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class ChatTest extends TestCase
@@ -17,6 +18,37 @@ class ChatTest extends TestCase
         $this->withHeader('X-User-Id', self::USER)->getJson('/api/v1/messages/conversations')
             ->assertStatus(200)
             ->assertJsonStructure(['data' => [], 'meta' => ['current_page', 'last_page', 'total']]);
+    }
+
+    public function test_liste_conversations_expose_with_boutique_verifiee(): void
+    {
+        $this->conversation();
+        Http::fake([
+            '*' => Http::response([
+                'id' => self::OTHER,
+                'nom' => 'Boutique Test',
+                'role' => 'vendeur_pro',
+                'is_pro' => true,
+                'boutique' => ['nom_boutique' => 'Boutique Test', 'slug' => 'boutique-test', 'verifie' => true],
+            ]),
+        ]);
+
+        $response = $this->withHeader('X-User-Id', self::USER)->getJson('/api/v1/messages/conversations')
+            ->assertStatus(200);
+
+        $response->assertJsonPath('data.0.with.role', 'vendeur_pro');
+        $response->assertJsonPath('data.0.with.is_pro', true);
+        $response->assertJsonPath('data.0.with.boutique.verifie', true);
+    }
+
+    public function test_liste_conversations_resiste_a_indisponibilite_auth(): void
+    {
+        $this->conversation();
+        Http::fake(['*' => Http::response([], 500)]);
+
+        $this->withHeader('X-User-Id', self::USER)->getJson('/api/v1/messages/conversations')
+            ->assertStatus(200)
+            ->assertJsonPath('data.0.with', null);
     }
 
     public function test_thread_refuse_un_non_participant(): void

@@ -35,4 +35,24 @@ class JwtValidationTest extends TestCase
     {
         $this->getJson('/internal/jwt/validate')->assertStatus(401);
     }
+
+    public function test_get_user_inclut_boutique_verifiee_et_is_pro(): void
+    {
+        $user = User::create([
+            'nom' => 'Boutique Test', 'email' => 'boutique@example.ci', 'password' => bcrypt('password123'),
+            'role' => User::ROLE_VENDEUR_PRO, 'plan_abonnement' => User::PLAN_PRO, 'verifie' => true,
+        ]);
+        $this->internal->boutiqueResponse = [
+            'nom_boutique' => 'Boutique Koffi', 'slug' => 'boutique-koffi', 'verifie' => true,
+        ];
+
+        $this->withHeader('X-Gateway-Internal', '1')
+            ->getJson('/internal/auth/users/'.$user->id)
+            ->assertStatus(200)
+            ->assertJsonPath('role', User::ROLE_VENDEUR_PRO)
+            ->assertJsonPath('is_pro', true)
+            ->assertJsonPath('verifie', true)
+            ->assertJsonPath('boutique.verifie', true)
+            ->assertJsonPath('boutique.nom_boutique', 'Boutique Koffi');
+    }
 }

@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Conversation (MessageController::conversations)",
+  "description": "Conversation de messagerie entre deux participants, avec l'aperçu du participant adverse (with). Le champ with est construit côté chat-service via l'API interne signée auth-subscription-service ; il peut être null si le service est indisponible.",
+  "type": "object",
+  "required": ["id", "participant_1", "participant_2", "article_id", "dernier_message_at", "created_at", "with"],
+  "properties": {
+    "id": { "type": "string", "format": "uuid" },
+    "participant_1": { "type": "string", "format": "uuid" },
+    "participant_2": { "type": "string", "format": "uuid" },
+    "article_id": { "type": ["string", "null"], "format": "uuid" },
+    "offre_troc_id": { "type": ["string", "null"], "format": "uuid" },
+    "dernier_message_at": { "type": ["string", "null"] },
+    "created_at": { "type": ["string", "null"] },
+    "with": {
+      "description": "Participant adverse. null si auth-service indisponible ou clé de signature absente.",
+      "type": ["object", "null"],
+      "required": ["id", "nom", "role", "is_pro", "boutique"],
+      "properties": {
+        "id": { "type": "string", "format": "uuid" },
+        "nom": { "type": "string" },
+        "role": { "type": "string", "enum": ["particulier", "vendeur_pro", "admin"] },
+        "is_pro": { "type": "boolean" },
+        "boutique": {
+          "type": ["object", "null"],
+          "properties": {
+            "nom_boutique": { "type": "string" },
+            "slug": { "type": "string" },
+            "verifie": { "type": "boolean" }
+          }
+        }
+      }
+    }
+  }
+}

@@ -4,8 +4,8 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { gsap } from 'gsap';
 import {
   ArrowLeftRight, BadgeCheck, Camera, CheckCheck, ChevronLeft, ChevronRight, ExternalLink,
-  Image as ImageIcon, LockKeyhole, MessageCircle, Plus, Search, SendHorizonal, ShieldCheck,
-  ShoppingBag, Tag, X, Zap,
+  Handshake, Image as ImageIcon, LockKeyhole, MessageCircle, Plus, Search, SendHorizonal, ShoppingBag,
+  ShieldCheck, Tag, X, Zap,
 } from 'lucide-react';
 import { api } from '../lib/api';
 import { useAuth } from '../context/AuthContext';
@@ -33,8 +33,16 @@ const STATUS_PROGRESS = { 'En cours': 20, 'Troc proposé': 45, 'Séquestre actif
 const PREVIEW_ICONS = {
   carte_troc: ArrowLeftRight,
   offre_prix: Tag,
+  deal: Handshake,
   systeme: ShieldCheck,
   texte: MessageCircle,
+};
+
+const DEAL_STATUS = {
+  proposed: { label: 'Proposé', className: 'bg-[#EFEFEF] text-[#121212]' },
+  countered: { label: 'Contre-proposition', className: 'bg-[#780000] text-white' },
+  accepted: { label: 'Accepté', className: 'bg-[#121212] text-white' },
+  rejected: { label: 'Refusé', className: 'bg-[#EFEFEF] text-[#121212]/60' },
 };
 
 function reduceMotion() {
@@ -62,6 +70,9 @@ function pulseIcon(el) {
 }
 
 function preview(conv) {
+  if (conv?.dernier_deal) {
+    return `Deal : ${formatFCFA(conv.dernier_deal.montant_fcfa)} · ${conv.dernier_deal.lieu_remise}`;
+  }
   const m = conv?.dernier_message;
   if (!m) return 'Aucun message pour le moment';
   if (m.type === 'carte_troc') return `Proposition de troc · ${formatFCFA(m.payload?.montant_soulte_fcfa ?? 0)} de soulte`;
@@ -81,12 +92,15 @@ function conversationStatus(conv) {
 
 function partnerBadge(partner, conv) {
   if (partner?.role === 'livreur' || conv?.livreur_id || partner?.livreur === true) {
-    return { label: 'Livreur', className: 'bg-[#780000] text-white' };
+    return { label: 'Livreur', short: 'Livreur', verified: false, className: 'bg-[#780000] text-white' };
   }
   if (partner?.is_pro || partner?.role === 'vendeur_pro') {
-    return { label: 'Vendeur Pro Vérifié', className: 'bg-[#121212] text-white' };
+    const verified = partner?.boutique?.verifie === true || partner?.verifie === true;
+    return verified
+      ? { label: 'Boutique Pro vérifiée', short: 'Pro vérifié', verified: true, className: 'bg-[#121212] text-white' }
+      : { label: 'Boutique Pro', short: 'Pro', verified: false, className: 'bg-[#121212] text-white' };
   }
-  return { label: 'Client', className: 'bg-[#EFEFEF] text-[#121212]/70' };
+  return { label: 'Particulier', short: 'Particulier', verified: false, className: 'bg-[#EFEFEF] text-[#121212]/70' };
 }
 
 function compressImage(file) {
@@ -366,6 +380,9 @@ function Thread({ partnerId, articleId, conversation, status, onBack, onToggleSu
   const [trocSoulte, setTrocSoulte] = useState('');
   const [attachedPhoto, setAttachedPhoto] = useState(null);
   const [pinOpen, setPinOpen] = useState(false);
+  const [dealOpen, setDealOpen] = useState(false);
+  const [dealMontant, setDealMontant] = useState('');
+  const [dealLieu, setDealLieu] = useState('');
 
   const { data: thread, isLoading } = useQuery({
     queryKey: ['messages', 'thread', partnerId, articleId],
@@ -378,6 +395,14 @@ function Thread({ partnerId, articleId, conversation, status, onBack, onToggleSu
     queryFn: async () => (await api.get(`/products/${articleId}`)).data,
     enabled: Boolean(articleId),
   });
+
+  const { data: dealsData } = useQuery({
+    queryKey: ['deals', conversation?.id],
+    queryFn: async () => (await api.get('/deals', { params: { conversation_id: conversation.id } })).data,
+    enabled: Boolean(conversation?.id),
+    refetchInterval: 6000,
+  });
+  const deals = dealsData?.data ?? [];
 
   const article = articleData?.data ?? conversation?.article;
   const messages = thread?.data ?? [];
@@ -460,6 +485,36 @@ function Thread({ partnerId, articleId, conversation, status, onBack, onToggleSu
     onError: (e) => toast.error(e.response?.data?.message ?? 'Action impossible.'),
   });
 
+  const proposeDeal = useMutation({
+    mutationFn: async ({ montant, lieu }) => (await api.post('/deals', {
+      conversation_id: conversation.id,
+      article_id: articleId || undefined,
+      montant_fcfa: Number(montant),
+      lieu_remise: lieu,
+    })).data,
+    onSuccess: () => {
+      toast.success('Deal proposé — en attente de l\'autre partie.');
+      setDealOpen(false); setDealMontant(''); setDealLieu('');
+      queryClient.invalidateQueries({ queryKey: ['deals'] });
+      queryClient.invalidateQueries({ queryKey: ['messages'] });
+    },
+    onError: (e) => toast.error(e.response?.data?.message ?? 'Proposition impossible.'),
+  });
+
+  const respondDeal = useMutation({
+    mutationFn: async ({ id, action, montant, lieu }) => (await api.patch(`/deals/${id}/respond`, {
+      action,
+      ...(action === 'counter' ? { montant_fcfa: Number(montant), lieu_remise: lieu } : {}),
+    })).data,
+    onSuccess: (data, vars) => {
+      const labels = { accept: 'Deal accepté — accord sur le prix et le lieu.', reject: 'Deal refusé.', counter: 'Contre-proposition envoyée.' };
+      toast.success(labels[vars.action] ?? 'Réponse enregistrée.');
+      queryClient.invalidateQueries({ queryKey: ['deals'] });
+      queryClient.invalidateQueries({ queryKey: ['messages'] });
+    },
+    onError: (e) => toast.error(e.response?.data?.message ?? 'Action impossible.'),
+  });
+
   const submit = () => {
     const value = text.trim();
     if (!value && !attachedPhoto) return;
@@ -520,8 +575,8 @@ function Thread({ partnerId, articleId, conversation, status, onBack, onToggleSu
               {partner?.nom ?? 'Conversation'}
             </h2>
             <span className={`inline-flex shrink-0 items-center gap-0.5 rounded-[5px] px-1.5 py-0.5 text-[8px] font-extrabold uppercase tracking-wide ${badge.className}`}>
-              {badge.label === 'Vendeur Pro Vérifié' && <BadgeCheck size={16} />}
-              <span className="sm:hidden">Pro vérifié</span>
+              {badge.verified && <BadgeCheck size={16} />}
+              <span className="sm:hidden">{badge.short}</span>
               <span className="hidden sm:inline">{badge.label}</span>
             </span>
           </div>
@@ -582,7 +637,22 @@ function Thread({ partnerId, articleId, conversation, status, onBack, onToggleSu
                   onTroc={(soulte) => { setTrocSoulte(soulte); setTrocOpen(true); }}
                   onPhoto={() => fileRef.current?.click()}
                   onPin={() => setPinOpen(true)}
+                  onDeal={() => setDealOpen(true)}
                 />
+
+                {deals.length > 0 && (
+                  <div className="grid gap-2" data-deals-list>
+                    {deals.map((deal) => (
+                      <DealCard
+                        key={deal.id}
+                        deal={deal}
+                        mine={deal.propose_par === user?.id}
+                        onRespond={respondDeal}
+                        pending={respondDeal.isPending}
+                      />
+                    ))}
+                  </div>
+                )}
 
                 {messages.map((m) => {
                   const mine = m.expediteur_id === user?.id;
@@ -695,6 +765,41 @@ function Thread({ partnerId, articleId, conversation, status, onBack, onToggleSu
         transactionId={conversation?.transaction_id ?? article?.transaction_id}
         dashboardPath={dashboardPath}
       />
+
+      <Modal
+        open={dealOpen}
+        onClose={() => setDealOpen(false)}
+        title="Proposer un deal"
+      >
+        <div className="grid gap-3">
+          <label className="grid gap-1">
+            <span className="text-[11px] font-semibold text-[#121212]/70">Prix proposé (FCFA)</span>
+            <input
+              type="number" min="0" value={dealMontant}
+              onChange={(e) => setDealMontant(e.target.value)}
+              placeholder="Ex. 45 000"
+              className="h-11 rounded-xl border-0 bg-[#F6F6F6] px-3 text-sm text-[#121212] outline-none focus:ring-2 focus:ring-[#780000]"
+            />
+          </label>
+          <label className="grid gap-1">
+            <span className="text-[11px] font-semibold text-[#121212]/70">Lieu de remise</span>
+            <input
+              type="text" value={dealLieu}
+              onChange={(e) => setDealLieu(e.target.value)}
+              placeholder="Ex. Abidjan Cocody, devant la station Total"
+              className="h-11 rounded-xl border-0 bg-[#F6F6F6] px-3 text-sm text-[#121212] outline-none focus:ring-2 focus:ring-[#780000]"
+            />
+          </label>
+          <button
+            type="button"
+            disabled={!dealMontant || !dealLieu || proposeDeal.isPending}
+            onClick={() => proposeDeal.mutate({ montant: dealMontant, lieu: dealLieu })}
+            className="mt-1 h-11 rounded-xl bg-[#780000] text-sm font-bold text-white transition disabled:opacity-40"
+          >
+            {proposeDeal.isPending ? 'Envoi…' : 'Envoyer la proposition'}
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 }
@@ -703,7 +808,7 @@ function Thread({ partnerId, articleId, conversation, status, onBack, onToggleSu
    Cartes d'action rapide (dans le fil)
    ================================================================ */
 
-function ActionCards({ article, status, onTroc, onPhoto, onPin }) {
+function ActionCards({ article, status, onTroc, onPhoto, onPin, onDeal }) {
   const cardRef = useRef(null);
   useLayoutEffect(() => animateEntrance(cardRef.current, '[data-action-card]'), [article?.id, status]);
 
@@ -711,6 +816,7 @@ function ActionCards({ article, status, onTroc, onPhoto, onPin }) {
     <section ref={cardRef} className="grid gap-2 sm:grid-cols-2" aria-label="Actions rapides de négociation">
       <ArticleActionCard article={article} status={status} />
 
+      <ActionCard icon={Handshake} title="Proposer un deal" hint="Prix et lieu de remise" onClick={onDeal} />
       <ActionCard icon={ArrowLeftRight} title="Troc pur" hint="Échanger sans soulte" onClick={() => onTroc('0')} />
       <ActionCard icon={Tag} title="Troc + soulte" hint="Ajouter un montant FCFA" onClick={() => onTroc('')} />
       <ActionCard icon={Camera} title="Joindre une photo" hint="Article ou preuve de remise" onClick={onPhoto} />
@@ -1051,6 +1157,49 @@ function PriceCard({ message, mine }) {
           </p>
         </div>
       </div>
+    </div>
+  );
+}
+
+function DealCard({ deal, mine, onRespond, pending }) {
+  const [counterOpen, setCounterOpen] = useState(false);
+  const [counterMontant, setCounterMontant] = useState(String(deal.montant_fcfa ?? ''));
+  const [counterLieu, setCounterLieu] = useState(deal.lieu_remise ?? '');
+  const meta = DEAL_STATUS[deal.statut] ?? DEAL_STATUS.proposed;
+  const canRespond = !mine && ['proposed', 'countered'].includes(deal.statut);
+
+  return (
+    <div className="rounded-2xl bg-white p-3 shadow-[0_2px_10px_rgba(18,18,18,0.06)]" data-deal-id={deal.id}>
+      <div className="flex items-center gap-2">
+        <Handshake size={18} className="text-[#780000]" />
+        <span className="text-[11px] font-bold text-[#121212]" style={{ fontFamily: FONT_TITLE }}>Deal de remise</span>
+        <span className={`ml-auto rounded-full px-2 py-0.5 text-[10px] font-bold ${meta.className}`}>{meta.label}</span>
+      </div>
+      <p className="mt-2 text-[20px] font-extrabold tracking-tight text-[#780000]" style={{ fontFamily: FONT_TITLE }}>
+        {formatFCFA(Number(deal.montant_fcfa ?? 0))}
+      </p>
+      <p className="mt-1 text-[11px] text-[#121212]/60">📍 {deal.lieu_remise}</p>
+      {canRespond && (
+        <div className="mt-3 flex flex-wrap gap-2">
+          <button type="button" disabled={pending} onClick={() => onRespond.mutate({ id: deal.id, action: 'accept' })}
+            className="h-9 rounded-xl bg-[#780000] px-3 text-[11px] font-bold text-white disabled:opacity-40">Accepter</button>
+          <button type="button" disabled={pending} onClick={() => onRespond.mutate({ id: deal.id, action: 'reject' })}
+            className="h-9 rounded-xl bg-[#EFEFEF] px-3 text-[11px] font-bold text-[#121212] disabled:opacity-40">Refuser</button>
+          <button type="button" disabled={pending} onClick={() => setCounterOpen((v) => !v)}
+            className="h-9 rounded-xl bg-[#121212] px-3 text-[11px] font-bold text-white disabled:opacity-40">Contre-proposer</button>
+        </div>
+      )}
+      {canRespond && counterOpen && (
+        <div className="mt-3 grid gap-2 rounded-xl bg-[#F6F6F6] p-3">
+          <input type="number" min="0" value={counterMontant} onChange={(e) => setCounterMontant(e.target.value)} placeholder="Montant FCFA"
+            className="h-10 rounded-lg border-0 bg-white px-3 text-xs outline-none focus:ring-2 focus:ring-[#780000]" />
+          <input type="text" value={counterLieu} onChange={(e) => setCounterLieu(e.target.value)} placeholder="Lieu de remise"
+            className="h-10 rounded-lg border-0 bg-white px-3 text-xs outline-none focus:ring-2 focus:ring-[#780000]" />
+          <button type="button" disabled={pending || !counterMontant || !counterLieu}
+            onClick={() => { onRespond.mutate({ id: deal.id, action: 'counter', montant: counterMontant, lieu: counterLieu }); setCounterOpen(false); }}
+            className="h-10 rounded-lg bg-[#780000] text-xs font-bold text-white disabled:opacity-40">Envoyer la contre-proposition</button>
+        </div>
+      )}
     </div>
   );
 }

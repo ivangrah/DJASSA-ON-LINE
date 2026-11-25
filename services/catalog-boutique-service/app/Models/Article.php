@@ -29,6 +29,8 @@ class Article extends Model
         'est_trocable' => 'boolean','specs' => 'array','images' => 'array',
         'vente_flash' => 'boolean','flash_fin_at' => 'datetime',
     ];
+    /** Boutique du même domaine (catalog) — pas de requête cross-service. */
+    public function boutique() { return $this->belongsTo(Boutique::class, 'boutique_id'); }
     public function scopePublished($q) { return $q->where('statut', self::STATUT_PUBLISHED); }
     /** Première image exploitable. Les anciennes lignes peuvent contenir des
      *  objets sérialisés (tableaux) : on ne renvoie qu'une chaîne, jamais un array. */

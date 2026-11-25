@@ -51,7 +51,7 @@ class ProductController extends Controller
 
     public function show(string $id): ProductResource
     {
-        return ProductResource::make(Article::findOrFail($id));
+        return ProductResource::make(Article::with('boutique')->findOrFail($id));
     }
 
     public function store(Request $request): JsonResponse
