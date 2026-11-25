@@ -115,7 +115,7 @@ class BrevoNotificationService
             ['PIN' => $pin, 'MONTANT' => number_format($montant, 0, ',', ' '), 'ARTICLE' => $articleTitre],
             $this->renderFallback('Code PIN de remise', [
                 'Votre code PIN à 4 chiffres pour <strong>'.e($articleTitre).'</strong> :',
-                '<p style="font-size:28px;letter-spacing:8px;font-weight:800;color:#E11D48">'.$pin.'</p>',
+                '<p style="font-size:28px;letter-spacing:8px;font-weight:800;color:#780000">'.$pin.'</p>',
                 '<p>Montrez ce code au vendeur <strong>uniquement au moment de la remise physique</strong> de l’article. Ne le partagez avec personne d’autre.</p>',
             ])
         );

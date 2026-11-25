@@ -35,5 +35,6 @@ class Transaction extends Model
     public const ESCROW_RELEASED = 'released';
     public const ESCROW_REFUNDED = 'refunded';
     public const ESCROW_FAILED = 'failed';
+    public const ESCROW_DISPUTED = 'disputed';
     public const PIN_MAX_TENTATIVES = 5;
 }

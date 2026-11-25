@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\RateLimiter;
 use RuntimeException;
 
 /**
@@ -26,6 +27,34 @@ class EscrowService
         return str_pad((string) random_int(0, 9999), 4, '0', STR_PAD_LEFT);
     }
 
+    /** Hachage bcrypt + pepper serveur (jamais de PIN en clair en base). */
+    private function hashPin(string $pin): string
+    {
+        $pepper = (string) config('services.security.pin_pepper', '');
+
+        return Hash::make($pin.$pepper);
+    }
+
+    /**
+     * Vérification avec pepper ; repli sur le hash historique sans pepper pour ne pas
+     * invalider les transactions déjà en séquestre lors du déploiement du pepper.
+     */
+    private function checkPin(string $pin, string $hash): bool
+    {
+        $pepper = (string) config('services.security.pin_pepper', '');
+        if ($pepper !== '' && Hash::check($pin.$pepper, $hash)) {
+            return true;
+        }
+
+        return Hash::check($pin, $hash);
+    }
+
+    /** Clé de limitation par IP : jamais l'IP en clair dans la clé de cache. */
+    private function ipThrottleKey(?string $ip): ?string
+    {
+        return $ip === null ? null : 'pin-verify|'.hash('sha256', $ip);
+    }
+
     /** initiated → held ; génère le PIN haché. Retourne le PIN en clair UNE seule fois. */
     public function marquerHeld(Transaction $transaction): ?string
     {
@@ -39,7 +68,7 @@ class EscrowService
         $pin = $this->genererPin();
         $transaction->update([
             'escrow_status' => Transaction::ESCROW_HELD,
-            'pin_hash' => Hash::make($pin),
+            'pin_hash' => $this->hashPin($pin),
             'pin_attempts' => 0,
             'held_at' => now(),
         ]);
@@ -61,10 +90,15 @@ class EscrowService
         return $pin;
     }
 
-    /** Vérifie le PIN du vendeur et libère les fonds. */
-    public function verifierPin(Transaction $transaction, string $vendeurId, string $pin): Transaction
+    /** Vérifie le PIN du vendeur et libère les fonds. $ip est optionnelle (appels internes signés). */
+    public function verifierPin(Transaction $transaction, string $vendeurId, string $pin, ?string $ip = null): Transaction
     {
-        return DB::transaction(function () use ($transaction, $vendeurId, $pin): Transaction {
+        $throttleKey = $this->ipThrottleKey($ip);
+        if ($throttleKey !== null && RateLimiter::tooManyAttempts($throttleKey, (int) config('services.security.pin_ip_attempts', 5))) {
+            throw new RuntimeException('Trop de tentatives de PIN depuis cette adresse. Réessayez plus tard.', 429);
+        }
+
+        return DB::transaction(function () use ($transaction, $vendeurId, $pin, $throttleKey): Transaction {
             /** @var Transaction $tx */
             $tx = Transaction::query()->lockForUpdate()->findOrFail($transaction->id);
 
@@ -80,8 +114,11 @@ class EscrowService
             if ($tx->pin_attempts >= Transaction::PIN_MAX_TENTATIVES) {
                 throw new RuntimeException('Code PIN bloqué après 5 tentatives erronées.', 423);
             }
-            if (! $tx->pin_hash || ! Hash::check($pin, $tx->pin_hash)) {
+            if (! $tx->pin_hash || ! $this->checkPin($pin, $tx->pin_hash)) {
                 $tx->increment('pin_attempts');
+                if ($throttleKey !== null) {
+                    RateLimiter::hit($throttleKey, (int) config('services.security.pin_ip_decay_seconds', 900));
+                }
                 $tentatives = $tx->refresh()->pin_attempts;
                 throw new RuntimeException(sprintf('Code PIN incorrect (%d/%d tentatives).', $tentatives, Transaction::PIN_MAX_TENTATIVES));
             }

@@ -43,9 +43,16 @@ class TransactionController extends Controller
     public function verifyPin(VerifyPinRequest $request, Transaction $transaction): JsonResponse
     {
         try {
-            $tx = $this->escrow->verifierPin($transaction, (string) $request->header('X-User-Id'), $request->validated('pin'));
+            $tx = $this->escrow->verifierPin(
+                $transaction,
+                (string) $request->header('X-User-Id'),
+                $request->validated('pin'),
+                $request->ip(),
+            );
         } catch (\RuntimeException $e) {
-            return response()->json(['message' => $e->getMessage()], $e->getCode() === 423 ? 423 : 422);
+            $status = in_array($e->getCode(), [423, 429], true) ? $e->getCode() : 422;
+
+            return response()->json(['message' => $e->getMessage()], $status);
         }
 
         return response()->json([
