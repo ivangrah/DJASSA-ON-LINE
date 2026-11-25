@@ -21,6 +21,7 @@ class AdminCampaignTest extends TestCase
         $this->withHeaders(['X-User-Role' => 'admin', 'Accept' => 'application/json'])
             ->postJson('/api/v1/admin/notifications/broadcast', [
                 'audience' => 'all', 'titre' => 'Campagne', 'corps' => 'Bonjour à tous', 'email' => false,
+                'confirm_mass' => true,
             ])->assertStatus(202)->assertJsonPath('queued', true);
     }
 }
